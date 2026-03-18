@@ -1,0 +1,56 @@
+{
+  "document_id": "system-design-jd-kpi",
+  "owner": "System Design Governance Function",
+  "approved_by": "Engineering Management",
+
+  "languages": {
+    "zh-TW": {
+      "title": "系統設計治理人員 JD 與 KPI 手冊",
+      "subtitle": "System Design Governance - Role Definitions & KPI Framework",
+      "version": "1.1",
+      "effective_date": "2026-02-09",
+      "header_title": "JD & KPI Governance Manual",
+      "toc_title": "目錄",
+      "files": {
+        "main": [
+          "00-index.md",
+          "01-department-mandate.md",
+          "02-role-responsibility-boundary.md",
+          "03-role-definitions-jd.md",
+          "04-role-kpi-evidence-model.md",
+          "05-smart-kpi-definitions.md",
+          "06-kpi-scoring-model.md",
+          "07-contribution-reward-mapping.md",
+          "08-multi-role-scoring-aggregation.md",
+          "09-annual-governance-cycle.md",
+          "10-score-usage-rules.md"
+        ],
+        "appendices": [
+          "appendix/A-decision-summary-appendix.md"
+        ]
+      }
+    },
+    "en-US": {
+      "title": "System Design Governance JD & KPI Manual",
+      "subtitle": "Role Definitions & KPI Framework",
+      "version": "1.0",
+      "effective_date": "2026-02-06",
+      "header_title": "JD & KPI Governance Manual",
+      "toc_title": "Table of Contents",
+      "files": {
+        "main": [
+          "00-index.md"
+        ],
+        "appendices": []
+      }
+    }
+  },
+
+  "build": {
+    "use_cover": true,
+    "use_appendix": true,
+    "toc": true,
+    "toc_depth": 3,
+    "number_sections": true
+  }
+}

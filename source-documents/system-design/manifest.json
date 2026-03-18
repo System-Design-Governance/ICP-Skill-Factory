@@ -1,0 +1,57 @@
+{
+  "document_id": "system-design-governance",
+  "owner": "System Design Governance Function",
+  "approved_by": "Engineering Management",
+
+  "languages": {
+    "zh-TW": {
+      "title": "System Design Governance",
+      "subtitle": "系統設計治理總則",
+      "version": "1.2",
+      "effective_date": "2026-01-21",
+      "header_title": "System Design Governance",
+      "toc_title": "目錄",
+      "files": {
+        "main": ["system-design-governance.md"],
+        "appendices": [
+          "appendix-a-iec62443-alignment.md",
+          "appendix-b-raci.md",
+          "appendix-c-residual-risk-template.md",
+          "appendix-d-integrated-risk-assessment-templates.md",
+          "appendix-e-design-request-readiness-guideline.md"
+        ]
+      }
+    },
+    "en-US": {
+      "title": "System Design Governance",
+      "subtitle": "System Design Governance Charter",
+      "version": "1.2",
+      "effective_date": "2026-01-21",
+      "header_title": "System Design Governance",
+      "toc_title": "Table of Contents",
+      "files": {
+        "main": ["system-design-governance.md"],
+        "appendices": [
+          "appendix-a-iec62443-alignment.md",
+          "appendix-b-raci.md",
+          "appendix-c-residual-risk-template.md",
+          "appendix-d-integrated-risk-assessment-templates.md",
+          "appendix-e-design-request-readiness-guideline.md"
+        ]
+      }
+    }
+  },
+
+  "build": {
+    "use_cover": true,
+    "use_appendix": true,
+    "appendix_position": "after_main",
+    "toc": true,
+    "toc_depth": 3,
+    "number_sections": true
+  },
+
+  "metadata": {
+    "footer_text": "Confidential - Internal Use Only"
+  }
+}

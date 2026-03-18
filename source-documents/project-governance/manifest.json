@@ -1,0 +1,74 @@
+{
+  "document_id": "power-platform-governance",
+  "owner": "System Design Governance Function",
+  "approved_by": "Engineering Management",
+  "release_type": "Institutional Governance Upgrade",
+  "status": "L5 Institutional Governance",
+  "edition": "Anti-Fragile Canvas Governance Edition — L5 Maturity",
+  "stability_horizon": "3 Years (2026-2029)",
+
+  "languages": {
+    "zh-TW": {
+      "title": "Power Platform 治理系統建置手冊",
+      "subtitle": "Design Governance System 實作指南 - Anti-Fragile Canvas Governance Edition",
+      "version": "5.0",
+      "effective_date": "2026-02-14",
+      "header_title": "Power Platform Governance v5.0",
+      "toc_title": "目錄",
+      "files": {
+        "main": [
+          "00-index.md",
+          "00A-build-order-and-bootstrap.md",
+          "00B-first-run-initialization-checklist.md",
+          "00C-placeholder-reference.md",
+          "01-prerequisites-and-environment.md",
+          "02-dataverse-data-model-and-security.md",
+          "03-sharepoint-architecture.md",
+          "04-powerapps-forms.md",
+          "05-core-flows-implementation-runbook.md",
+          "06-guardrails-and-anti-cheating.md",
+          "07-testing-and-acceptance.md"
+        ],
+        "appendices": [
+          "appendix/A-core-flows-specification.md",
+          "appendix/Canvas-Brand-UI-Standard-v1.2.md",
+          "appendix/Canvas-Editor-Operability-Playbook-v1.md"
+        ]
+      },
+      "sections": {
+        "section_0": {
+          "title": "導覽與啟動",
+          "files": ["00-index.md", "00A-build-order-and-bootstrap.md", "00B-first-run-initialization-checklist.md", "00C-placeholder-reference.md"]
+        },
+        "section_1": {
+          "title": "治理基礎結構",
+          "files": ["01-prerequisites-and-environment.md", "02-dataverse-data-model-and-security.md", "03-sharepoint-architecture.md"]
+        },
+        "section_2": {
+          "title": "人類操作介面",
+          "files": ["04-powerapps-forms.md"]
+        },
+        "section_3": {
+          "title": "系統自動化實作",
+          "files": ["05-core-flows-implementation-runbook.md"]
+        },
+        "section_4": {
+          "title": "治理防線與反作弊",
+          "files": ["06-guardrails-and-anti-cheating.md"]
+        },
+        "section_5": {
+          "title": "驗證、測試與封版",
+          "files": ["07-testing-and-acceptance.md"]
+        }
+      }
+    }
+  },
+
+  "build": {
+    "use_cover": true,
+    "use_appendix": true,
+    "toc": true,
+    "toc_depth": 3,
+    "number_sections": true
+  }
+}
