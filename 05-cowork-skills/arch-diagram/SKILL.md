@@ -95,13 +95,42 @@ Layer 3: Conduit 連線                  ← Zone 之間的連接線
 **D2 classes 定義**（放在 `.d2` 檔案開頭）：
 ```d2
 classes: {
-  zone_l4: { style: { fill: "#e8eef5"; stroke: "#0C3467"; stroke-width: 2; font-size: 16 } }
-  zone_dmz: { style: { fill: "#fdecea"; stroke: "#c0392b"; stroke-width: 2; font-size: 16 } }
-  zone_l3: { style: { fill: "#e0f4fb"; stroke: "#008EC3"; stroke-width: 2; font-size: 16 } }
-  zone_l2: { style: { fill: "#e8f5e9"; stroke: "#2e7d32"; stroke-width: 2; font-size: 16 } }
-  zone_l1: { style: { fill: "#fff8e1"; stroke: "#F5A623"; stroke-width: 2; font-size: 16 } }
-  zone_l0: { style: { fill: "#f5f5f5"; stroke: "#9B9B9B"; stroke-width: 2; font-size: 16 } }
-  zone_sub: { style: { fill: "transparent"; stroke: "#ccc"; stroke-dash: 3; stroke-width: 1; font-size: 13 } }
+  zone_l4: { style: { fill: "#e8eef5"; stroke: "#0C3467"; stroke-width: 2; font-size: 16; bold: true } }
+  zone_dmz: { style: { fill: "#fdecea"; stroke: "#c0392b"; stroke-width: 2; font-size: 16; bold: true } }
+  zone_l3: { style: { fill: "#e0f4fb"; stroke: "#008EC3"; stroke-width: 2; font-size: 16; bold: true } }
+  zone_l2: { style: { fill: "#e8f5e9"; stroke: "#2e7d32"; stroke-width: 2; font-size: 16; bold: true } }
+  zone_l1: { style: { fill: "#fff8e1"; stroke: "#F5A623"; stroke-width: 2; font-size: 16; bold: true } }
+  zone_l0: { style: { fill: "#f5f5f5"; stroke: "#9B9B9B"; stroke-width: 2; font-size: 16; bold: true } }
+  zone_sub: { style: { fill: "transparent"; stroke: "#9B9B9B"; stroke-dash: 3; stroke-width: 1; font-size: 13 } }
+}
+```
+
+**設備 classes 定義**（對應 substation_final.svg 風格）：
+```d2
+classes: {
+  # L3 設備
+  scada_server:   { shape: rectangle; style: { fill: "#e0f4fb"; stroke: "#0C3467"; stroke-width: 2; font-size: 13 } }
+  hmi_workstation: { shape: rectangle; style: { fill: "#e0f4fb"; stroke: "#008EC3"; stroke-width: 2; font-size: 13 } }
+  historian:      { shape: cylinder;   style: { fill: "#e0f4fb"; stroke: "#0C3467"; stroke-width: 2; font-size: 13 } }
+  engineering_ws: { shape: rectangle; style: { fill: "#f5f5f5"; stroke: "#9B9B9B"; stroke-width: 2; font-size: 13 } }
+  ntp_server:     { shape: rectangle; style: { fill: "#e0f4fb"; stroke: "#008EC3"; stroke-width: 2; font-size: 13 } }
+  # DMZ 設備
+  firewall:       { shape: diamond;   style: { fill: "#fdecea"; stroke: "#c0392b"; stroke-width: 2; font-size: 13 } }
+  data_diode:     { shape: diamond;   style: { fill: "#fff8e1"; stroke: "#F5A623"; stroke-width: 2; font-size: 13 } }
+  jump_server:    { shape: rectangle; style: { fill: "white";   stroke: "#c0392b"; stroke-width: 1; stroke-dash: 3; font-size: 13 } }
+  # L2 設備
+  switch_prp:     { shape: hexagon;   style: { fill: "#e0f4fb"; stroke: "#008EC3"; stroke-width: 2; font-size: 12 } }
+  # L1 設備
+  gateway:        { shape: hexagon;   style: { fill: "#fff8e1"; stroke: "#F5A623"; stroke-width: 2; font-size: 13 } }
+  redbox:         { shape: hexagon;   style: { fill: "#e0f4fb"; stroke: "#0C3467"; stroke-width: 2; font-size: 12 } }
+  rtu_ied:        { shape: rectangle; style: { fill: "#fff8e1"; stroke: "#F5A623"; stroke-width: 2; font-size: 13 } }
+  plc:            { shape: rectangle; style: { fill: "#e0f4fb"; stroke: "#008EC3"; stroke-width: 2; font-size: 13 } }
+  # L0 設備
+  field_ied:      { shape: rectangle; style: { fill: "#f5f5f5"; stroke: "#9B9B9B"; stroke-width: 2; font-size: 12 } }
+  inverter:       { shape: rectangle; style: { fill: "#fff8e1"; stroke: "#F5A623"; stroke-width: 1; font-size: 12 } }
+  ups:            { shape: rectangle; style: { fill: "#fff8e1"; stroke: "#F5A623"; stroke-width: 1; font-size: 12 } }
+  # 外部系統
+  external_system: { shape: rectangle; style: { fill: "white"; stroke: "#9B9B9B"; stroke-width: 1; stroke-dash: 3; font-size: 13 } }
 }
 ```
 
@@ -724,7 +753,7 @@ field_devices:
 | PRP_LAN_A | PRP LAN-A IEC 62439-3 | `#008EC3` | 2 | 實線 | 主骨幹 |
 | PRP_LAN_B | PRP LAN-B IEC 62439-3 | `#0C3467` | 2 | 虛線(3) | 備援骨幹 |
 | IEC61850_fiber | IEC 61850 GOOSE Fiber SM | `#0C3467` | 3 | 實線 | 保護通訊 |
-| Modbus_TCP | Modbus TCP | `#008EC3` | 1 | 實線 | 現場控制 |
+| Modbus_TCP | Modbus TCP | `#9B9B9B` | 1 | 虛線(3) | 現場控制 |
 | RS485_modbus | RS-485 Modbus RTU | `#9B9B9B` | 1 | 虛線(3) | 串列通訊 |
 | OPC_UA | OPC-UA / ICCP | `#008EC3` | 2 | 實線 | SCADA 通訊 |
 | DNP3_serial | DNP3 Serial | `#F5A623` | 1 | 虛線(3) | 調度通訊 |
