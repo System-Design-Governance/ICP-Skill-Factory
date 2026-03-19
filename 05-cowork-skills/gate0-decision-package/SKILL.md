@@ -1,185 +1,170 @@
 ---
 name: gate0-decision-package
 description: >
-  Gate 0 決策與成本分析。
-  Assemble, verify completeness of, and package the Gate 0 decision package that consolidates all Pre-Gate 0 deliverables into a structured submission f。Cost Risk Contingency Analysis evaluates cost exposure and calculates risk-adjusted contingency res
-  MANDATORY TRIGGERS: Gate 0 決策與成本分析, Gate 0 決策包組裝, 成本風險餘裕分析, contingency-planning, governance, decision-package, gate-review, gate0 decision package, Pre-R0, Gate 0 Decision Package Assembly, risk-analysis.
-  Use this skill for gate0 decision package tasks in OT/ICS/SCADA cybersecurity and energy infrastructure projects.
+  Assemble and verify Gate 0 decision package consolidating all Pre-Gate 0 deliverables,
+  and perform cost risk contingency analysis for project budget risk adjustment.
+  MANDATORY TRIGGERS: Gate 0, 決策包, decision package, Gate 0 組裝,
+  Gate 0 assembly, 成本風險, cost risk, contingency, 風險餘裕,
+  risk contingency, Gate 0 package, 決策包組裝, gate review package,
+  風險調整預算, risk-adjusted budget, 成本敏感度.
+  Use this skill for Gate 0 decision package assembly and cost risk contingency analysis.
 ---
 
-# Gate 0 決策與成本分析
+# Gate 0 決策包組裝與成本風險分析 (Gate 0 Decision Package & Cost Risk)
 
-本 Skill 整合 2 個工程技能定義，提供Gate 0 決策與成本分析的完整工作流程。
-適用領域：Pre-Gate & Presales（D14）。
+本 Skill 整合 2 個工程技能定義，將所有 Pre-Gate 0 產出整合為 Gate 0 決策包，並執行成本風險餘裕分析。
 
 ---
 
 ## 0. 初始化
 
-執行前確認：
-
-1. **專案背景**：已取得專案範圍定義與系統邊界
-2. **輸入文件**：下方§1 列出的輸入已備齊或已標註為 TBD
-3. **適用標準**：已確認本專案適用的 IEC 62443 / ISO 標準版本
-4. **前置依賴**：確認以下 SK 產出已可用：SK-D14-001, SK-D14-003, SK-D14-004, SK-D14-005, SK-D14-006, SK-D14-008
-
----
-
-## 1. 輸入
-
-- Requirement clarification record (from SK-D14-001 + stakeholder Q&A records)
-- Risk pre-disclosure list (from SK-D14-003 — risk identification output)
-- Feasibility assessment (from SK-D14-003)
-- CBOM (from SK-D14-005)
-- Concept architecture (from SK-D14-013 ⏳)
-- Preliminary security classification (from SK-D14-014) — supports scope stability assessment
-- Component Bill of Materials (CBOM) with unit costs from SK-D14-005 ⏳
-- Risk matrix and cost risk assessments from SK-D14-004 ⏳
-- Labor hours and staffing estimates from SK-D14-006 ⏳
-- Historical cost variance data from similar projects (if available)
-- Market volatility and supply chain risk factors
-- Currency exchange rates (for multi-region deployments)
+1. **5 大 Gate 0 必要輸入**已產出 (或明確標示 gap)：
+   - (1) 需求釐清記錄 (SK-D14-001)
+   - (2) 風險預先揭露清單 (SK-D14-004)
+   - (3) 可行性評估 (SK-D14-003)
+   - (4) CBOM (SK-D14-005)
+   - (5) 概念架構 (SK-D14-013)
+2. **CBOM 已完成**：成本數據可用於風險餘裕計算
 
 ---
 
-## 2. 工作流程
+## 1. 工作流程
 
-### Step 1: Gate 0 決策包組裝
-**SK 來源**：SK-D14-015 — Gate 0 Decision Package Assembly
+### Step 1: Gate 0 決策包組裝 (SK-D14-015)
 
-執行Gate 0 決策包組裝：Assemble, verify completeness of, and package the Gate 0 decision package that consolidates all Pre-Gate 0 deliverables into a structured submission f
+**目標**：驗證完整性、評估品質閾值、組裝為正式決策包。
 
-**本步驟交付物**：
-- Gate 0 Decision Package:
-- Package cover sheet: project name, customer, package version, submission date, Pre-Gate Design Support owner
-- Completeness checklist: all 5 mandatory inputs verified present and current
+**GOV-SD Gate 0 四大品質閾值**：
 
-### Step 2: 成本風險餘裕分析
-**SK 來源**：SK-D14-016 — Cost Risk Contingency Analysis
+| 閾值 | 定義 | 驗證方式 |
+|------|------|---------|
+| Comprehensibility | 決策者能理解內容 | 非技術人員 review |
+| Evaluability | 內容足以做 Go/No-Go 決策 | 檢查 cost/risk/feasibility 數據 |
+| Accountable Owner | 每項交付物有負責人 | 責任矩陣檢查 |
+| Scope Stability | 範圍不會在評審中大幅變動 | 假設清單 + 風險清單穩定性 |
 
-執行成本風險餘裕分析：Cost Risk Contingency Analysis evaluates cost exposure and calculates risk-adjusted contingency reserves for the Component Bill of Materials (CBOM) an
+**操作步驟**：
 
-**本步驟交付物**：
-- Cost Risk Assessment Report identifying cost drivers and exposure areas
-- Contingency Reserve Calculation showing base cost, risk factors, and contingency percentage
-- Risk-Adjusted Project Budget with low/baseline/high scenarios
+1. **完整性檢查**：5 大必要輸入逐項驗證
+   ```markdown
+   | # | 必要輸入 | 來源 SK | 文件位置 | 版本 | 狀態 |
+   |---|---------|--------|---------|------|------|
+   | 1 | 需求釐清記錄 | SK-D14-001 | 01_brief/brief.md | v1.0 | ✅ |
+   | 2 | 風險預先揭露 | SK-D14-004 | 03_work/risk_matrix.md | v1.0 | ✅ |
+   | 3 | 可行性評估 | SK-D14-003 | 03_work/feasibility.md | v1.0 | ✅ |
+   | 4 | CBOM | SK-D14-005 | 03_work/cbom.xlsx | v1.0 | ✅ |
+   | 5 | 概念架構 | SK-D14-013 | 03_work/architecture.md | v1.0 | ✅ |
+   ```
+
+2. **品質閾值評估**：每個閾值 Pass/Fail
+3. **交叉引用矩陣**：確保 5 大輸入間的數據一致
+4. **已知缺口文件化**：未解決的 gap 記錄 owner + 解決路徑
+5. **Gate 0 簡報摘要**：2-3 頁 executive summary
+6. **責任移交備忘**：Pre-Gate → Post-Gate 的責任移交
+
+**⚠️ 避坑**：
+- 不要在缺少任何必要輸入的情況下提交 Gate 0——即使有 gap 也要文件化
+- 品質閾值不是 checkbox——需實質評估 (Comprehensibility 需要非技術人員確認)
+- 交叉引用不一致 (如 CBOM 金額 ≠ 可行性成本範圍) 會直接導致 Gate 0 fail
 
 ---
 
-## 3. 輸出 / 交付物
+### Step 2: 成本風險餘裕分析 (SK-D14-016)
 
-| # | 交付物 | 格式 |
+**目標**：計算風險調整後的 contingency reserve。
+
+**操作步驟**：
+
+1. **辨識成本風險驅動因素** (≥5 項)：
+   ```markdown
+   | Risk ID | 風險描述 | 機率 | 影響 (TWD) | 風險暴露 | 類別 |
+   |---------|---------|------|-----------|---------|------|
+   | CR-001 | 供應商漲價 | 30% | 500,000 | 150,000 | Supply |
+   | CR-002 | 場域限制增加工時 | 40% | 300,000 | 120,000 | Schedule |
+   | CR-003 | 匯率波動 (USD) | 20% | 200,000 | 40,000 | Financial |
+   | CR-004 | 額外安全控制需求 | 25% | 400,000 | 100,000 | Scope |
+   | CR-005 | Legacy 整合困難 | 35% | 350,000 | 122,500 | Technical |
+   ```
+
+2. **三情境模型**：
+   ```markdown
+   | 情境 | 基礎成本 | 風險調整 | Contingency % | 總計 |
+   |------|---------|---------|-------------|------|
+   | Low (Optimistic) | 5,000,000 | +200,000 | 4% | 5,200,000 |
+   | Baseline (Expected) | 5,000,000 | +500,000 | 10% | 5,500,000 |
+   | High (Pessimistic) | 5,000,000 | +1,200,000 | 24% | 6,200,000 |
+   ```
+
+3. **Contingency 分配**：按風險類別分配
+4. **成本敏感度分析**：辨識對總成本影響最大的 ≥3 個風險
+5. **緩解策略**：每個高風險有觸發條件+緩解措施
+6. **Finance/PM 核准**：contingency 需正式核准
+7. **Contingency 在預算中正式分離**：不混入基礎成本
+
+**⚠️ 避坑**：
+- Contingency 不是「加 10% 了事」——需有 risk-based 計算基礎
+- 三情境差異太小 → 低估風險；差異太大 → 不可信
+- 敏感度分析至少 3 個風險——識別哪些風險對預算影響最大
+
+---
+
+## 2. 輸出
+
+| # | 交付物 | 步驟 |
 |---|--------|------|
-| 1 | Gate 0 Decision Package: | 依需求 |
-| 2 | Package cover sheet: project name, customer, package version, submission date, Pre-Gate Design Support owner | 依需求 |
-| 3 | Completeness checklist: all 5 mandatory inputs verified present and current | Markdown |
-| 4 | Quality threshold assessment: | 依需求 |
-| 5 | Comprehensibility: are the deliverables understandable to Gate 0 reviewers? | 依需求 |
-| 6 | Evaluability: do the deliverables contain sufficient information for informed decision-making? | 依需求 |
-| 7 | Cost Risk Assessment Report identifying cost drivers and exposure areas | Markdown |
-| 8 | Contingency Reserve Calculation showing base cost, risk factors, and contingency percentage | 依需求 |
-| 9 | Risk-Adjusted Project Budget with low/baseline/high scenarios | 依需求 |
-| 10 | Contingency Allocation by risk category (supply chain, labor escalation, scope change, technical) | 依需求 |
-| 11 | Cost Risk Mitigation strategies and triggers for contingency draw-down | 依需求 |
-| 12 | Cost Baseline and Budget Constraint documentation for Gate 0 approval | 依需求 |
+| 1 | Gate 0 Decision Package | 1 |
+| 2 | Completeness Checklist (5 大輸入) | 1 |
+| 3 | Quality Threshold Assessment | 1 |
+| 4 | Cross-Reference Matrix | 1 |
+| 5 | Gate 0 Briefing Summary (2-3 page) | 1 |
+| 6 | Cost Risk Assessment Report | 2 |
+| 7 | Contingency Reserve Calculation | 2 |
+| 8 | Risk-Adjusted Budget (3 scenarios) | 2 |
+| 9 | Cost Sensitivity Analysis | 2 |
 
 ---
 
-## 4. 適用標準
+## 3. 驗收標準
 
-- GOV-SD: Gate 0 framework — 5 mandatory inputs, 4 quality thresholds, blocking conditions, responsibility handover within
-- GOV-SDP: Pre-Gate Design Support Role — Gate 0 package quality is a role KPI; responsibility handover marks end of Pre-G
-- ID01 §6.5.1.1.3: Gate 0 review requirements
-- ID03 §5.5.2: Security program activities — Gate 0 as project initiation gate
-- IEC 62443-1-1:2013 "Cybersecurity for industrial automation and control systems – Part 1-1"
-- PMBOK (Project Management Body of Knowledge) Guide – 6th Edition or later
-- ISO 21500:2021 "Guidance on project management"
-- NIST SP 800-82 "Guide to ICS Security"
-
----
-
-## 5. 驗收標準
-
-| # | 驗收項目 | 通過條件 |
-|---|---------|---------|
-| 1 | All 5 mandatory Gate 0 inputs present and verified current: requirement clarific | ✅ 已驗證 |
-| 2 | Quality threshold assessment completed for all 4 thresholds (comprehensibility,  | ✅ 已驗證 |
-| 3 | Cross-reference matrix demonstrates traceability: requirements → feasibility → C | ✅ 已驗證 |
-| 4 | Known gaps and open issues documented with owner and proposed resolution path —  | ✅ 已驗證 |
-| 5 | Gate 0 briefing summary produced: 2–3 page executive summary covering project ov | ✅ 已驗證 |
-| 6 | Pre-Gate 0 responsibility handover note prepared: confirms 15-working-day handov | ✅ 已驗證 |
-| 7 | Cost Risk Assessment Report identifies at minimum 5 distinct cost risk drivers w | ✅ 已驗證 |
-| 8 | Contingency Reserve Calculation shows base cost, risk adjustments, and contingen | ✅ 已驗證 |
-| 9 | Risk-Adjusted Budget includes three scenarios: low (base – minimal contingency), | ✅ 已驗證 |
-| 10 | Contingency allocation by category (supply chain, labor, scope, technical) sums  | ✅ 已驗證 |
-| 11 | Cost sensitivity analysis quantifies impact of at minimum 3 key risk materializa | ✅ 已驗證 |
-| 12 | Cost Risk Mitigation strategies are documented with specific triggers for contin | ✅ 已驗證 |
-| 13 | Cost Baseline and contingency reserve approved by Finance and Project Leadership | ✅ 已驗證 |
-| 14 | Contingency reserve is formally separated in budget documentation (not hidden in | ✅ 已驗證 |
+| # | 項目 | 條件 |
+|---|------|------|
+| 1 | 5 大輸入全部存在+驗證 current | ✓ |
+| 2 | 4 品質閾值每項有 Pass/Fail | ✓ |
+| 3 | 交叉引用一致 (成本/風險/範圍) | ✓ |
+| 4 | 已知缺口有 owner+解決路徑 | ✓ |
+| 5 | ≥5 成本風險驅動因素 | ✓ |
+| 6 | 三情境 (Low/Base/High) 已計算 | ✓ |
+| 7 | 敏感度分析 ≥3 個風險 | ✓ |
+| 8 | Contingency 在預算中正式分離 | ✓ |
 
 ---
 
-## 6. 工時參考
+## 4. 工時
 
-| SK | 估算基準 |
-|----|---------|
-| SK-D14-015 | | Junior (< 2 yr) | 3–5 person-days | Assumes all 5 inputs already produced; includes assembly, qual |
-| SK-D14-015 | | Senior (5+ yr) | 2–3 person-days | Same scope; senior conducts efficient quality assessment and ra |
-
----
-
-## 7. 品質檢查清單
-
-| # | 檢查項目 | 通過條件 |
-|---|---------|---------|
-| 1 | 輸入完整性 | 所有必要輸入文件已讀取並摘要 |
-| 2 | 流程覆蓋 | 2 個工作步驟皆已執行並有產出 |
-| 3 | 輸出完整性 | 所有交付物已產出、格式正確、非空白 |
-| 4 | 標準合規 | 產出引用的標準版本正確 |
-| 5 | 術語一致 | 專案術語、縮寫與 glossary 一致 |
-| 6 | 跨步驟一致 | 各步驟產出間無矛盾（如數量、SL等級） |
+| 步驟 | Junior | Senior |
+|------|--------|--------|
+| Gate 0 組裝 | 3-5 pd | 2-3 pd |
+| 成本風險分析 | 5-8 pd | 3-5 pd |
 
 ---
 
-## 8. 人類審核閘門
-
-完成所有工作步驟後，暫停並向使用者提交審核：
+## 5. 人類審核閘門
 
 ```
-Gate 0 決策與成本分析已完成。
-📋 執行範圍：2 個工程步驟（SK-D14-015, SK-D14-016）
-📊 交付物清單：
-  - Gate 0 Decision Package:
-  - Package cover sheet: project name, customer, package version, submission date, Pre-Gate Design Support owner
-  - Completeness checklist: all 5 mandatory inputs verified present and current
-  - Quality threshold assessment:
-  - Comprehensibility: are the deliverables understandable to Gate 0 reviewers?
-⚠️ 待確認事項：{列出 TBD 項目或需人工判斷的假設}
-👉 請審核以上成果，確認 PASS / FAIL / PASS with Conditions。
+Gate 0 決策包已組裝。
+📋 5 大輸入：{pass}/{total} 通過 | 品質閾值：{qt_pass}/4
+📊 成本：基礎 {base} | Contingency {pct}% | 風險調整 {adj}
+⚠️ 缺口：{gaps} 項待解決
+👉 請 HEAD (系統設計主管) 審核並決策 Gate 0 Go/No-Go/Conditional。
 ```
 
-**判定標準**：
-- **PASS**：成果完整且正確，可進入下一階段或歸檔
-- **FAIL**：發現重大缺漏或錯誤，需返工後重新提交
-- **PASS with Conditions**：整體接受，但需補充特定項目後完成
-
 ---
 
-## 9. IEC 62443 生命週期對應
+## 6. Source Traceability
 
-| 項目 | 值 |
-|------|---|
-| 主要生命週期階段 | 依專案階段 |
-| Domain | D14 (Pre-Gate & Presales) |
-| SK 覆蓋 | SK-D14-015, SK-D14-016 |
+| SK | 名稱 | 核心知識 |
+|----|------|---------|
+| SK-D14-015 | Gate 0 Decision Package Assembly | 5 大輸入、4 品質閾值、交叉引用、責任移交 |
+| SK-D14-016 | Cost Risk Contingency Analysis | 成本風險驅動、三情境、敏感度、Contingency 分離 |
 
----
-
-## 10. Source Traceability
-
-| SK 編號 | 英文名稱 | 中文名稱 | 核心知識 |
-|--------|---------|---------|---------|
-| SK-D14-015 | Gate 0 Decision Package Assembly | Gate 0 決策包組裝 | Assemble, verify completeness of, and package the Gate 0 dec |
-| SK-D14-016 | Cost Risk Contingency Analysis | 成本風險餘裕分析 | Cost Risk Contingency Analysis evaluates cost exposure and c |
-
-<!-- Phase 5 Wave 2 deepened: SK-D14-015, SK-D14-016 -->
+<!-- Phase 6: Enhanced 2026-03-19. -->
