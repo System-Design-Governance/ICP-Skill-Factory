@@ -83,9 +83,38 @@ description: >
 
 ## 4. 定價邏輯
 
+### 4.1 硬體設備定價（三層瀑布）
+
+填入 CBOM 單價時，依以下優先順序查詢：
+
+| 優先序 | 定價來源 | 使用條件 | 取價方式 | 精度 |
+|--------|----------|----------|----------|------|
+| 1 | 歷史成交價 (高信心) | `confidence` = `high` 或 `medium` | 取 `median_unit_price` | ±10% |
+| 2 | 歷史成交價 (低信心) | `confidence` = `low` | 取 `median_unit_price`，備註標註「歷史價，僅供參考」 | ±20% |
+| 3 | 市場估價 | 無歷史資料 | 台灣代理商市場價 ±10%（品牌官方建議售價 / 經銷報價） | ±20% |
+
+**查詢方式**：在 `references/price_lookup.json` 中以產品型號或品牌名稱模糊比對。
+
+**廢棄產品處理**：若查到的產品 `is_deprecated` = true，改用 `replacement_code` 指向的替代品價格。替代關係詳見 `references/deprecated_products.json`。
+
+**價格趨勢提示**：
+- `price_trend` = `rising`：備註「近期漲價趨勢，建議預留 5-10% 漲幅」
+- `price_trend` = `falling`：備註「近期降價趨勢」
+- `price_trend` = `stable`：無需額外備註
+
+**價格匹配流程**：
+1. 使用者提供設備型號（如 "FortiGate 60F"）
+2. 在 price_lookup.json 中搜尋：
+   a. `product_name` 包含型號 → 精確匹配
+   b. `brand_name` 包含品牌名 → 品牌匹配，列出該品牌所有產品供選擇
+   c. `product_spec` 包含關鍵字 → 規格匹配
+3. 若找到多筆，取 `confidence` 最高、`latest_date` 最近的一筆
+4. 若完全找不到，退回市場估價模式
+
+### 4.2 其他品項定價
+
 | 品項類型 | 定價策略 | 資料來源 |
 |----------|----------|----------|
-| 硬體設備 | 台灣代理商市場價 ±10% | 品牌官方建議售價 / 經銷報價 |
 | 軟體授權 | 年訂閱 or 永久授權；依授權數計算 | 原廠公開定價 |
 | ISP 月費 | 商用固定 IP 光纖月租 | 台灣 ISP 商用方案（中華電信/遠傳等） |
 | 工程人天 | `每天 = 8 小時` | 單日費率見 §5 |
@@ -445,6 +474,7 @@ wb.save('03_work/cbom.xlsx')
 | 14 | 表格範圍正確 | `表格_BOM` 的 `ref` 涵蓋所有資料行（非原始模板的 `B4:X44`） |
 | 15 | 對齊一致性 | C,D,E,F,I,J,K = center/center；G,H = left/center + wrap_text；L,M = left/center |
 | 16 | 數字格式 | L,M 欄 number_format = `"NT$"#,##0`（含貨幣前綴） |
+| 17 | 價格來源標示 | 每筆硬體單價備註欄標明來源：`[歷史]` / `[市場]` / `[TBD]` |
 
 ---
 
@@ -513,7 +543,7 @@ wb.save('03_work/cbom.xlsx')
 
 | 類別 | 涵蓋品項範例 | 定價考量 |
 |------|------------|---------|
-| Hardware | 防火牆、IDS/IPS、Data Diode、安全交換器 | 台灣代理商市場價 ±10% |
+| Hardware | 防火牆、IDS/IPS、Data Diode、安全交換器 | 歷史成交價優先（見 §4.1），無資料時台灣代理商市場價 ±10% |
 | Software | EDR/XDR、SIEM、OT 監控、漏洞管理 | 年訂閱 × 授權數 × 年數 |
 | Services | 安全評估、合規稽核、滲透測試、SL 驗證 | 人天費率 × 估算天數 |
 | Maintenance | 安全設備維護、訂閱續約、安全更新 | 設備金額 × 年維護比率 |
@@ -565,6 +595,7 @@ wb.save('03_work/cbom.xlsx')
 | 10 | CBOM 狀態 | 明確標示 Draft/Quoted/Gate 0 |
 | 11 | Excel 格式 | Group Header 黃底、字型一致、表格範圍正確 |
 | 12 | 公式正確 | 小計欄皆為公式，非手動值 |
+| 13 | 價格來源標示 | 每筆硬體單價備註欄標明來源：`[歷史]` / `[市場]` / `[TBD]` |
 
 ---
 
@@ -605,3 +636,11 @@ CBOM 初稿已完成。
 本 Skill 的 `templates/` 目錄包含：
 
 - `CF-SR-03-01.xlsx` — 公司 BOM 成本預估表模板（空白版），作為預設模板使用
+
+本 Skill 的 `references/` 目錄包含：
+
+- `price_lookup.json` — 產品歷史成交價摘要表（1,829 筆），涵蓋 199 品牌，時間跨度 2024-01 ~ 2026-03
+- `deprecated_products.json` — 廢棄產品替代關係（38 筆）
+- `brand_map.json` — 品牌代碼對照表（199 筆）
+
+> 價格資料建議每季更新。97.2% 為 TWD，少量 EUR/USD 品項需按匯率換算。
