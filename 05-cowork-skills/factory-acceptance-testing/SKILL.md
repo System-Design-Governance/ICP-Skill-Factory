@@ -1,190 +1,116 @@
 ---
 name: factory-acceptance-testing
 description: >
-  工廠驗收測試。
-  Develop the Factory Acceptance Test (FAT) procedure document that defines the test protocol for verifying security and functional requirements at the 。Design security-specific FAT (Factory Acceptance Test) test cases that comprehensively validate the
-  MANDATORY TRIGGERS: FAT 程序撰寫, 安全 FAT 測試案例設計, 工廠驗收測試, access-control, security-testing, test-procedure, factory acceptance testing, IEC-62443, network-segmentation, factory-acceptance-testing, pre-shipment.
-  Use this skill for factory acceptance testing tasks in OT/ICS/SCADA cybersecurity and energy infrastructure projects.
+  工廠驗收測試：FAT 程序撰寫與安全 FAT 測試案例設計。
+  MANDATORY TRIGGERS: FAT, 工廠驗收, factory acceptance, 出廠測試,
+  factory test, pre-shipment test.
+  Use this skill for factory acceptance testing in OT/ICS cybersecurity projects.
 ---
 
-# 工廠驗收測試
+# 工廠驗收測試 (Factory Acceptance Testing)
 
-本 Skill 整合 2 個工程技能定義，提供工廠驗收測試的完整工作流程。
-適用領域：Testing & Commissioning（D08）。
+整合 2 個 SK，涵蓋 FAT 程序開發與安全測試案例設計。
 
 ---
 
 ## 0. 初始化
 
-執行前確認：
-
-1. **專案背景**：已取得專案範圍定義與系統邊界
-2. **輸入文件**：下方§1 列出的輸入已備齊或已標註為 TBD
-3. **適用標準**：已確認本專案適用的 IEC 62443 / ISO 標準版本
-4. **前置依賴**：確認以下 SK 產出已可用：SK-D01-001, SK-D01-002, SK-D01-003, SK-D01-006, SK-D01-007, SK-D01-019
-
----
-
-## 1. 輸入
-
-- Security Functional Description Specification (from SK-D09-002 ⏳) — SR requirements that must be verified
-- FR/SR mapping matrix (from SK-D01-007) — specifies which SRs apply per zone/device
-- Zone/Conduit architecture (from SK-D01-001) — defines the security topology to be tested
-- Endpoint hardening specifications (from SK-D01-019) — hardening configurations to verify during FAT
-- Account and access control policy (from SK-D01-020) — RBAC implementation to verify
-- Malware protection deployment plan (from SK-D01-023) — antivirus configuration to verify
-- Security Functional Specification (from SK-D09-002)
-- Security Requirements specification including FR-SR mapping (from SK-D01-006, SK-D01-007)
-- System architecture and zone/conduit diagram (from SK-D01-001)
-- Access control matrix and RBAC policies (from SK-D01-003)
-- Encryption and key management specification (from SK-D05-001 ⏳)
-- System hardening checklist and baseline standards (from SK-D01-002)
+1. 安全功能描述規範 (SFDS) 已完成 (SK-D09-002)
+2. FR/SR 映射矩陣已就緒 (SK-D01-007)
+3. 端點加固規格已定義 (SK-D01-019)
+4. 帳號/存取控制策略已定義 (SK-D01-020)
+5. 確認 FAT = 工廠測試 (pre-shipment)，區別於 SAT (site) 和 SIT (integration)
 
 ---
 
-## 2. 工作流程
+## 1. 工作流程
 
-### Step 1: FAT 程序撰寫
-**SK 來源**：SK-D08-001 — FAT Procedure Development
+### Step 1: FAT 程序撰寫 (SK-D08-001)
 
-執行FAT 程序撰寫：Develop the Factory Acceptance Test (FAT) procedure document that defines the test protocol for verifying security and functional requirements at the 
+**FAT 文件架構**：
 
-**本步驟交付物**：
-- FAT Procedure Document (per ID14 exemplar format):
-- Test scope and objectives: what is being verified, what is out of scope
-- Test environment requirements: lab setup, network configuration, simulated loads
+| 章節 | 內容 |
+|------|------|
+| 1. 範圍 | 受測系統/元件、測試邊界 |
+| 2. 測試環境 | 硬體配置、網路拓撲、模擬器 |
+| 3. 前置條件 | 系統狀態、資料準備、人員 |
+| 4. 測試類別 | 功能、安全、效能、故障恢復 |
+| 5. 測試案例 | ID、步驟、預期結果、pass/fail |
+| 6. 通過標準 | 整體 pass 門檻 |
+| 7. 文件標準 | 紀錄格式、證據要求 |
 
-### Step 2: 安全 FAT 測試案例設計
-**SK 來源**：SK-D08-002 — Security FAT Test Case Design
+**步驟**：
+1. 從 FR/SR 矩陣提取所有可在工廠驗證的需求
+2. 分類為功能測試、安全測試、效能測試、故障恢復測試
+3. 撰寫每個測試案例：前置條件 → 步驟 → 預期結果 → pass/fail 判定
+4. 定義測試環境需求 (可能需要模擬現場設備)
+5. 建立測試執行順序 (dependency-aware)
+6. 定義文件化標準：截圖、log、簽核
 
-執行安全 FAT 測試案例設計：Design security-specific FAT (Factory Acceptance Test) test cases that comprehensively validate the security controls and hardening of the OT/ICS syst
+**⚠️ 避坑**：
+- 測試環境缺少模擬器 → 關鍵介面測試被 skip，到 SAT 才發現問題
+- Pass/fail 標準模糊 → 客戶與整合商對結果各說各話
+- 未列出排除項 → 客戶期望所有功能都在 FAT 完成
 
-**本步驟交付物**：
-- Security FAT Test Plan: overview of security testing scope, test environment setup requirements, safety considerations, and test execution schedule
-- Security FAT Test Case Catalog: prioritized list of all security test cases with test ID, description, preconditions, test steps, expected results, an
-- Access Control Test Cases: user authentication (valid/invalid credentials, multi-factor), authorization (role-based access, zone boundaries, conduit r
+### Step 2: 安全 FAT 測試案例設計 (SK-D08-002)
 
----
+**安全測試類別**：
 
-## 3. 輸出 / 交付物
+| 類別 | 測試內容 | 工具 |
+|------|----------|------|
+| 帳號管理 | RBAC、密碼策略、lockout | 手動 + script |
+| 網路安全 | Firewall rules、port scan、VLAN isolation | Nmap, Nessus |
+| 加密驗證 | TLS 版本、憑證鏈、cipher suite | Wireshark, OpenSSL |
+| 加固驗證 | 不必要服務關閉、預設帳號移除 | CIS-CAT, custom script |
+| 日誌/稽核 | 事件記錄完整性、syslog 輸出 | Log parser |
+| 惡意程式防護 | AV/EDR 安裝、更新機制 | 產品管理介面 |
 
-| # | 交付物 | 格式 |
-|---|--------|------|
-| 1 | FAT Procedure Document (per ID14 exemplar format): | 依需求 |
-| 2 | Test scope and objectives: what is being verified, what is out of scope | 依需求 |
-| 3 | Test environment requirements: lab setup, network configuration, simulated loads | 依需求 |
-| 4 | Test categories (per ID14 14-category structure): | 依需求 |
-| 5 | Physical security inspection | 依需求 |
-| 6 | Network architecture verification | 依需求 |
-| 7 | Security FAT Test Plan: overview of security testing scope, test environment setup requirements, safety considerations, and test execution schedule | 依需求 |
-| 8 | Security FAT Test Case Catalog: prioritized list of all security test cases with test ID, description, preconditions, test steps, expected results, an | Markdown |
-| 9 | Access Control Test Cases: user authentication (valid/invalid credentials, multi-factor), authorization (role-based access, zone boundaries, conduit r | 依需求 |
-| 10 | Network Segmentation Test Cases: inter-zone communication validation (allowed vs. blocked traffic), conduit rule enforcement, zone boundary crossing v | 依需求 |
-| 11 | Encryption and Cryptography Test Cases: encryption validation (TLS version, cipher strength), key exchange verification, data-in-transit encryption, c | 依需求 |
-| 12 | Logging and Audit Trail Test Cases: log generation on security events, audit trail completeness, timestamp validation, log integrity verification (tam | 依需求 |
+**步驟**：
+1. 從 SR 清單建立測試案例：每個 SR 至少一個正向 + 一個負向測試
+2. 正向測試：驗證安全功能正常運作 (e.g., 正確帳號可登入)
+3. 負向測試：驗證安全功能正確拒絕 (e.g., 錯誤密碼被鎖定)
+4. 邊界測試：極端情況 (e.g., 密碼長度剛好 = 最低要求)
+5. 對應每案例到 SR ID，建立追蹤矩陣
+6. 定義證據要求：截圖、scan report、config export
 
----
-
-## 4. 適用標準
-
-- IEC 62443-2-4 SP.09.01–SP.09.04: Verification and validation requirements
-- IEC 62443-3-3: System Security Requirements — SR verification drives FAT test categories
-- IEC 62443-4-2: Component Security Requirements — device-level verification requirements
-- ISO 17025: General requirements for the competence of testing and calibration laboratories (supplementary, for test envi
-- GOV-SD: Gate 3 delivery checklist — FAT completion evidence required; testing results serve as SR verification evidence
-- IEC 62443-3-3: System Security Requirements and Security Levels — Functional Security Requirements (FR) and Security Lev
-- IEC 62443-2-4: Technical security measures for OT/ICS systems — security control implementation guidance
-- NIST SP 800-115: Technical Security Testing and Assessment — security testing methodology and best practices
-- OWASP Testing Guide: guidance on access control testing, encryption validation, and security testing in general
-- IEC 62443-1-1: Terminology, concepts and models — foundational security concepts
-
----
-
-## 5. 驗收標準
-
-| # | 驗收項目 | 通過條件 |
-|---|---------|---------|
-| 1 | FAT procedure covers all 14 test categories (per ID14 exemplar) or documents exp | ✅ 已驗證 |
-| 2 | Every applicable SR in the FR/SR mapping matrix has at least one corresponding F | ✅ 已驗證 |
-| 3 | Each test case includes: unique ID, clear steps, expected result, and unambiguou | ✅ 已驗證 |
-| 4 | Test environment specification is sufficient to reproduce the test: lab configur | ✅ 已驗證 |
-| 5 | Re-test criteria defined: conditions for re-execution of failed tests, maximum r | ✅ 已驗證 |
-| 6 | FAT procedure reviewed and approved by Security Engineering Role and Design QA R | ✅ 已驗證 |
-| 7 | Every Functional Security Requirement (FR) in SK-D09-002 has at least one corres | ✅ 已驗證 |
-| 8 | Access control test cases cover: valid authentication, invalid credentials, role | ✅ 已驗證 |
-| 9 | Network segmentation test cases cover: allowed inter-zone communication, blocked | ✅ 已驗證 |
-| 10 | Encryption test cases cover: TLS version and cipher strength validation, certifi | ✅ 已驗證 |
-| 11 | Logging and audit trail test cases cover: event logging completeness, timestamp  | ✅ 已驗證 |
-| 12 | Security alarm test cases cover: alarm triggering on policy violations, alarm de | ✅ 已驗證 |
-| 13 | Hardening compliance test cases cover: firmware version, disabled services, remo | ✅ 已驗證 |
-| 14 | Test cases are documented in a consistent format with clear preconditions, test  | ✅ 已驗證 |
+**⚠️ 避坑**：
+- 僅測正向案例 → 安全功能「存在」但「不生效」未被發現
+- 未測 default password → 出廠即存在已知弱點
+- 掃描工具 false positive 未人工確認 → 報告不可信
 
 ---
 
-## 6. 工時參考
+## 2. 驗收標準
 
-| SK | 估算基準 |
-|----|---------|
-| SK-D08-001 | | Junior (< 2 yr) | 10–15 person-days | Assumes ~30 applicable SRs, 14 test categories, ~100 individ |
-| SK-D08-001 | | Senior (5+ yr) | 5–8 person-days | Same scope; senior leverages reusable test case templates and S |
-| SK-D08-002 | | Junior (< 2 yr) | 8–15 person-days | Assumes moderate system complexity (~5 zones, ~3 user roles,  |
-| SK-D08-002 | | Senior (5+ yr) | 4–8 person-days | Same scope; senior can leverage prior security testing experien |
-| SK-D08-002 | Notes: Complex systems with multi-zone architectures, many user roles, or stringent encryption requi |
-
----
-
-## 7. 品質檢查清單
-
-| # | 檢查項目 | 通過條件 |
-|---|---------|---------|
-| 1 | 輸入完整性 | 所有必要輸入文件已讀取並摘要 |
-| 2 | 流程覆蓋 | 2 個工作步驟皆已執行並有產出 |
-| 3 | 輸出完整性 | 所有交付物已產出、格式正確、非空白 |
-| 4 | 標準合規 | 產出引用的標準版本正確 |
-| 5 | 術語一致 | 專案術語、縮寫與 glossary 一致 |
-| 6 | 跨步驟一致 | 各步驟產出間無矛盾（如數量、SL等級） |
+| # | 條件 |
+|---|------|
+| 1 | FAT 程序涵蓋所有可工廠驗證的 FR/SR |
+| 2 | 每個測試案例含：前置條件、步驟、預期結果、pass/fail |
+| 3 | 安全測試含正向 + 負向案例 |
+| 4 | 測試案例 ↔ SR ID 追蹤矩陣完整 |
+| 5 | 測試環境需求已明確定義 |
+| 6 | FAT 排除項已列出並經客戶同意 |
+| 7 | 文件符合 Gate 3 delivery checklist 要求 |
 
 ---
 
-## 8. 人類審核閘門
-
-完成所有工作步驟後，暫停並向使用者提交審核：
+## 3. 人類審核閘門
 
 ```
-工廠驗收測試已完成。
-📋 執行範圍：2 個工程步驟（SK-D08-001, SK-D08-002）
-📊 交付物清單：
-  - FAT Procedure Document (per ID14 exemplar format):
-  - Test scope and objectives: what is being verified, what is out of scope
-  - Test environment requirements: lab setup, network configuration, simulated loads
-  - Test categories (per ID14 14-category structure):
-  - Physical security inspection
-⚠️ 待確認事項：{列出 TBD 項目或需人工判斷的假設}
-👉 請審核以上成果，確認 PASS / FAIL / PASS with Conditions。
+FAT 程序完成。
+📋 範圍：2 個工程步驟 (SK-D08-001, SK-D08-002)
+📊 交付物：FAT 程序文件 ({n} 案例)、安全測試案例 ({m} SR 覆蓋)
+⚠️ 待確認：{TBD 項目}
+👉 請 STC + SAC + 客戶代表審核。
 ```
 
-**判定標準**：
-- **PASS**：成果完整且正確，可進入下一階段或歸檔
-- **FAIL**：發現重大缺漏或錯誤，需返工後重新提交
-- **PASS with Conditions**：整體接受，但需補充特定項目後完成
-
 ---
 
-## 9. IEC 62443 生命週期對應
+## 4. Source Traceability
 
-| 項目 | 值 |
-|------|---|
-| 主要生命週期階段 | 依專案階段 |
-| Domain | D08 (Testing & Commissioning) |
-| SK 覆蓋 | SK-D08-001, SK-D08-002 |
+| SK | 名稱 | 核心知識 |
+|----|------|---------|
+| SK-D08-001 | FAT Procedure Development | 程序架構、案例撰寫、環境需求、文件標準 |
+| SK-D08-002 | FAT Execution (Security) | 安全測試類別、正/負向測試、SR 追蹤 |
 
----
-
-## 10. Source Traceability
-
-| SK 編號 | 英文名稱 | 中文名稱 | 核心知識 |
-|--------|---------|---------|---------|
-| SK-D08-001 | FAT Procedure Development | FAT 程序撰寫 | Develop the Factory Acceptance Test (FAT) procedure document |
-| SK-D08-002 | Security FAT Test Case Design | 安全 FAT 測試案例設計 | Design security-specific FAT (Factory Acceptance Test) test  |
-
-<!-- Phase 5 Wave 2 deepened: SK-D08-001, SK-D08-002 -->
+<!-- Phase 6: Enhanced 2026-03-19. -->

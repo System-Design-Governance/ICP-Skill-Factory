@@ -1,177 +1,122 @@
 ---
 name: document-management
 description: >
-  文件與版本管理。
-  This skill encompasses the systematic management of all project document deliverables per the contract and ID03 requirements, tracking each deliverabl。- Analyze archive retrieval metrics to identify indexing gaps or process inefficiencies
-  MANDATORY TRIGGERS: 文件與版本管理, 版本控制與歸檔, 文件交付清單管理, gate-control, deliverable-tracking, project-management, Document Delivery Checklist Management, document-management, contract-compliance, document management, Version Control and Archiving.
-  Use this skill for document management tasks in OT/ICS/SCADA cybersecurity and energy infrastructure projects.
+  文件管理：SLD 管理與文件交付追蹤。
+  MANDATORY TRIGGERS: 文件管理, document management, SLD, 單線圖,
+  文件交付, document delivery, deliverable tracking.
+  Use this skill for document management and delivery tasks in OT/ICS projects.
 ---
 
-# 文件與版本管理
+# 文件管理 (Document Management)
 
-本 Skill 整合 2 個工程技能定義，提供文件與版本管理的完整工作流程。
-適用領域：Documentation（D09）。
+整合 2 個 SK，涵蓋單線圖管理與文件交付清單管理。
 
 ---
 
 ## 0. 初始化
 
-執行前確認：
-
-1. **專案背景**：已取得專案範圍定義與系統邊界
-2. **輸入文件**：下方§1 列出的輸入已備齊或已標註為 TBD
-3. **適用標準**：已確認本專案適用的 IEC 62443 / ISO 標準版本
-4. **前置依賴**：確認以下 SK 產出已可用：SK-D08-001, SK-D11-001, SK-D11-005, SK-D11-006
+1. 電力系統架構與設備規格已確定
+2. 合約交付物清單已從 SOW/ID03 提取
+3. 文件管理系統已建立 (SharePoint/Confluence/DMS)
+4. Gate 3 delivery checklist 已確認
 
 ---
 
-## 1. 輸入
+## 1. 工作流程
 
-- Contract and Statement of Work (SOW) specifying deliverable requirements and delivery schedule
-- Project schedule and milestone dates (from SK-D11-001: Project Planning)
-- Design plan and work breakdown structure (WBS) identifying which skill/discipline is responsible for each deliverable
-- Technical specifications for deliverable format, quality standards, and review criteria (per ID03 §5.5.3)
-- Gate 3 (Design Review) checklist template and review criteria
-- Previous deliverable checklists from similar projects (for template adaptation)
-- Project governance structure defined: CCB authority, approval matrix, change request procedures
-- Document classification scheme established (e.g., specification, design, test, security assessment, SOP)
-- Archive storage location(s) identified and approved: local network, enterprise repository, cloud platform
-- Retention policy framework developed aligned with regulatory requirements and organizational needs
-- Version control tools selected and configured: document management system (DMS) or revision control system (RCS)
-- Team training planned on version control and archiving procedures
+### Step 1: 單線圖管理 (SK-D09-006)
 
----
+**SLD 必要元素**：
 
-## 2. 工作流程
+| 元素 | 符號標準 | 說明 |
+|------|----------|------|
+| 變壓器 | IEC 60617 | 容量、電壓比、阻抗 |
+| 斷路器 | IEEE Std 91 | 額定電流、斷路容量 |
+| 保護繼電器 | ANSI device number | 功能代碼 (e.g., 87T) |
+| 計量點 | CT/PT symbol | 比流器/比壓器 |
+| 負載 | Load symbol | 額定功率、功率因數 |
+| 匯流排 | Bus bar | 額定電壓、短路容量 |
 
-### Step 1: 文件交付清單管理
-**SK 來源**：SK-D09-004 — Document Delivery Checklist Management
+**步驟**：
+1. 從電力系統架構建立 SLD 初稿 (CAD 格式)
+2. 標註所有設備：ID、額定值、設定值
+3. 與設備清單交叉核對 (每個設備 ID 一一對應)
+4. 覆蓋保護區域與協調曲線參考
+5. 與 SK-D01-001 安全區邊界對齊
+6. 審核：DES + PE + SYS 簽核
 
-執行文件交付清單管理：This skill encompasses the systematic management of all project document deliverables per the contract and ID03 requirements, tracking each deliverabl
+**⚠️ 避坑**：
+- SLD 與設備清單不同步 → 施工時裝錯設備
+- 保護區域遺漏 → 某段匯流排無保護
+- 未標 CT/PT ratio → 計量數據錯誤
 
-**本步驟交付物**：
-- Document Delivery Checklist (DDC): master spreadsheet/document listing all contractual deliverables with status (Draft, Under Review, Approved, Delive
-- Deliverable Status Report: monthly or gate-level report summarizing completeness percentage, at-risk deliverables, and mitigation actions
-- Gate 3 Delivery Verification Checklist: formal sign-off confirming all design-phase deliverables meet quality and completeness criteria
+### Step 2: 文件交付清單管理 (SK-D09-008)
 
-### Step 2: 版本控制與歸檔
-**SK 來源**：SK-D09-005 — Version Control and Archiving
-
-執行版本控制與歸檔：- Analyze archive retrieval metrics to identify indexing gaps or process inefficiencies
-
----
-
-## 3. 輸出 / 交付物
-
-| # | 交付物 | 格式 |
-|---|--------|------|
-| 1 | Document Delivery Checklist (DDC): master spreadsheet/document listing all contractual deliverables with status (Draft, Under Review, Approved, Delive | Markdown |
-| 2 | Deliverable Status Report: monthly or gate-level report summarizing completeness percentage, at-risk deliverables, and mitigation actions | Markdown |
-| 3 | Gate 3 Delivery Verification Checklist: formal sign-off confirming all design-phase deliverables meet quality and completeness criteria | Markdown |
-| 4 | Deliverable Handover Record: signed acknowledgment from customer upon final delivery of all project documents | 依需求 |
-| 5 | Lessons Learned on Deliverable Management: process improvements for tracking and delivery efficiency | 依需求 |
-
----
-
-## 4. 適用標準
-
-- ID03 §5.5.3: Document Delivery Checklist Management — primary procedural requirements for tracking and delivery
-- ID01 §7.0: Design Phase requirements — all design deliverables must conform to ID01 standards
-- ID02 Annex A: Security countermeasure documentation — ensures all security deliverables are included
-- Project management best practices (PMBOK, ISO 21500) for deliverable tracking
-- Contractual requirements per SOW and customer specifications
-- IEC 62443-1-1: Terminology and concepts
-- IEC 62443-3-3: System design and engineering; documentation requirements
-- ISO 9001: Quality management; document control
-- ISO 27001: Information security; asset management and documentation
-- Project-specific document control procedures
-
----
-
-## 5. 驗收標準
-
-| # | 驗收項目 | 通過條件 |
-|---|---------|---------|
-| 1 | DDC includes 100% of deliverables specified in the contract and SOW, organized b | ✅ 已驗證 |
-| 2 | Each deliverable has a clearly assigned owner, planned delivery date, and docume | ✅ 已驗證 |
-| 3 | DDC status is updated at least monthly and reported at all project gate reviews  | ✅ 已驗證 |
-| 4 | All at-risk deliverables (past due or approaching deadline) have documented miti | ✅ 已驗證 |
-| 5 | Gate 3 sign-off confirms that all design-phase deliverables are complete, approv | ✅ 已驗證 |
-| 6 | Final project closeout includes a Deliverable Handover Record signed by both pro | ✅ 已驗證 |
-| 7 | Version numbering scheme documented and communicated; consistent application acr | ✅ 已驗證 |
-| 8 | Change tracking mechanism implemented in all documents; change history visible f | ✅ 已驗證 |
-| 9 | Baseline management process defined with CCB authority, change request form, and | ✅ 已驗證 |
-| 10 | Archive storage location configured with appropriate access controls, backup str | ✅ 已驗證 |
-| 11 | Retention policy documented by document type; retention tracking system implemen | ✅ 已驗證 |
-| 12 | Retrieval index and search procedures documented; archive custodian designated | ✅ 已驗證 |
-| 13 | All team members trained on version control and archiving procedures | ✅ 已驗證 |
-| 14 | Audit of archive demonstrates 100% traceability of document versions and changes | ✅ 已驗證 |
-
----
-
-## 6. 工時參考
-
-| SK | 估算基準 |
-|----|---------|
-| SK-D09-004 | | Junior (< 2 yr) | 2–4 person-days | Assumes single-site project with 30–50 contractual deliverable |
-| SK-D09-004 | | Senior (5+ yr) | 1–2 person-days | Same scope; senior can rapidly establish DDC template, identify |
-| SK-D09-004 | Notes: Multi-site or phased projects may require 1.5–2× effort. Ongoing maintenance throughout proje |
-| SK-D09-005 | Archive retrieval speed: average time to locate and retrieve historical document <24 hours |
-
----
-
-## 7. 品質檢查清單
-
-| # | 檢查項目 | 通過條件 |
-|---|---------|---------|
-| 1 | 輸入完整性 | 所有必要輸入文件已讀取並摘要 |
-| 2 | 流程覆蓋 | 2 個工作步驟皆已執行並有產出 |
-| 3 | 輸出完整性 | 所有交付物已產出、格式正確、非空白 |
-| 4 | 標準合規 | 產出引用的標準版本正確 |
-| 5 | 術語一致 | 專案術語、縮寫與 glossary 一致 |
-| 6 | 跨步驟一致 | 各步驟產出間無矛盾（如數量、SL等級） |
-
----
-
-## 8. 人類審核閘門
-
-完成所有工作步驟後，暫停並向使用者提交審核：
+**文件生命週期**：
 
 ```
-文件與版本管理已完成。
-📋 執行範圍：2 個工程步驟（SK-D09-004, SK-D09-005）
-📊 交付物清單：
-  - Document Delivery Checklist (DDC): master spreadsheet/document listing all contractual deliverables with status (Draft, Under Review, Approved, Delive
-  - Deliverable Status Report: monthly or gate-level report summarizing completeness percentage, at-risk deliverables, and mitigation actions
-  - Gate 3 Delivery Verification Checklist: formal sign-off confirming all design-phase deliverables meet quality and completeness criteria
-  - Deliverable Handover Record: signed acknowledgment from customer upon final delivery of all project documents
-  - Lessons Learned on Deliverable Management: process improvements for tracking and delivery efficiency
-⚠️ 待確認事項：{列出 TBD 項目或需人工判斷的假設}
-👉 請審核以上成果，確認 PASS / FAIL / PASS with Conditions。
+Draft → Internal Review → Revision → Customer Review → Approved → Delivered → Archived
 ```
 
-**判定標準**：
-- **PASS**：成果完整且正確，可進入下一階段或歸檔
-- **FAIL**：發現重大缺漏或錯誤，需返工後重新提交
-- **PASS with Conditions**：整體接受，但需補充特定項目後完成
+**交付清單欄位**：
+
+| 欄位 | 說明 |
+|------|------|
+| Doc ID | 文件編號 |
+| Title | 文件名稱 |
+| Type | 規格/圖面/報告/手冊 |
+| Owner | 負責人 |
+| Status | Draft/Review/Approved/Delivered |
+| Due Date | 合約交付日 |
+| Actual Date | 實際交付日 |
+| Gate | 對應 Gate (G1/G2/G3) |
+| Review Comments | 審核意見追蹤 |
+
+**步驟**：
+1. 從合約/SOW 提取所有必須交付的文件
+2. 建立交付清單 (Excel 或 DMS tracker)
+3. 指定每份文件的 owner + due date
+4. 每週追蹤狀態更新
+5. Gate 審核前 checklist 比對：所有 Gate-required 文件是否 Approved
+6. 交付後歸檔並記錄客戶確認
+
+**⚠️ 避坑**：
+- 合約要求的文件遺漏未列入清單 → Gate 審核才發現缺件
+- 狀態未即時更新 → PM 以為完成其實還在 Draft
+- 交付格式不符合約 (e.g., 要求 PDF 卻給 .docx) → 退件
 
 ---
 
-## 9. IEC 62443 生命週期對應
+## 2. 驗收標準
 
-| 項目 | 值 |
-|------|---|
-| 主要生命週期階段 | 依專案階段 |
-| Domain | D09 (Documentation) |
-| SK 覆蓋 | SK-D09-004, SK-D09-005 |
+| # | 條件 |
+|---|------|
+| 1 | SLD 涵蓋 100% 電力設備且標註完整 |
+| 2 | SLD 符號符合 IEC 60617 / IEEE Std 91 |
+| 3 | 設備 ID 與設備清單一一對應 |
+| 4 | 交付清單涵蓋合約所有必須文件 |
+| 5 | Gate 前所有必要文件 status = Approved |
+| 6 | 文件格式符合合約要求 |
 
 ---
 
-## 10. Source Traceability
+## 3. 人類審核閘門
 
-| SK 編號 | 英文名稱 | 中文名稱 | 核心知識 |
-|--------|---------|---------|---------|
-| SK-D09-004 | Document Delivery Checklist Management | 文件交付清單管理 | This skill encompasses the systematic management of all proj |
-| SK-D09-005 | Version Control and Archiving | 版本控制與歸檔 | - Analyze archive retrieval metrics to identify indexing gap |
+```
+文件管理完成。
+📋 範圍：2 個工程步驟 (SK-D09-006, SK-D09-008)
+📊 交付物：SLD ({n} 張)、文件交付清單 ({m} 份文件追蹤)
+⚠️ 待確認：{TBD 項目}
+👉 請 DES + PM 審核。
+```
 
-<!-- Phase 5 Wave 2 deepened: SK-D09-004, SK-D09-005 -->
+---
+
+## 4. Source Traceability
+
+| SK | 名稱 | 核心知識 |
+|----|------|---------|
+| SK-D09-006 | SLD Management | SLD 繪製、設備標註、保護區域、審核 |
+| SK-D09-008 | Document Delivery | 交付清單、生命週期追蹤、Gate checklist |
+
+<!-- Phase 6: Enhanced 2026-03-19. -->

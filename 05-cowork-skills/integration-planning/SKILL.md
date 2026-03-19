@@ -1,191 +1,122 @@
 ---
 name: integration-planning
 description: >
-  整合規劃與架構。
-  Develop the system-level interface integration matrix that comprehensively maps all inter-system communication interfaces within the overall OT/ICS so。System Integration Architecture Diagram design defines the complete visual and logical representati
-  MANDATORY TRIGGERS: 整合規劃與架構, 介面整合矩陣建立, 系統整合架構圖繪製, architecture, security-zone, IEC-62443, system, diagram, system-architecture, integration, System Integration Architecture Diagram.
+  整合規劃：建立介面整合矩陣與系統整合測試計畫。
+  MANDATORY TRIGGERS: 整合規劃, integration planning, 介面矩陣, interface matrix, SIT,
+  整合測試, system integration test, integration matrix.
   Use this skill for integration planning tasks in OT/ICS/SCADA cybersecurity and energy infrastructure projects.
 ---
 
-# 整合規劃與架構
+# 整合規劃 (Integration Planning)
 
-本 Skill 整合 2 個工程技能定義，提供整合規劃與架構的完整工作流程。
-適用領域：System Integration（D07）。
+整合 2 個 SK，涵蓋介面整合矩陣建立與系統整合測試計畫。
 
 ---
 
 ## 0. 初始化
 
-執行前確認：
-
-1. **專案背景**：已取得專案範圍定義與系統邊界
-2. **輸入文件**：下方§1 列出的輸入已備齊或已標註為 TBD
-3. **適用標準**：已確認本專案適用的 IEC 62443 / ISO 標準版本
-4. **前置依賴**：確認以下 SK 產出已可用：SK-D01-001, SK-D01-002, SK-D01-003, SK-D01-011, SK-D02-001, SK-D02-004
+1. 專案功能架構與系統分解已完成 (SK-D01-002, SK-D01-011)
+2. Zone/Conduit 架構已定義 (SK-D01-001)
+3. 網路拓撲圖已產出或同步進行中 (SK-D02-001)
+4. 資料流圖已產出 (SK-D02-004)
 
 ---
 
-## 1. 輸入
+## 1. 工作流程
 
-- Functional architecture and system decomposition (from SK-D01-002 ⏳: Defense-in-Depth Strategy Design and SK-D01-011 ⏳: Functional Architecture Defini
-- Zone/Conduit architecture (from SK-D01-001: Zone/Conduit Architecture Design)
-- Network topology diagram (from SK-D02-001 ⏳: OT Network Topology Design; or being developed in parallel)
-- Data flow diagrams (from SK-D02-004 ⏳: Data Flow Diagram Development)
-- Functional and performance requirements (from customer SOW, NERC CIP, IEEE, IEC standards)
-- Inter-system communication specifications and technical interface specifications from vendors (communication protocol documentation, API specification
-- Security architecture design from SK-D01-001 (security zones, trust boundaries, access rules)
-- System requirements and functional specifications from project scope documentation
-- Network topology and physical site layout diagrams
-- Legacy system inventories and technical datasheets
-- Regulatory compliance requirements (IEC 62443, NERC CIP, grid codes)
-- Protocol and interface specifications for candidate integration technologies
+### Step 1: 介面整合矩陣建立 (SK-D07-001)
 
----
+**矩陣欄位定義**：
 
-## 2. 工作流程
+| 欄位 | 說明 | 範例 |
+|------|------|------|
+| Interface ID | 唯一識別碼 | INT-SCADA-RTU-01 |
+| Source System | 來源系統 | SCADA Master |
+| Destination System | 目標系統 | RTU-001 |
+| Protocol | 通訊協定 | IEC 60870-5-104 |
+| Direction | 方向 | Bidirectional |
+| Data Payload | 資料描述 | Real-time measurements, 500 B/s |
+| Latency Req | 延遲需求 | < 500 ms |
+| Availability | 可用性 | 99.5% |
+| Source Zone | 來源安全區 | Zone-L3 (Control) |
+| Dest Zone | 目標安全區 | Zone-L1 (Field) |
+| Auth Method | 認證方式 | X.509 certificates |
+| Encryption | 加密需求 | TLS 1.2+ |
+| Conduit Ref | 管道參考 | CDT-L3-L1-01 |
 
-### Step 1: 介面整合矩陣建立
-**SK 來源**：SK-D07-001 — Interface Integration Matrix Development
+**步驟**：
+1. 從功能架構識別所有子系統對 (SCADA↔RTU, EMS↔DERMS, SCADA↔Historian 等)
+2. 逐一填寫矩陣欄位：協定、延遲、頻寬、安全區跨越
+3. 標記所有跨安全區介面，對應 SK-D01-001 conduit 表
+4. 對跨區介面指定認證/加密機制
+5. 執行相容性分析：識別協定衝突或資料模型不匹配
+6. 產出系統對系統連接圖 (節點=系統, 邊=介面)
 
-執行介面整合矩陣建立：Develop the system-level interface integration matrix that comprehensively maps all inter-system communication interfaces within the overall OT/ICS so
+**⚠️ 避坑**：
+- 遺漏 legacy 系統介面 → 上線後發現不相容，需緊急加 protocol gateway
+- 未記錄「無加密」介面的補償控制 → 審計不通過
+- 延遲需求與加密開銷衝突未事先分析 → 即時控制迴路失效
 
-**本步驟交付物**：
-- System-Level Interface Integration Matrix (structured table or spreadsheet):
-- Interface ID (unique identifier, e.g., "INT-SCADA-RTU-01", "INT-EMS-DERMS-001")
-- Source System (e.g., "SCADA Master", "EMS Server", "RTU-001", "PMU-002")
+### Step 2: 系統整合測試計畫 (SK-D07-002)
 
-### Step 2: 系統整合架構圖繪製
-**SK 來源**：SK-D07-002 — System Integration Architecture Diagram
+**測試計畫架構**：
 
-執行系統整合架構圖繪製：System Integration Architecture Diagram design defines the complete visual and logical representation of heterogeneous OT/ICS system interconnections 
+| 區段 | 內容 |
+|------|------|
+| 範圍定義 | 測試涵蓋的子系統與介面清單 |
+| 測試環境 | 硬體/軟體/網路配置、模擬器需求 |
+| 測試案例 | 功能測試、效能測試、安全測試、故障切換測試 |
+| 通過標準 | 每案例的 pass/fail 判定條件 |
+| 時程與資源 | 人員、設備、場地、天數 |
+| 風險與應變 | 測試失敗的升級與重測程序 |
 
-**本步驟交付物**：
-- System integration architecture diagram (Visio, Draw.io, or AutoCAD format) showing all subsystems and interconnections
-- Data flow diagram depicting information movement between systems with directionality and volume indicators
-- Protocol stack matrices mapping which protocols operate on which communication links
+**步驟**：
+1. 從介面矩陣提取所有待測介面
+2. 為每個介面設計至少：正常流程、異常流程、邊界條件 各一案例
+3. 設計跨系統端對端場景 (e.g., 事件從 field device → RTU → SCADA → Historian 全程驗證)
+4. 定義效能基準：延遲、吞吐量、並行連線數
+5. 定義安全測試：認證失敗、未授權存取、加密降級偵測
+6. 建立測試追蹤矩陣：測試案例 ↔ 介面 ID ↔ 需求 ID
 
----
-
-## 3. 輸出 / 交付物
-
-| # | 交付物 | 格式 |
-|---|--------|------|
-| 1 | System-Level Interface Integration Matrix (structured table or spreadsheet): | Markdown |
-| 2 | Interface ID (unique identifier, e.g., "INT-SCADA-RTU-01", "INT-EMS-DERMS-001") | 依需求 |
-| 3 | Source System (e.g., "SCADA Master", "EMS Server", "RTU-001", "PMU-002") | 依需求 |
-| 4 | Destination System (e.g., "RTU", "Field Device", "Historian", "Protection Relay", "DMS") | 依需求 |
-| 5 | Communication Protocol(s) (e.g., "Modbus TCP", "IEC 60870-5-104", "DNP3", "OPC-UA", "MQTT", "REST API") | 依需求 |
-| 6 | Direction (unidirectional source → destination, or bidirectional) | 依需求 |
-| 7 | System integration architecture diagram (Visio, Draw.io, or AutoCAD format) showing all subsystems and interconnections | 依需求 |
-| 8 | Data flow diagram depicting information movement between systems with directionality and volume indicators | 依需求 |
-| 9 | Protocol stack matrices mapping which protocols operate on which communication links | 依需求 |
-| 10 | Security zone boundary overlay diagrams aligned with SK-D01-001 design | 依需求 |
-| 11 | Integration topology documentation including equipment lists and communication link specifications | Markdown |
-| 12 | Diagram validation checklist and completeness assessment | Markdown |
-
----
-
-## 4. 適用標準
-
-- IEC 62443-1-1: Terminology, concepts and models — interface and communication definitions in ICS context
-- IEC 62443-3-2: Security Risk Assessment for System Design — interface-level risk assessment and control design
-- IEC 62351-1 / IEC 62351-3: Power Systems Management and Associated Information Exchange Data and Communication Security 
-- NERC CIP-005 / CIP-007: Cyber Security Standards for Critical Infrastructure Protection (if applicable to North American
-- IEEE 1686 / IEEE 1815: Interfaces for distributed energy resources; DNP3 and IEC 61850 protocol standards
-- IEC 61850: Communication networks and systems for power utility automation (protocol-level interface definitions)
-- Customer security and interoperability standards
-- IEC 62443-2-1: Establishing an industrial automation and control systems security program
-- IEC 62443-3-3: System security requirements and security levels
-- NIST SP 800-82: Guide to Industrial Control Systems (ICS) Security
+**⚠️ 避坑**：
+- 測試環境與生產環境差異過大 → SIT 結果不可信
+- 未涵蓋故障切換場景 → redundancy 設計未被驗證
+- 安全測試僅測「應通過」場景，未測「應拒絕」→ 漏洞未被發現
 
 ---
 
-## 5. 驗收標準
+## 2. 驗收標準
 
-| # | 驗收項目 | 通過條件 |
-|---|---------|---------|
-| 1 | Every inter-system data exchange identified in the data flow diagram (SK-D02-004 | ✅ 已驗證 |
-| 2 | Every matrix entry includes: source system, destination system, protocol, latenc | ✅ 已驗證 |
-| 3 | 100% of interfaces crossing security zone boundaries are explicitly identified a | ✅ 已驗證 |
-| 4 | For zone-crossing interfaces: authentication and encryption methods are specifie | ✅ 已驗證 |
-| 5 | No interface has latency or protocol requirements that conflict with the securit | ✅ 已驗證 |
-| 6 | All standard protocols are identified with their security strengths and weakness | ✅ 已驗證 |
-| 7 | Legacy system interfaces are identified and their security constraints documente | ✅ 已驗證 |
-| 8 | Interface compatibility analysis identifies any protocol conflicts or data model | ✅ 已驗證 |
-| 9 | All major subsystems (SCADA, EMS, DERMS, historian, protection, metering) are id | ✅ 已驗證 |
-| 10 | Data flow directions between systems are explicitly shown with annotations indic | ✅ 已驗證 |
-| 11 | Security zone boundaries from SK-D01-001 are overlaid on the architecture diagra | ✅ 已驗證 |
-| 12 | Protocol stacks for each communication link are specified in a matrix format, in | ✅ 已驗證 |
-| 13 | The diagram has been reviewed and validated by at least the System Architect, Se | ✅ 已驗證 |
-| 14 | Completeness assessment confirms that all known system interfaces, data requirem | ✅ 已驗證 |
+| # | 條件 |
+|---|------|
+| 1 | 資料流圖中每個子系統間交換均有對應矩陣條目 |
+| 2 | 每條目含：來源、目標、協定、延遲、安全分類 |
+| 3 | 100% 跨安全區介面已標記並連結 conduit 設計 |
+| 4 | 跨區介面已指定認證/加密方法並說明理由 |
+| 5 | Legacy 介面已識別並記錄安全限制與補償控制 |
+| 6 | SIT 計畫涵蓋功能、效能、安全、故障切換測試 |
+| 7 | 測試追蹤矩陣完整：案例↔介面↔需求 |
+| 8 | SYS + Security Engineer + Network Engineer 已審核簽核 |
 
 ---
 
-## 6. 工時參考
-
-| SK | 估算基準 |
-|----|---------|
-| SK-D07-001 | | Junior (< 2 yr) | 4–6 person-days | ~15–25 interfaces; includes discovery, protocol research, late |
-| SK-D07-001 | | Senior (5+ yr) | 2–3 person-days | Same scope; senior can leverage protocol knowledge and pattern  |
-| SK-D07-001 | Notes: Large distributed systems (> 50 interfaces, multiple sites, legacy heterogeneous subsystems)  |
-| SK-D07-002 | | Role            | Days (4-hour work units) | |
-| SK-D07-002 | | Junior          | 12–16 days               | |
-| SK-D07-002 | | Senior          | 6–8 days                 | |
-
----
-
-## 7. 品質檢查清單
-
-| # | 檢查項目 | 通過條件 |
-|---|---------|---------|
-| 1 | 輸入完整性 | 所有必要輸入文件已讀取並摘要 |
-| 2 | 流程覆蓋 | 2 個工作步驟皆已執行並有產出 |
-| 3 | 輸出完整性 | 所有交付物已產出、格式正確、非空白 |
-| 4 | 標準合規 | 產出引用的標準版本正確 |
-| 5 | 術語一致 | 專案術語、縮寫與 glossary 一致 |
-| 6 | 跨步驟一致 | 各步驟產出間無矛盾（如數量、SL等級） |
-
----
-
-## 8. 人類審核閘門
-
-完成所有工作步驟後，暫停並向使用者提交審核：
+## 3. 人類審核閘門
 
 ```
-整合規劃與架構已完成。
-📋 執行範圍：2 個工程步驟（SK-D07-001, SK-D07-002）
-📊 交付物清單：
-  - System-Level Interface Integration Matrix (structured table or spreadsheet):
-  - Interface ID (unique identifier, e.g., "INT-SCADA-RTU-01", "INT-EMS-DERMS-001")
-  - Source System (e.g., "SCADA Master", "EMS Server", "RTU-001", "PMU-002")
-  - Destination System (e.g., "RTU", "Field Device", "Historian", "Protection Relay", "DMS")
-  - Communication Protocol(s) (e.g., "Modbus TCP", "IEC 60870-5-104", "DNP3", "OPC-UA", "MQTT", "REST API")
-⚠️ 待確認事項：{列出 TBD 項目或需人工判斷的假設}
-👉 請審核以上成果，確認 PASS / FAIL / PASS with Conditions。
+整合規劃完成。
+📋 範圍：2 個工程步驟 (SK-D07-001, SK-D07-002)
+📊 交付物：介面整合矩陣 ({n} 筆介面)、SIT 計畫 ({m} 筆測試案例)
+⚠️ 待確認：{TBD 項目}
+👉 請 SYS + SEC + NET 審核，確認 PASS / FAIL / PASS with Conditions。
 ```
 
-**判定標準**：
-- **PASS**：成果完整且正確，可進入下一階段或歸檔
-- **FAIL**：發現重大缺漏或錯誤，需返工後重新提交
-- **PASS with Conditions**：整體接受，但需補充特定項目後完成
-
 ---
 
-## 9. IEC 62443 生命週期對應
+## 4. Source Traceability
 
-| 項目 | 值 |
-|------|---|
-| 主要生命週期階段 | 依專案階段 |
-| Domain | D07 (System Integration) |
-| SK 覆蓋 | SK-D07-001, SK-D07-002 |
+| SK | 名稱 | 核心知識 |
+|----|------|---------|
+| SK-D07-001 | Interface Integration Matrix | 介面識別、協定映射、安全區跨越、相容性分析 |
+| SK-D07-002 | System Integration Test Plan | 測試架構、案例設計、效能基準、追蹤矩陣 |
 
----
-
-## 10. Source Traceability
-
-| SK 編號 | 英文名稱 | 中文名稱 | 核心知識 |
-|--------|---------|---------|---------|
-| SK-D07-001 | Interface Integration Matrix Development | 介面整合矩陣建立 | Develop the system-level interface integration matrix that c |
-| SK-D07-002 | System Integration Architecture Diagram | 系統整合架構圖繪製 | System Integration Architecture Diagram design defines the c |
-
-<!-- Phase 5 Wave 2 deepened: SK-D07-001, SK-D07-002 -->
+<!-- Phase 6: Enhanced 2026-03-19. -->

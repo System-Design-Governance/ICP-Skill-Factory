@@ -1,154 +1,107 @@
 ---
 name: api-integration
 description: >
-  API 與第三方集成。
-  Integrate third-party APIs (weather services, market data feeds, grid operator interfaces, cloud platforms) with OT/ICS systems, enabling data exchang
-  MANDATORY TRIGGERS: 第三方 API 串接, API 與第三方集成, rest-api, authentication, third-party-api, api integration, cloud-integration, soap-xml, Third-Party API Integration, data-encryption.
-  Use this skill for api integration tasks in OT/ICS/SCADA cybersecurity and energy infrastructure projects.
+  API 與第三方系統整合：REST/SOAP API 設計、認證、錯誤處理、速率限制。
+  MANDATORY TRIGGERS: API, 第三方整合, third-party integration, REST, API 整合,
+  web service, API integration.
+  Use this skill for third-party API integration tasks in OT/ICS projects.
 ---
 
-# API 與第三方集成
+# API 與第三方整合 (API Integration)
 
-本 Skill 整合 1 個工程技能定義，提供API 與第三方集成的完整工作流程。
-適用領域：System Integration（D07）。
+整合 1 個 SK，涵蓋第三方 API 整合設計與實作。
 
 ---
 
 ## 0. 初始化
 
-執行前確認：
-
-1. **專案背景**：已取得專案範圍定義與系統邊界
-2. **輸入文件**：下方§1 列出的輸入已備齊或已標註為 TBD
-3. **適用標準**：已確認本專案適用的 IEC 62443 / ISO 標準版本
-4. **前置依賴**：確認以下 SK 產出已可用：SK-D01-001, SK-D01-005, SK-D01-006, SK-D02-003, SK-D02-006, SK-D05-001
+1. 待整合的第三方服務已識別 (天氣、市場、電網調度、雲平台)
+2. API 文件 / Swagger spec 已取得
+3. 安全策略已確定 (認證方式、資料分級)
+4. 網路連線方案已確認 (DMZ、proxy、VPN)
 
 ---
 
-## 1. 輸入
+## 1. 工作流程
 
-- Third-party API technical documentation (REST/SOAP specification, authentication schemes, data models, rate limits)
-- Network architecture and zone/conduit diagram (from SK-D01-001)
-- Data requirements and information classification (from SK-D01-005, SK-D01-007)
-- Security requirements and authentication policies (from SK-D01-002, SK-D01-003, SK-D01-006)
-- Zone/conduit crossing approval documentation (per SK-D01-001 boundary)
-- Redundancy and failover strategy (from SK-D02-006 ⏳)
+### Step 1: 第三方 API 整合設計 (SK-D07-007)
 
----
+**整合架構模式**：
 
-## 2. 工作流程
+| 模式 | 適用場景 | 優點 | 風險 |
+|------|----------|------|------|
+| Direct Call | 低頻、非關鍵 | 簡單 | 耦合高 |
+| API Gateway | 多 API 聚合 | 統一認證/限流 | 增加延遲 |
+| Message Queue | 非同步、高可靠 | 解耦、重試 | 複雜度高 |
+| Polling + Cache | 外部限流嚴格 | 減少呼叫數 | 資料延遲 |
 
-### Step 1: 第三方 API 串接
-**SK 來源**：SK-D07-007 — Third-Party API Integration
+**認證方式比較**：
 
-執行第三方 API 串接：Integrate third-party APIs (weather services, market data feeds, grid operator interfaces, cloud platforms) with OT/ICS systems, enabling data exchang
+| 方式 | 安全等級 | 適用場景 |
+|------|----------|----------|
+| API Key | 低 | 公開資料 (天氣 API) |
+| OAuth 2.0 | 中-高 | 雲平台、SaaS |
+| mTLS | 高 | OT-IT 邊界、關鍵資料 |
+| HMAC Signature | 中 | 交易/市場資料 |
 
-**本步驟交付物**：
-- Third-Party API Integration Specification: API endpoint, authentication method, data format, rate limits, timeout behavior
-- API Authentication and Credential Management Plan: credential storage, rotation schedule, access control (who can access credentials), audit trail req
-- API Data Format Mapping Document: external API data format → internal system data format, including validation rules and type conversions for both RES
+**步驟**：
+1. 分析 API spec：endpoints, rate limits, pagination, error codes
+2. 設計整合架構 (選擇上述模式)
+3. 實作認證流程 (token 更新、密鑰輪替)
+4. 設計資料映射：API 回應 → 內部資料模型
+5. 實作錯誤處理：retry (exponential backoff)、circuit breaker、fallback
+6. 設定 rate limiting：遵守第三方限制、內部保護
+7. 實作日誌與監控：呼叫次數、延遲、錯誤率
+8. 安全設計：API key 存於 vault (非 source code)、傳輸加密、輸入驗證
 
----
+**⚠️ 避坑**：
+- API key 硬編碼在 source code → 洩漏至 Git repo
+- 未實作 circuit breaker → 第三方掛掉拖垮整個系統
+- 未處理 rate limit 429 回應 → 被封鎖 IP
+- 未做輸入驗證 → API injection 攻擊風險
+- 時區處理不一致 → 天氣/市場資料對不上時間
 
-## 3. 輸出 / 交付物
+**測試策略**：
 
-| # | 交付物 | 格式 |
-|---|--------|------|
-| 1 | Third-Party API Integration Specification: API endpoint, authentication method, data format, rate limits, timeout behavior | 依需求 |
-| 2 | API Authentication and Credential Management Plan: credential storage, rotation schedule, access control (who can access credentials), audit trail req | 依需求 |
-| 3 | API Data Format Mapping Document: external API data format → internal system data format, including validation rules and type conversions for both RES | 依需求 |
-| 4 | Error Handling and Retry Logic Specification: timeout values, retry attempts, exponential backoff, fallback behavior, alert triggers | 依需求 |
-| 5 | API Security Hardening Checklist: TLS/SSL version verification, certificate pinning (if applicable), API key encryption, data-in-transit encryption, s | Markdown |
-| 6 | Zone/Conduit Crossing Configuration: explicit approval of inter-zone API traffic, firewall rule specifications (to be implemented in SK-D02-003 ⏳) | 依需求 |
-
----
-
-## 4. 適用標準
-
-- IEC 62443-2-4: Technical security measures for OT/ICS systems — API interface and data exchange security requirements
-- OWASP Top 10 for API Security: guidance on API authentication, data validation, logging, and error handling
-- NIST SP 800-82 Rev. 3: Guide to OT Security — guidance on third-party system integration and data exchange
-- OWASP Secure Coding Practices: input validation, output encoding, credential management
-- TLS 1.2 or TLS 1.3 (minimum): encryption standard for API data-in-transit
-- IEC 62443-3-3: System Security Requirements and Security Levels — API integration security baselines
-
----
-
-## 5. 驗收標準
-
-| # | 驗收項目 | 通過條件 |
-|---|---------|---------|
-| 1 | API endpoint, authentication method, data format, and rate limits are explicitly | ✅ 已驗證 |
-| 2 | API authentication plan specifies credential storage mechanism, rotation schedul | ✅ 已驗證 |
-| 3 | Data format mapping is bidirectional (where applicable) and includes validation  | ✅ 已驗證 |
-| 4 | Error handling specification covers all documented error codes; timeout values a | ✅ 已驗證 |
-| 5 | Security hardening checklist is 100% complete: TLS version ≥ 1.2 is enforced, AP | ✅ 已驗證 |
-| 6 | Zone/conduit crossing has been documented and approved by SAC/STC; firewall rule | ✅ 已驗證 |
-| 7 | API integration test plan is complete; authentication, data validation, rate lim | ✅ 已驗證 |
+| 測試類型 | 內容 |
+|----------|------|
+| Contract Test | 驗證 API 回應符合 spec |
+| Integration Test | 實際呼叫 sandbox/staging API |
+| Failure Test | 模擬 timeout、500、rate limit |
+| Security Test | 無效 token、過期 token、injection |
+| Performance Test | 並行呼叫數、延遲分布 |
 
 ---
 
-## 6. 工時參考
+## 2. 驗收標準
 
-| SK | 估算基準 |
-|----|---------|
-| SK-D07-007 | | Junior (< 2 yr) | 5–10 person-days | Assumes single API endpoint, straightforward REST/JSON data f |
-| SK-D07-007 | | Senior (5+ yr) | 2–5 person-days | Same scope; senior can leverage prior API integration experienc |
-| SK-D07-007 | Notes: APIs with complex authentication schemes (OAuth 2.0, certificate-based), multiple data format |
-
----
-
-## 7. 品質檢查清單
-
-| # | 檢查項目 | 通過條件 |
-|---|---------|---------|
-| 1 | 輸入完整性 | 所有必要輸入文件已讀取並摘要 |
-| 2 | 流程覆蓋 | 1 個工作步驟皆已執行並有產出 |
-| 3 | 輸出完整性 | 所有交付物已產出、格式正確、非空白 |
-| 4 | 標準合規 | 產出引用的標準版本正確 |
-| 5 | 術語一致 | 專案術語、縮寫與 glossary 一致 |
-| 6 | 跨步驟一致 | 各步驟產出間無矛盾（如數量、SL等級） |
+| # | 條件 |
+|---|------|
+| 1 | 所有 API endpoints 已整合並通過 contract test |
+| 2 | 認證 token 自動更新，密鑰存於 vault (非 source code) |
+| 3 | 錯誤處理覆蓋 timeout、5xx、rate limit (429) |
+| 4 | Circuit breaker 已配置並測試 |
+| 5 | 監控儀表板含呼叫量、錯誤率、P95 延遲 |
+| 6 | 安全測試通過：無 injection、token 洩漏風險 |
 
 ---
 
-## 8. 人類審核閘門
-
-完成所有工作步驟後，暫停並向使用者提交審核：
+## 3. 人類審核閘門
 
 ```
-API 與第三方集成已完成。
-📋 執行範圍：1 個工程步驟（SK-D07-007）
-📊 交付物清單：
-  - Third-Party API Integration Specification: API endpoint, authentication method, data format, rate limits, timeout behavior
-  - API Authentication and Credential Management Plan: credential storage, rotation schedule, access control (who can access credentials), audit trail req
-  - API Data Format Mapping Document: external API data format → internal system data format, including validation rules and type conversions for both RES
-  - Error Handling and Retry Logic Specification: timeout values, retry attempts, exponential backoff, fallback behavior, alert triggers
-  - API Security Hardening Checklist: TLS/SSL version verification, certificate pinning (if applicable), API key encryption, data-in-transit encryption, s
-⚠️ 待確認事項：{列出 TBD 項目或需人工判斷的假設}
-👉 請審核以上成果，確認 PASS / FAIL / PASS with Conditions。
+API 整合完成。
+📋 範圍：1 個工程步驟 (SK-D07-007)
+📊 交付物：整合設計文件、API 映射表、錯誤處理規範、監控配置
+⚠️ 待確認：{TBD 項目}
+👉 請 SYS + SEC 審核。
 ```
 
-**判定標準**：
-- **PASS**：成果完整且正確，可進入下一階段或歸檔
-- **FAIL**：發現重大缺漏或錯誤，需返工後重新提交
-- **PASS with Conditions**：整體接受，但需補充特定項目後完成
-
 ---
 
-## 9. IEC 62443 生命週期對應
+## 4. Source Traceability
 
-| 項目 | 值 |
-|------|---|
-| 主要生命週期階段 | 依專案階段 |
-| Domain | D07 (System Integration) |
-| SK 覆蓋 | SK-D07-007 |
+| SK | 名稱 | 核心知識 |
+|----|------|---------|
+| SK-D07-007 | Third-Party API Integration | 架構模式、認證、錯誤處理、rate limit、安全 |
 
----
-
-## 10. Source Traceability
-
-| SK 編號 | 英文名稱 | 中文名稱 | 核心知識 |
-|--------|---------|---------|---------|
-| SK-D07-007 | Third-Party API Integration | 第三方 API 串接 | Integrate third-party APIs (weather services, market data fe |
-
-<!-- Phase 5 Wave 2 deepened: SK-D07-007 -->
+<!-- Phase 6: Enhanced 2026-03-19. -->
