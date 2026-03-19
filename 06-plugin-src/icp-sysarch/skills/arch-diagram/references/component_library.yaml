@@ -1,0 +1,541 @@
+# ============================================================
+# OT 架構圖元件庫 — component_library.yaml
+# 版本：v2.0  |  2026-03-04
+# 維護說明：見 OT_Architecture_Framework_v1.0.md §3.5
+# 必填欄位：id / category / vendor / model / display_name / d2_class / protocols
+# ============================================================
+# 分層對照：
+#   L4 (Enterprise)   → category: IT_SWITCH / IT_FIREWALL / ERP_SERVER
+#   DMZ               → category: FIREWALL / DATA_DIODE / VPN_ROUTER
+#   L3 (Supervisory)  → category: HMI / HISTORIAN / SCADA_SERVER / NTP_SERVER / ENG_WS / UPS_L3
+#   L2 (Control Net)  → category: SWITCH_PRP / SWITCH_MANAGED / REDBOX
+#   L1 (Field Ctrl)   → category: GATEWAY / RTU / PLC / STATCOM_CTRL
+#   L0 (Field Dev)    → category: IED_PROTECTION / METER / INVERTER / UPS_FIELD / PMU
+# ============================================================
+
+components:
+
+  # ═══════════════════════════════════════════════════════════
+  # L4 — 企業層 (Enterprise Zone)
+  # ═══════════════════════════════════════════════════════════
+
+  - id: IT-SW-CISCO-C9200
+    category: IT_SWITCH
+    vendor: Cisco
+    model: Catalyst C9200L-24T-4G
+    display_name: "C9200\nIT Core Switch"
+    d2_class: switch_prp
+    protocols: [Ethernet, SNMP, LACP, STP]
+    ports:
+      ETH_1G: 24
+      SFP: 4
+    redundancy: false
+    notes: "企業 IT 核心交換機，供 L4 ERP/ADCC 使用"
+
+  - id: IT-FW-FORTINET-200F
+    category: IT_FIREWALL
+    vendor: Fortinet
+    model: FortiGate-200F
+    display_name: "FortiGate 200F\nNGFW"
+    d2_class: firewall
+    protocols: [IPSec, SSL-VPN, IPS, DPI]
+    ports:
+      ETH_1G: 16
+      SFP: 8
+    redundancy: false
+    certifications: [IEC 62443-4-2, Common Criteria]
+    notes: "企業邊界 NGFW，L4→DMZ 間防護"
+
+  - id: IT-SRV-DELL-R740
+    category: ERP_SERVER
+    vendor: Dell
+    model: PowerEdge R740
+    display_name: "ERP Server\nDell R740"
+    d2_class: scada_server
+    protocols: [TCP/IP, OPC_DA, ICCP]
+    ports:
+      ETH_1G: 4
+    redundancy: false
+    notes: "ERP / ADCC / EMS 伺服器主機"
+
+  # ═══════════════════════════════════════════════════════════
+  # DMZ — 邊界防護 (Demilitarized Zone)
+  # ═══════════════════════════════════════════════════════════
+
+  - id: FW-MOXA-EDR-GN010
+    category: FIREWALL
+    vendor: Moxa
+    model: EDR-GN010
+    display_name: "FIREWALL\nEDR-GN010"
+    d2_class: firewall
+    protocols: [Ethernet, IPSec, OpenVPN]
+    ports:
+      ETH: 10
+    redundancy: false
+    certifications: [IEC 62443-4-2]
+
+  - id: FW-FORTINET-60F-RUGGED
+    category: FIREWALL
+    vendor: Fortinet
+    model: FortiGate-60F (Rugged)
+    display_name: "FortiGate 60F\n工業防火牆"
+    d2_class: firewall
+    protocols: [IPSec, SSL-VPN, IPS, Modbus-proxy]
+    ports:
+      ETH_1G: 10
+    redundancy: false
+    certifications: [IEC 62443-4-2, UL, DNV GL]
+    notes: "工業環境 NGFW，可用於 OT/IT 邊界"
+
+  - id: DIODE-OWL-200
+    category: DATA_DIODE
+    vendor: Owl Cyber Defense
+    model: DUO-200
+    display_name: "Data Diode\nOWL DUO-200"
+    d2_class: data_diode
+    protocols: [UDP-proxy, Syslog, SNMP-trap]
+    ports:
+      ETH: 2
+    redundancy: false
+    certifications: [IEC 62443-3-3, NSA]
+    notes: "單向資料傳輸，OT→IT 唯讀安全通道"
+
+  - id: VPN-CISCO-RV340
+    category: VPN_ROUTER
+    vendor: Cisco
+    model: RV340
+    display_name: "VPN Router\nCisco RV340"
+    d2_class: gateway
+    protocols: [IPSec, SSL-VPN, PSTN, 4G-LTE]
+    ports:
+      ETH: 4
+      WAN: 2
+    redundancy: false
+    notes: "緊急遠端維護 VPN 通道（PSTN / 4G 備援）"
+
+  - id: SW-MOXA-EDS-408A
+    category: SWITCH_PRP
+    vendor: Moxa
+    model: EDS-408A
+    display_name: "EDS-408A\nPRP Switch"
+    d2_class: switch_prp
+    protocols: [PRP, RSTP, IEC61850, SNMP]
+    ports:
+      ETH_100M: 8
+    redundancy: true
+    certifications: [IEC 62443-4-2, DNV GL]
+    notes: "DMZ 內部交換機"
+
+  # ═══════════════════════════════════════════════════════════
+  # L3 — 監控站 (Supervisory Control Zone)
+  # ═══════════════════════════════════════════════════════════
+
+  - id: HMI-ADV-DA820
+    category: HMI
+    vendor: Advantech
+    model: DA-820C
+    display_name: "SCADA HMI\nDA-820C"
+    d2_class: hmi_workstation
+    protocols: [OPC_UA, IEC61850, Modbus_TCP]
+    ports:
+      ETH: 4
+    redundancy: false
+    notes: "主站/備援 HMI 使用同型號，以 display_name 區分主/備"
+
+  - id: SCADA-GE-CIMPLICITY
+    category: SCADA_SERVER
+    vendor: GE Digital
+    model: CIMPLICITY 11.x
+    display_name: "SCADA Server\nGE CIMPLICITY"
+    d2_class: scada_server
+    protocols: [OPC_UA, OPC_DA, IEC61850, DNP3]
+    ports:
+      ETH: 4
+    redundancy: false
+    notes: "OT 監控中樞，整合 IEC 61850 / DNP3 南向通訊"
+
+  - id: HIST-ADV-DA820
+    category: HISTORIAN
+    vendor: Advantech
+    model: DA-820C
+    display_name: "Historian\nDA-820C"
+    d2_class: historian
+    protocols: [OPC_UA, SQL, REST-API]
+    ports:
+      ETH: 4
+    redundancy: false
+
+  - id: NTP-MEIN-M600
+    category: NTP_SERVER
+    vendor: Meinberg
+    model: LANTIME M600
+    display_name: "NTP Server\nIEEE 1588 PTP"
+    d2_class: ntp_server
+    protocols: [NTP, PTPv2, IRIG-B, SNMP]
+    ports:
+      ETH: 2
+      GNSS: 1
+    redundancy: false
+    certifications: [IEEE 1588-2008, IEC 61850-9-3]
+
+  - id: ENG-WS-DELL-XPS
+    category: ENG_WS
+    vendor: Dell
+    model: Precision 5570
+    display_name: "Engineering WS\nDell Precision"
+    d2_class: engineering_ws
+    protocols: [OPC_UA, IEC61850, SSH]
+    ports:
+      ETH: 1
+    redundancy: false
+    notes: "工程師工作站，用於組態設定、固件更新"
+
+  - id: UPS-APC-SUA5000
+    category: UPS_L3
+    vendor: APC by Schneider
+    model: SUA5000RMI5U
+    display_name: "UPS L3\n5kVA"
+    d2_class: ups
+    protocols: [SNMP, Modbus_TCP]
+    ports:
+      ETH: 1
+    redundancy: false
+    notes: "L3 監控站 UPS，市電中斷時維持監控站運作 ≥ 30 分鐘"
+
+  # ═══════════════════════════════════════════════════════════
+  # L2 — 控制網路 (Control Network Zone)
+  # ═══════════════════════════════════════════════════════════
+
+  - id: SW-MOXA-PT-G7728
+    category: SWITCH_MANAGED
+    vendor: Moxa
+    model: PT-G7728
+    display_name: "PT-G7728\nCore Switch"
+    d2_class: switch_prp
+    protocols: [PRP, HSR, RSTP, IEC61850, SNMP]
+    ports:
+      ETH_1G: 28
+      SFP: 4
+    redundancy: true
+    certifications: [IEC 62443-4-2, DNV GL]
+    notes: "L2 核心骨幹交換機，支援 PRP/HSR 冗餘"
+
+  - id: SW-SEL-2730M
+    category: SWITCH_MANAGED
+    vendor: SEL
+    model: SEL-2730M
+    display_name: "SEL-2730M\nManaged Switch"
+    d2_class: switch_prp
+    protocols: [PRP, HSR, RSTP, IEC61850, SNMP]
+    ports:
+      ETH_100M: 24
+      SFP: 4
+    redundancy: true
+    certifications: [IEC 62443-4-2, IEEE 1613]
+    notes: "SEL 工業交換機，常用於變電所 L2 控制網路"
+
+  - id: SW-HIRSCH-RSPE30-24
+    category: SWITCH_PRP
+    vendor: Belden (Hirschmann)
+    model: RSPE30-24
+    display_name: "RSPE30\nPRP Switch"
+    d2_class: switch_prp
+    protocols: [PRP, HSR, RSTP, GOOSE, SNMP]
+    ports:
+      ETH_1G: 24
+      SFP: 6
+    redundancy: true
+    certifications: [IEC 62443-4-2, IEEE 1613, IEC 61850-8-1]
+    notes: "Belden/Hirschmann 工業 PRP 交換機，歐洲電力廠商常用"
+
+  - id: RB-MOXA-RB-5100
+    category: REDBOX
+    vendor: Moxa
+    model: RB-5100
+    display_name: "RedBox\nRB-5100"
+    d2_class: redbox
+    protocols: [PRP, HSR, RSTP]
+    ports:
+      ETH: 3
+    redundancy: true
+    certifications: [IEC 62439-3]
+    notes: "PRP/HSR RedBox，用於非冗餘設備接入 PRP 網路"
+
+  # ═══════════════════════════════════════════════════════════
+  # L1 — 現場控制層 (Field Control Zone)
+  # ═══════════════════════════════════════════════════════════
+
+  - id: GW-ADV-IEC7442
+    category: GATEWAY
+    vendor: Advantech
+    model: IEC-7442
+    display_name: "IEC-7442\nProtocol GW"
+    d2_class: gateway
+    protocols: [IEC61850, Modbus_TCP, Modbus_RTU, RS485, DNP3, IEC60870-5-104]
+    ports:
+      ETH: 2
+      RS485: 4
+      RS232: 2
+    redundancy: false
+    notes: "多協定 Protocol Gateway，IEC 61850 ↔ DNP3/Modbus 轉換"
+
+  - id: GW-MOXA-MGATE5105
+    category: GATEWAY
+    vendor: Moxa
+    model: MGate 5105-MB-EIP
+    display_name: "MGate 5105\nModbus GW"
+    d2_class: gateway
+    protocols: [Modbus_TCP, Modbus_RTU, RS485, EtherNet/IP]
+    ports:
+      ETH: 2
+      RS485: 1
+      RS232: 1
+    redundancy: false
+    certifications: [IEC 62443-4-2]
+    notes: "Modbus RTU → TCP 轉換 GW，MCC 側常用"
+
+  - id: RTU-TPRI-RSG007R
+    category: RTU
+    vendor: TPRI
+    model: RSG-007R
+    display_name: "RTU\nRSG-007R"
+    d2_class: rtu_ied
+    protocols: [IEC61850, Modbus_RTU, RS485, DNP3, IEC60870-5-101]
+    ports:
+      ETH: 2
+      RS485: 8
+      DI: 32
+      DO: 16
+    redundancy: false
+    certifications: [CNS, TPC-approved]
+    notes: "台電 TPC 標準規範 RTU，RSG-007R 型號"
+
+  - id: RTU-ABB-RTU560
+    category: RTU
+    vendor: ABB
+    model: RTU560
+    display_name: "RTU560\nABB RTU"
+    d2_class: rtu_ied
+    protocols: [IEC61850, IEC60870-5-101, IEC60870-5-104, DNP3, Modbus_RTU]
+    ports:
+      ETH: 4
+      RS485: 8
+      DI: 64
+      DO: 32
+    redundancy: false
+    certifications: [IEC 62443-4-2, NERC CIP]
+    notes: "ABB RTU，適用於大型變電所多點監控"
+
+  - id: PLC-MITSU-Q03UD
+    category: PLC
+    vendor: Mitsubishi Electric
+    model: MELSEC Q03UDVCPU
+    display_name: "Q03UDVCPU\nMCC PLC"
+    d2_class: plc
+    protocols: [Modbus_TCP, Modbus_RTU, RS485, SLMP]
+    ports:
+      ETH: 1
+      RS485: 2
+    redundancy: false
+    notes: "MCC 控制器，管理饋線開關、電動機啟停"
+
+  - id: STATCOM-OSC-ABB
+    category: STATCOM_CTRL
+    vendor: ABB
+    model: PCS-6000
+    display_name: "STATCOM OSC\nABB PCS-6000"
+    d2_class: plc
+    protocols: [Modbus_TCP, IEC61850, RS485]
+    ports:
+      ETH: 2
+      RS485: 4
+    redundancy: false
+    notes: "STATCOM 主控制器，調壓補償模組協調控制"
+
+  # ═══════════════════════════════════════════════════════════
+  # L0 — 現場設備 (Field Devices)
+  # ═══════════════════════════════════════════════════════════
+
+  # ── 保護電驛 IED ──────────────────────────────────────────
+
+  - id: IED-SEL-487E
+    category: IED_PROTECTION
+    vendor: SEL
+    model: SEL-487E
+    display_name: "SEL-487E\n主變差動保護"
+    d2_class: field_ied
+    protocols: [IEC61850, Modbus_RTU, RS485, DNP3]
+    ports:
+      ETH: 2
+      RS485: 1
+    redundancy: false
+    certifications: [IEEE C37.90]
+    notes: "87T 變壓器差動保護電驛"
+
+  - id: IED-SEL-311L
+    category: IED_PROTECTION
+    vendor: SEL
+    model: SEL-311L
+    display_name: "SEL-311L\n線路距離保護"
+    d2_class: field_ied
+    protocols: [IEC61850, GOOSE, Modbus_RTU, RS485]
+    ports:
+      ETH: 2
+      RS485: 1
+    redundancy: false
+    certifications: [IEEE C37.90, IEC 61850-8-1]
+    notes: "21L 距離保護電驛，適用於 69kV~161kV 線路"
+
+  - id: IED-SEL-351A
+    category: IED_PROTECTION
+    vendor: SEL
+    model: SEL-351A
+    display_name: "SEL-351A\n過電流保護"
+    d2_class: field_ied
+    protocols: [IEC61850, Modbus_RTU, RS485, DNP3]
+    ports:
+      ETH: 2
+      RS485: 1
+    redundancy: false
+    certifications: [IEEE C37.90]
+    notes: "50/51 過電流 / 接地故障保護電驛"
+
+  - id: IED-SEL-367
+    category: IED_PROTECTION
+    vendor: SEL
+    model: SEL-367
+    display_name: "SEL-367\n方向過電流保護"
+    d2_class: field_ied
+    protocols: [IEC61850, GOOSE, Modbus_RTU, RS485]
+    ports:
+      ETH: 2
+      RS485: 1
+    redundancy: false
+    certifications: [IEEE C37.90]
+    notes: "67N 方向性過電流保護電驛"
+
+  - id: IED-ABB-REL670
+    category: IED_PROTECTION
+    vendor: ABB
+    model: REL670
+    display_name: "REL670\n線路保護 IED"
+    d2_class: field_ied
+    protocols: [IEC61850, GOOSE, Modbus_RTU, RS485, DNP3]
+    ports:
+      ETH: 4
+      RS485: 2
+    redundancy: false
+    certifications: [IEC 61850-8-1, IEC 61850-9-2, IEEE C37.90]
+    notes: "ABB 線路保護 IED，支援 21/67/27/59 多功能"
+
+  - id: IED-GE-F650
+    category: IED_PROTECTION
+    vendor: GE Grid Solutions
+    model: Multilin F650
+    display_name: "F650\n間隔控制器"
+    d2_class: field_ied
+    protocols: [IEC61850, GOOSE, Modbus_TCP, DNP3]
+    ports:
+      ETH: 2
+      RS485: 2
+    redundancy: false
+    certifications: [IEC 61850, IEEE C37.90]
+    notes: "GE 間隔保護控制器，整合 Bay Control + 保護功能"
+
+  - id: IED-SIEMENS-7SJ85
+    category: IED_PROTECTION
+    vendor: Siemens
+    model: SIPROTEC 5 7SJ85
+    display_name: "7SJ85\n過電流/接地"
+    d2_class: field_ied
+    protocols: [IEC61850, GOOSE, Modbus_RTU, RS485, DNP3]
+    ports:
+      ETH: 2
+      RS485: 2
+    redundancy: false
+    certifications: [IEC 61850-8-1, IEEE C37.90]
+    notes: "Siemens SIPROTEC 5 系列，50/51/51N 過電流接地保護"
+
+  # ── 量測計費 ────────────────────────────────────────────
+
+  - id: METER-LGE-E650
+    category: METER
+    vendor: Landis+Gyr
+    model: E650
+    display_name: "E650\n數位電能表"
+    d2_class: field_ied
+    protocols: [IEC61850, Modbus_RTU, RS485, DLMS]
+    ports:
+      ETH: 1
+      RS485: 1
+    redundancy: false
+    certifications: [IEC 62052-11, IEC 62053-21]
+    notes: "高精度數位電能表，計費/量測兼用"
+
+  - id: PMU-SEL-RTAC
+    category: PMU
+    vendor: SEL
+    model: SEL-3530 RTAC
+    display_name: "SEL-RTAC\nPMU / RTAC"
+    d2_class: field_ied
+    protocols: [IEC61850, C37.118, DNP3, Modbus_TCP]
+    ports:
+      ETH: 4
+      RS485: 2
+    redundancy: false
+    certifications: [IEEE C37.118.1, IEC 61850]
+    notes: "同步相量量測單元，廣域量測 / 電力系統動態分析"
+
+  # ── 太陽能 / 儲能 ─────────────────────────────────────
+
+  - id: INV-SMA-SUNNY50
+    category: INVERTER
+    vendor: SMA
+    model: Sunny Tripower CORE2 50
+    display_name: "SMA 50kW\n光伏逆變器"
+    d2_class: inverter
+    protocols: [Modbus_TCP, Modbus_RTU, RS485, SunSpec]
+    ports:
+      ETH: 1
+      RS485: 1
+    redundancy: false
+    certifications: [IEC 62109, IEEE 1547]
+    notes: "SMA 三相 50kW 光伏逆變器，SunSpec Modbus"
+
+  - id: INV-SUNGROW-SG250HX
+    category: INVERTER
+    vendor: Sungrow
+    model: SG250HX
+    display_name: "SG250HX\n250kW 逆變器"
+    d2_class: inverter
+    protocols: [Modbus_TCP, Modbus_RTU, RS485, IEC60870-5-104]
+    ports:
+      ETH: 2
+      RS485: 2
+    redundancy: false
+    certifications: [IEC 62109, IEEE 1547, UL 1741]
+    notes: "Sungrow 250kW 集中式逆變器，大型太陽能廠站"
+
+  - id: UPS-EATON-9PX
+    category: UPS_FIELD
+    vendor: Eaton
+    model: 9PX 6000i
+    display_name: "UPS Field\nEaton 9PX 6kVA"
+    d2_class: ups
+    protocols: [SNMP, Modbus_TCP, USB]
+    ports:
+      ETH: 1
+    redundancy: false
+    certifications: [IEC 62040-3]
+    notes: "現場設備 UPS，維持 L0/L1 設備供電穩定"
+
+# ============================================================
+# 元件庫統計（v2.0）
+# ── L4 Enterprise：3（IT-SW / IT-FW / ERP-SRV）
+# ── DMZ：4（FIREWALL × 2 / DATA_DIODE / VPN_ROUTER / DMZ-SW）
+# ── L3 Supervisory：5（HMI / SCADA / HIST / NTP / ENG-WS / UPS-L3）
+# ── L2 Control：4（SWITCH_PRP × 3 / REDBOX）
+# ── L1 Field Control：6（GATEWAY × 2 / RTU × 2 / PLC / STATCOM）
+# ── L0 Field Devices：12（IED × 7 / METER / PMU / INVERTER × 2 / UPS）
+# 合計：34 個設備定義
+# ============================================================

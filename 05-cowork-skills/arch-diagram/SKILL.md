@@ -79,6 +79,34 @@ Layer 3: Conduit 連線                  ← Zone 之間的連接線
 
 **擴充 Zone 顏色**：若專案有上述未列出的 Zone 類型，從 Material Design 色票中選擇淺色系（50-100 級），保持與現有 Zone 的視覺區分度。
 
+### 3.1 OT/電力系統 Purdue Model 色彩規範
+
+當繪製 OT/ICS/電力系統架構圖時，使用以下 Purdue Level 對應的品牌色系：
+
+| Purdue Level | Zone 名稱 | 背景填充 | 邊框 (stroke) | 用途 |
+|---|---|---|---|---|
+| L4 Enterprise | 企業網路 | `#e8eef5` | `#0C3467` (Navy) | 公司 IT、ERP、遠端存取 |
+| DMZ | 非軍事區 | `#fdecea` | `#c0392b` (Red) | 防火牆邊界、堡壘主機 |
+| L3 Supervisory | 監控層 | `#e0f4fb` | `#008EC3` (Sky Blue) | SCADA、HMI、歷史資料庫 |
+| L2 Distribution | 通訊骨幹 | `#e8f5e9` | `#2e7d32` (Green) | PRP 交換器、L2 匯聚 |
+| L1 Field Control | 現場控制 | `#fff8e1` | `#F5A623` (Amber) | RTU、IED、閘道器 |
+| L0 Field Devices | 現場設備 | `#f5f5f5` | `#9B9B9B` (Gray) | 感測器、致動器、再生能源設備 |
+
+**D2 classes 定義**（放在 `.d2` 檔案開頭）：
+```d2
+classes: {
+  zone_l4: { style: { fill: "#e8eef5"; stroke: "#0C3467"; stroke-width: 2; font-size: 16 } }
+  zone_dmz: { style: { fill: "#fdecea"; stroke: "#c0392b"; stroke-width: 2; font-size: 16 } }
+  zone_l3: { style: { fill: "#e0f4fb"; stroke: "#008EC3"; stroke-width: 2; font-size: 16 } }
+  zone_l2: { style: { fill: "#e8f5e9"; stroke: "#2e7d32"; stroke-width: 2; font-size: 16 } }
+  zone_l1: { style: { fill: "#fff8e1"; stroke: "#F5A623"; stroke-width: 2; font-size: 16 } }
+  zone_l0: { style: { fill: "#f5f5f5"; stroke: "#9B9B9B"; stroke-width: 2; font-size: 16 } }
+  zone_sub: { style: { fill: "transparent"; stroke: "#ccc"; stroke-dash: 3; stroke-width: 1; font-size: 13 } }
+}
+```
+
+**⚠️ 所有顏色必須來自上表常數，禁止在 D2 碼中硬編碼 hex 色碼。**
+
 ---
 
 ## 4. 元件命名慣例
@@ -117,10 +145,27 @@ Conduit 編號從 C1 開始連續編號，不跳號。
 
 ## 6. D2 專用規範
 
+### 6.0 Layout Engine 強制規則
+
+**⚠️ Layout Engine 必須指定為 `dagre`，禁止使用 `elk`。**
+
+```d2
+vars: {
+  d2-config: {
+    layout-engine: dagre
+  }
+}
+```
+
+**原因**：
+- ELK 引擎有已知缺陷：subgroup 排序不可預測、TB 佈局不穩定
+- dagre 引擎的 `direction: down` 按宣告順序由左至右排列子群組（可控制）
+- 所有 `.d2` 檔案第一行必須包含此 vars 設定
+
 ### 6.1 基本語法
 
 ```d2
-# 全域設定
+# 全域設定（必須包含 layout-engine 指定）
 direction: down
 
 # Zone 容器使用 style 統一設定
@@ -586,7 +631,237 @@ SND (Simple Network Diagram) 為架構圖的簡化版，用於概念設計階段
 
 ---
 
-## 20. 人類審核閘門（Human Review Gate）
+## 20. OT 架構圖自動化工具鏈
+
+### 20.1 YAML → D2 → SVG 管線
+
+大型 OT/電力系統架構圖建議使用自動化管線取代手動編寫 D2：
+
+```
+Step 1: project.yaml     ← 使用者填寫專案配置（純 YAML，無需 D2 語法）
+Step 2: gen_d2.py         ← Python 腳本將 YAML 轉換為 .d2 原始碼
+Step 3: d2 CLI            ← D2 渲染引擎產出 raw SVG
+Step 4: optimize_svg.py   ← SVG 後處理（標題列、圖例、Label 背景）
+Step 5: check_collision.py ← A-class 碰撞偵測品質檢查
+```
+
+**工具鏈檔案**（見 `references/` 目錄）：
+- `component_library.yaml` — 設備元件庫（34+ 設備，含協定/認證/冗餘資訊）
+- `project_template.yaml` — 專案配置 YAML 範本（含完整中文註解）
+
+### 20.2 project.yaml 配置結構
+
+```yaml
+project:
+  name: "場站名稱"
+  site_code: "SITE"
+  date: "YYYY-MM-DD"
+  standard: "IEC 62443"
+
+enterprise:
+  enabled: true/false      # false = 省略整個 L4 Zone
+
+dmz:
+  firewall_model: "FW-MOXA-EDR-GN010"
+  remote_access: true/false
+
+scada:
+  hmi_count: 1 | 2
+  hmi_model: "DA-820"
+  historian: true/false
+  ntp: true/false
+
+network:
+  prp_enabled: true/false   # true = 雙 PRP 骨幹（LAN-A + LAN-B）
+  core_switch_model: "PT-G7728"
+  feeder_groups:
+    - id: "M1"
+      label: "M1"
+      description: "161kV TR"
+
+field_control:
+  gateways:
+    count: 1 | 2            # 閘道器冗餘
+    model: "IEC-7442"
+  rtu_panels:
+    - id: "TPC"
+      rtu_model: "RSG-007R"
+      ieds:
+        - id: "IED_87L1"
+          label: "87L1\n線路保護"
+          protocol: "IEC61850"
+          connected_to: "gw_A"  # null = 省略連線
+  statcom:
+    enabled: true/false     # false = 省略 STATCOM 子群組
+
+field_devices:
+  protection_ieds:
+    enabled: true/false
+    ieds:
+      - id: "IED_87T"
+        label: "87T1 / 87T2\n變壓器差動保護"
+        comm: "IEC61850_fiber"
+```
+
+### 20.3 D2 生成規則（Rulebook）
+
+| 規則 ID | 規則 | 說明 |
+|---------|------|------|
+| R-D2-01 | Layout Engine = dagre | 禁止 elk（排序不穩定） |
+| R-D2-02 | D2 中不宣告 title/legend | 由 SVG 後處理注入 |
+| R-D2-03 | L1 子群組宣告順序固定 | gw → rtu_panels → mcc → statcom（控制視覺位置） |
+| R-D2-04 | Collision A-class | 連線不可穿越文字標籤（< 15px 視為碰撞） |
+| R-D2-05 | L0 子群組順序 | r_group (左) → solar (右) |
+| R-D2-06 | Backbone Label 去重 | LAN-A/LAN-B 同類連線僅首條保留標籤 |
+| R-D2-08 | 子群組統一用 zone_sub class | 透明背景 + 虛線框 |
+| R-D2-09 | connected_to=null → 不產生連線 | 防止長距離連線導致圖面混亂 |
+| R-D2-10 | 連線標籤禁止 `\n` | D2 SVG 忽略換行；改用兩個空格分隔 |
+
+### 20.4 通訊樣式定義（comm_styles）
+
+| 樣式 Key | 標籤 | Stroke 色 | 寬度 | 虛線 | 用途 |
+|----------|------|----------|------|------|------|
+| PRP_LAN_A | PRP LAN-A IEC 62439-3 | `#008EC3` | 2 | 實線 | 主骨幹 |
+| PRP_LAN_B | PRP LAN-B IEC 62439-3 | `#0C3467` | 2 | 虛線(3) | 備援骨幹 |
+| IEC61850_fiber | IEC 61850 GOOSE Fiber SM | `#0C3467` | 3 | 實線 | 保護通訊 |
+| Modbus_TCP | Modbus TCP | `#008EC3` | 1 | 實線 | 現場控制 |
+| RS485_modbus | RS-485 Modbus RTU | `#9B9B9B` | 1 | 虛線(3) | 串列通訊 |
+| OPC_UA | OPC-UA / ICCP | `#008EC3` | 2 | 實線 | SCADA 通訊 |
+| DNP3_serial | DNP3 Serial | `#F5A623` | 1 | 虛線(3) | 調度通訊 |
+| IEEE1588_PTP | IEEE 1588 PTP | `#F5A623` | 1 | 虛線(3) | 時間同步 |
+
+---
+
+## 21. SVG 後處理管線（R-PP 規則）
+
+D2 CLI 產出的 raw SVG 需經 8 步後處理：
+
+| Step | 函數 | 轉換內容 |
+|------|------|---------|
+| 1 | parse_svg() | 提取 viewBox、計算 bounding box |
+| 2 | remove_d2_artifacts() | 刪除 D2 自動產生的 title/legend 群組 |
+| 3 | shift_content(+110px) | 所有元素下移 110px（為標題列留空間） |
+| 4 | inject_title_bar() | 注入品牌標題列（Navy 背景、3 行文字） |
+| 5 | fix_dasharray() | 修正 dasharray > 8 → 6,4（D2 已知問題） |
+| 6 | inject_legend() | 動態偵測空白區域放置雙欄圖例（480px 寬） |
+| 7 | add_label_backgrounds() | 連線標籤加白底（fill-opacity=0.85） |
+| 8 | update_canvas() | 更新 viewBox 尺寸以容納所有元素 |
+
+### 21.1 標題列規格（R-PP-02）
+
+```
+┌──────────────────────────────────────────────────┐
+│ ▌ [Project Name]                    [Revision]   │  ← height: 110px
+│ ▌ [Site Name]                       [Date]       │  ← bg: #0C3467 (Navy)
+│ ▌ [Standard: IEC 62443]                          │  ← left border: 6px #008EC3
+└──────────────────────────────────────────────────┘
+```
+
+### 21.2 圖例放置規則（R-PP-03/06）
+
+- 寬度 480px，雙欄浮動層
+- 位置由 find_empty_zone() 動態掃描（100px 步進）
+- **禁止硬編碼座標**；若找不到空白區域，fallback 至 (30, y_start)
+- 內容：元件形狀（矩形/菱形/六角形） + 連線樣式（實線/虛線/顏色）
+
+### 21.3 Dasharray 修正（R-PP-04）
+
+D2/dagre 渲染時會將 stroke-dash 值乘以 stroke-width：
+- `stroke-dash: 3` + `stroke-width: 2` → SVG 中 `stroke-dasharray: 6`
+- **修正規則**：dasharray > 8 → 強制 normalize 為 `6,4`
+
+### 21.4 A1 紙張輸出
+
+大型電力系統架構圖建議輸出 A1 尺寸：
+- SVG 注入 `width="841mm" height="594mm"` (A1 landscape)
+- 字型放大：Zone 16pt、子群組 13pt、設備 12pt
+
+---
+
+## 22. 碰撞偵測（A-class）
+
+### 22.1 定義
+
+A-class 碰撞 = 連線路徑穿越或觸碰非 Zone 標題的文字標籤（距離 < 15px）。
+
+### 22.2 偵測流程
+
+1. 提取 SVG 中所有 `<text>` 元素（排除 Zone 標題）
+2. 提取所有 `<path>` 元素，解析 SVG d 屬性 (M/L/H/V/C/Q)
+3. 計算每個文字與路徑線段的垂直距離
+4. 距離 < 15px 且非路徑端點 → 記為碰撞
+
+### 22.3 嚴重度分級
+
+| 等級 | A-class 數 | 判定 | 處理 |
+|------|-----------|------|------|
+| Green | 0 | 優秀 | 直接通過 |
+| Yellow | 1-4 | 可接受 | 記錄，必要時微調 |
+| Red | ≥5 | 不接受 | 必須調整 feeder_groups 順序或 connected_to 設定 |
+
+### 22.4 常見修正方式
+
+- 重新排列 `feeder_groups`（影響 L2 交換器位置）
+- 將問題 IED 的 `connected_to` 設為 `null`（省略長距離連線）
+- 調整 L1 子群組內容（gw/rtu/mcc/statcom 分配）
+
+---
+
+## 23. 元件庫（Component Library）
+
+大型 OT 專案建議使用結構化元件庫取代逐一手動命名。元件庫格式：
+
+```yaml
+# component_library.yaml
+- id: "SW-MOXA-EDS-408A"
+  category: SWITCH_MANAGED
+  vendor: "MOXA"
+  model: "EDS-408A"
+  display_name: "EDS-408A\nManaged Ethernet Switch"
+  d2_class: switch_managed
+  protocols: [Ethernet, SNMP]
+  ports: { ETH: 8 }
+  redundancy: false
+  certifications: [IEC 62443-4-2, IEEE 1613]
+  purdue_level: [L1, L2]
+  notes: "8x100M, DIN-rail"
+
+- id: "FW-MOXA-EDR-GN010"
+  category: FIREWALL
+  vendor: "MOXA"
+  model: "EDR-G9010"
+  display_name: "EDR-G9010\nIndustrial Firewall"
+  d2_class: firewall
+  protocols: [NAT, VPN, DPI]
+  ports: { ETH: 10, SFP: 2 }
+  redundancy: true
+  certifications: [IEC 62443-4-1, IEC 62443-4-2]
+  purdue_level: [DMZ]
+  notes: "IPS/IDS, DPI, VPN"
+```
+
+**命名慣例**：`{類別前綴}-{廠牌}-{型號}`
+- IT-SW: IT 交換器、FW: 防火牆、GW: 閘道器、RTU: 遠端終端
+- IED: 智慧電子裝置、HMI: 人機介面、SW-MOXA: MOXA 交換器
+
+完整元件庫見 `references/component_library.yaml`（34+ 設備）。
+完整專案配置範本見 `references/project_template.yaml`。
+
+---
+
+## 24. 已知限制與陷阱
+
+| ID | 問題 | 影響 | 解決方式 |
+|----|------|------|---------|
+| KB-01 | D2 title/legend 節點無法控制位置 | 圖面混亂 | 不在 D2 中宣告，改由 SVG 後處理注入 |
+| KB-02 | dasharray × stroke-width 自動放大 | 虛線過粗 | SVG 後處理 normalize 為 6,4 |
+| KB-03 | ELK 引擎 subgroup 排序不可預測 | 佈局錯亂 | 強制使用 dagre |
+| KB-05 | D2 label 中 `\n` 在 SVG 被忽略 | 標籤擠成一行 | 用兩個空格替代 |
+| KB-06 | dagre direction:down 按宣告順序排列 | YAML 順序不等於視覺順序 | 在 gen_d2.py 中硬編碼子群組宣告順序 |
+
+---
+
+## 25. 人類審核閘門（Human Review Gate）
 
 **審核時機**：架構圖初版完成後提交審核。
 
@@ -606,7 +881,7 @@ SND (Simple Network Diagram) 為架構圖的簡化版，用於概念設計階段
 
 ---
 
-## 21. Source Traceability
+## 26. Source Traceability
 
 | SK 編號 | 名稱 | 整合內容 |
 |--------|------|---------|
@@ -617,3 +892,13 @@ SND (Simple Network Diagram) 為架構圖的簡化版，用於概念設計階段
 | SK-D02-011 | Simple Network Diagram | SND 佈局、SuC 邊界 |
 
 <!-- Phase 5 Wave 1: SK knowledge integrated from SK-D01-001/002, SK-D02-001/004/011 -->
+<!-- Phase 7: OT automation toolchain integrated from source-documents/system-architecture-diagram -->
+
+---
+
+## 附帶檔案
+
+本 Skill 的 `references/` 目錄包含：
+
+- `component_library.yaml` — OT/電力系統設備元件庫（34+ 設備，含協定、認證、冗餘資訊）
+- `project_template.yaml` — 專案配置 YAML 範本（含完整中文註解，272 行）
