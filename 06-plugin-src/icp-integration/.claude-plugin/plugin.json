@@ -1,0 +1,6 @@
+{
+  "name": "icp-integration",
+  "version": "1.1.0",
+  "description": "ICP 整合驗證與資料平台 — 系統整合、測試驗收、文件撰寫、資料平台、自動化",
+  "author": { "name": "ICP System Design Dept" }
+}

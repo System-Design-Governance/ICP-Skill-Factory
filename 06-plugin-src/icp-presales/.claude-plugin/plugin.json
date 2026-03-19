@@ -1,0 +1,6 @@
+{
+  "name": "icp-presales",
+  "version": "1.1.0",
+  "description": "ICP 售前設計支援角色 (PGS) — 提案準備、CBOM 估算、現場評估、概念設計、Gate 0 決策",
+  "author": { "name": "ICP System Design Dept" }
+}

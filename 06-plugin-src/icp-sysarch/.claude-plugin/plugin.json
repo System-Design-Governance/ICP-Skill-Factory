@@ -1,0 +1,6 @@
+{
+  "name": "icp-sysarch",
+  "version": "1.1.0",
+  "description": "ICP 系統架構師角色 (SYS) — 架構設計、電力分析、保護協調、控制系統、電氣設計",
+  "author": { "name": "ICP System Design Dept" }
+}

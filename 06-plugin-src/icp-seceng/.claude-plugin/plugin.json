@@ -1,0 +1,6 @@
+{
+  "name": "icp-seceng",
+  "version": "1.1.0",
+  "description": "ICP 資安工程角色 (SAC) — OT/ICS 資安設計、威脅評估、安全加固、監控與事件回應",
+  "author": { "name": "ICP System Design Dept" }
+}

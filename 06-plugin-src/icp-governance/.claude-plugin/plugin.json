@@ -1,0 +1,6 @@
+{
+  "name": "icp-governance",
+  "version": "1.1.0",
+  "description": "ICP 設計治理 — 設計審查、流程開發、品質保證、知識管理、需求追溯、專案協調",
+  "author": { "name": "ICP System Design Dept" }
+}
