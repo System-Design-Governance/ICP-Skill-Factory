@@ -1,0 +1,47 @@
+# 測試方案 A: label.near 外置標題
+# 測試 D2 是否支援將容器標題放到外部，使連線不經過標題區
+
+direction: down
+
+# --- 方案 A1: outside-top-center ---
+outer_a1: "Zone 02/03｜PRP Dual-LAN (outside-top-center)" {
+  label.near: outside-top-center
+  style.fill: "#e8f5e9"
+  style.stroke: "#2e7d32"
+
+  sw_a: "SW_CORE_A" { shape: rectangle }
+  sw_b: "SW_CORE_B" { shape: rectangle }
+}
+
+# --- 方案 A2: outside-top-left ---
+outer_a2: "Zone 02/03｜PRP Dual-LAN (outside-top-left)" {
+  label.near: outside-top-left
+  style.fill: "#e8f5e9"
+  style.stroke: "#2e7d32"
+
+  sw_c: "SW_CORE_C" { shape: rectangle }
+  sw_d: "SW_CORE_D" { shape: rectangle }
+}
+
+# --- 方案 A3: top-left (inside) ---
+outer_a3: "Zone 02/03｜PRP Dual-LAN (top-left)" {
+  label.near: top-left
+  style.fill: "#e8f5e9"
+  style.stroke: "#2e7d32"
+
+  sw_e: "SW_CORE_E" { shape: rectangle }
+  sw_f: "SW_CORE_F" { shape: rectangle }
+}
+
+# --- 跨容器連線（模擬真實情境）---
+top_node: "L3 Server" { shape: rectangle }
+bottom_node_1: "IED_1" { shape: rectangle }
+bottom_node_2: "IED_2" { shape: rectangle }
+
+top_node -> outer_a1.sw_a: "conn1" { style.stroke: "#008EC3"; style.stroke-dash: 5 }
+top_node -> outer_a1.sw_b: "conn2" { style.stroke: "#F5A623"; style.stroke-dash: 5 }
+outer_a1.sw_a -> bottom_node_1: "conn3" { style.stroke: "#008EC3"; style.stroke-dash: 5 }
+outer_a1.sw_b -> bottom_node_2: "conn4" { style.stroke: "#F5A623"; style.stroke-dash: 5 }
+
+top_node -> outer_a2.sw_c: "conn5" { style.stroke: "#008EC3"; style.stroke-dash: 5 }
+top_node -> outer_a3.sw_e: "conn6" { style.stroke: "#008EC3"; style.stroke-dash: 5 }

@@ -8,7 +8,17 @@
 
 ## 背景
 
-鑑識報告已完成（13 個缺口：5 Critical、5 Major、3 Minor）。本 Prompt 是基於鑑識報告的**修訂版執行計畫**，補充了原始 remediation-plan.md 遺漏的 4 個問題。
+鑑識報告已完成（13 個缺口：5 Critical、5 Major、3 Minor）。本 Prompt 是基於鑑識報告的**修訂版執行計畫**，補充了原始 remediation-plan.md 遺漏的 5 個問題：
+
+**重大發現：原始 7-Phase 計畫與實際執行嚴重偏離。**
+
+原始計畫的 7 Phase 為：①領域發現 → ②架構設計 → ③技能定義 → ④依賴對應 → ⑤衝突分析 → ⑥分類重構 → ⑦演進規劃。實際執行完成了 Phase 1-3，但 **Phase 4-7 全部未執行**（僅有 TODO.md），取而代之的是直接進入 Cowork SKILL.md 轉換和 Plugin 打包（不在原始計畫中）。這導致：
+- `04-dependency-map/` 和 `04-review/` 編號衝突
+- `05-conflict-analysis/` 和 `05-cowork-skills/` 編號衝突
+- `06-refactoring/` 和 `07-evolution/` 空殼佔位
+- 依賴圖、衝突矩陣、重構提案、演進路線圖均未產出
+
+此偏差是 Victor 有意識的決策（優先讓 Skills 可用於生產），不是失誤。但目錄結構需要清理以反映真實狀態。
 
 ## ⚠️ 核心原則（貫穿所有任務）
 
@@ -42,15 +52,60 @@
 
 原始 remediation-plan.md 的 R-001~R-013 加上 4 個補充任務（R-014~R-017）。
 
-### Phase 0 (P0): 治理修正 + Git 初始化
+### Phase 0 (P0): 目錄重整 + 治理修正 + Git 初始化
+
+#### R-018 [新增] — 目錄結構重整（最優先）
+
+**問題**：原始 7-Phase 計畫使用 `01-07` 編號目錄，但 Phase 4-7 未執行（僅有 TODO.md），實際工作建立了 `04-review/` 和 `05-cowork-skills/` 與原始目錄**編號衝突**。
+
+**原始結構 → 實際狀態**：
+```
+01-domain-map/           ✅ Phase 1 完成（保留）
+02-skill-candidates/     ✅ Phase 2 完成（保留）
+03-skill-definitions/    ✅ Phase 3 完成（保留）
+04-dependency-map/       ❌ Phase 4 未執行（僅 TODO.md）
+04-review/               ✅ 實際 Phase 3-5 Review（與上方衝突）
+05-conflict-analysis/    ❌ Phase 5 未執行（僅 TODO.md）
+05-cowork-skills/        ✅ 實際 Phase 5 Cowork（與上方衝突）
+06-refactoring/          ❌ Phase 6 未執行（僅 TODO.md）
+07-evolution/            ❌ Phase 7 未執行（僅 TODO.md）
+```
+
+**修正方案**：將原始未執行的 Phase 4-7 TODO 目錄歸檔為 `_archive/`，消除編號衝突，同時建立 Plugin 原始碼目錄 `06-plugin-src/`。
+
+```bash
+# 1. 歸檔未執行的 Phase 目錄
+mkdir -p _archive/original-plan
+mv 04-dependency-map _archive/original-plan/
+mv 05-conflict-analysis _archive/original-plan/
+mv 06-refactoring _archive/original-plan/
+mv 07-evolution _archive/original-plan/
+
+# 2. 建立 Plugin 開發目錄（從 05-cowork-skills/plugins/ 的建構來源搬入）
+mkdir -p 06-plugin-src
+
+# 3. 重整後的乾淨結構：
+# 00-governance/           ← 治理文件
+# 01-domain-map/           ← Phase 1 (完成)
+# 02-skill-candidates/     ← Phase 2 (完成)
+# 03-skill-definitions/    ← Phase 3 (完成，凍結)
+# 04-review/               ← Phase 3-5 Review 報告
+# 05-cowork-skills/        ← 51 個 SKILL.md 開發工作區
+# 06-plugin-src/           ← 5 個 Plugin 原始碼（打包來源）
+# source-documents/        ← 治理+範例+程序文件
+# _archive/original-plan/  ← 未執行的 Phase 4-7 TODO（保留可追溯）
+```
+
+**注意**：`_archive/original-plan/` 中的 TODO.md 保留了原始 Phase 4-7 的規劃意圖，未來如需執行依賴對應、衝突分析、分類重構或演進規劃，可從此處恢復。
 
 | ID | 任務 | 對應缺口 | 說明 |
 |----|------|---------|------|
+| **R-018** | 目錄結構重整 | G-014 (新) | 歸檔 Phase 4-7 空目錄，消除編號衝突，建立 06-plugin-src |
 | **R-001** | 更新 SCHEMA.md | G-003 | 明確區分 YAML fields (~13) vs prose sections (~14)，新增 ADR 記錄此設計決策 |
-| **R-002** | git init + push to GitHub | G-013 | `git init && git remote add origin https://github.com/System-Design-Governance/ICP-Skill-Factory.git && git add -A && git commit -m "Phase 5: initial commit with 51 SKILL.md + 5 plugins" && git push -u origin main` |
+| **R-002** | git init + push to GitHub | G-013 | `git remote add origin https://github.com/System-Design-Governance/ICP-Skill-Factory.git && git add -A && git commit && git push -u origin main`（repo 已有 .git） |
 | **R-010** | forensic report supersession note | G-008 | 在 `04-review/forensic-review-report.md` 頂部加入指向 phase4-review-report.md 的 supersession note |
-| **R-011** | SCHEMA.md 標註 composition_patterns Optional | G-007 | 將此欄位標為 `Optional / Deferred (Phase 4 未執行)` |
-| **R-013** | README.md 標註 project-governance/ 定位 | G-002 | 建立或更新 repo 根目錄的 README.md |
+| **R-011** | SCHEMA.md 標註 composition_patterns Optional | G-007 | 將此欄位標為 `Optional / Deferred (原始 Phase 4 未執行)` |
+| **R-013** | README.md 更新 | G-002 | 建立 repo 根目錄 README.md，含專案概述、目錄說明、Phase 狀態、偏差記錄 |
 
 ### Phase 1 (P1): 核心 Plugin 深化
 
@@ -205,11 +260,12 @@ zip -r /tmp/{plugin-name}.plugin . -x "*.DS_Store"
 
 ```
 P0 (Day 1-2)
+├── R-018: 目錄結構重整（歸檔 Phase 4-7 空目錄 + 建立 06-plugin-src）  ← 最優先
 ├── R-001: SCHEMA.md 更新
-├── R-002: git init + push
+├── R-002: git commit + push（目錄重整後 commit）
 ├── R-010: forensic report supersession
 ├── R-011: composition_patterns Optional
-└── R-013: README.md
+└── R-013: README.md（含專案偏差記錄）
 
 P1 (Day 3-20)
 ├── R-014: 5 Plugin 共用資源建立     ← 新增，最優先

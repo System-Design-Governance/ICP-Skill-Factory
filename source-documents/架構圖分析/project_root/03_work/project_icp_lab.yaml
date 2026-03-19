@@ -1,0 +1,202 @@
+project:
+  name: "ICP 2L's Lab OT 系統架構圖"
+  site: "ICP_LAB"
+  rev: "2.0"
+  date: "2026-03-05"
+  engineer: "OT Security Engineer"
+  standard: "IEC 62443-3-3 / IEC 62439-3 PRP"
+  # ── IEC 62443 Zone 標籤（覆蓋 Purdue 預設標籤）──────────────
+  zone_labels:
+    l4:  "Zone 04 + External｜HMI & Dispatch Center"
+    dmz: "Zone 01｜DMZ  Demilitarized Zone"
+    l3:  "Zone 02｜SCADA & Control Server Zone"
+    l2:  "Zone 02/03｜PRP Dual-LAN Control Network"
+    l1:  "Zone 03｜SIS  Protocol Gateway Layer"
+    l0:  "Zone 03｜SIS  MCC / PMCC IED Layer"
+
+# ── L4 / Zone 04 + External ──────────────────────────────────
+enterprise:
+  enabled: true
+  erp: false
+  adcc: true                    # 調度中心（ADCC，DNP3 over Analog Modem）
+  scada_ws: false               # HMI 監控桌已移至 L3（Zone 02）PRP 網路上
+
+# ── Zone 01 DMZ ───────────────────────────────────────────────
+dmz:
+  firewall_model: "FW-MOXA-EDR-G9010"
+  l3_switch_model: "SW-MOXA-RKS-G4028"
+  remote_access: true
+  remote_type: "PSTN"           # Analog Modem Tainet T-336NX
+
+# ── Zone 02 SCADA（L3 伺服器層）──────────────────────────────
+# 全部設備均為 PRP 設備，同時連接 LAN-A 與 LAN-B
+scada:
+  hmi_model: "ADV-ECU-479"
+  hmi_count: 2
+  hmi_labels:
+    hmi_a: "SCADA A (Active)"       # 主用 SCADA 伺服器
+    hmi_b: "SCADA B (Standby)"      # 備援 SCADA 伺服器（Active-Standby）
+  historian: true
+  historian_model: "DB-ADV-ECU-479" # Database 主機（Advantech ECU-479）
+  engineering_ws: true
+  engineering_ws_model: "IEC61850 訊號紀錄工具"  # Omicron DANEO400
+  ntp: true
+  ntp_model: "GPS-SIE-RSG2488"      # Siemens RSG2488 GPS 時間源
+  gnss: true                        # GPS 衛星授時天線
+  ups_l3: false
+  hmi_ws: true                      # HMI 及監控桌（操作員端點）
+  hmi_ws_model: ""                  # 無特定型號
+
+# ── Zone 02/03 PRP 控制網路（L2）─────────────────────────────
+# IEC 62439-3 PRP：LAN-A 與 LAN-B 完全獨立，所有設備同時連接兩網
+network:
+  prp_enabled: true
+  core_switch_model: "SW-MOXA-RKS-G4028"
+  feeder_groups: []               # 僅兩台核心交換器（無 feeder edge switch）
+
+# ── Zone 03 SIS — L1 協定閘道層（Gateway）────────────────────
+# Gateway 為 PRP 設備，同時連接 LAN-A 與 LAN-B
+field_control:
+  gateways:
+    enabled: true
+    zone: "l3"                    # 與 SCADA 同層（責任分界點），非 L1 現場控制層
+    count: 2                      # Gateway A (Active) + Gateway B (Standby)
+    model: "GW-ADV-ECU-479"
+    gw_labels:
+      gw_a: "Gateway A (Active)"  # 主用協定閘道
+      gw_b: "Gateway B (Standby)" # 備援協定閘道（Active-Standby）
+    protocol_conversion:
+      - "IEC 61850 MMS → DNP3"
+      - "IEC 61850 GOOSE → DNP3"
+      - "IEC 61850 → IEC 60870-5-104"
+
+  rtu_panels: []                  # 無 RTU 盤（IED 直接連接 PRP 網路）
+
+  statcom:
+    enabled: false
+
+# ── Zone 03 SIS — L0 IED 層（MCC & PMCC）────────────────────
+# 全部 IED 均為 PRP 設備，同時連接 LAN-A 與 LAN-B
+field_devices:
+  protection_ieds:
+    enabled: true
+    group_label: "MCC IED 群（Motor Control Center，5 台）"
+    ieds:
+      - id: MCC_IED01
+        label: "MCC IED 01\nLINE BAY"
+        comm: IEC61850_fiber
+        connected_to: gw_A
+      - id: MCC_IED02
+        label: "MCC IED 02\nTR BAY"
+        comm: IEC61850_fiber
+        connected_to: gw_A
+      - id: MCC_IED03
+        label: "MCC IED 03\nBUS-RY"
+        comm: IEC61850_fiber
+        connected_to: gw_A
+      - id: MCC_IED04
+        label: "MCC IED 04\nLINE-RY AUX"
+        comm: IEC61850_fiber
+        connected_to: gw_B
+      - id: MCC_IED05
+        label: "MCC IED 05\nTR-RY AUX"
+        comm: IEC61850_fiber
+        connected_to: gw_B
+
+  pmcc_ieds:
+    enabled: true
+    group_label: "PMCC IED 群（Power MCC，3 台）"
+    ieds:
+      - id: PMCC_IED01
+        label: "PMCC IED 01\nMAIN BAY"
+        comm: IEC61850_fiber
+        connected_to: gw_A
+      - id: PMCC_IED02
+        label: "PMCC IED 02\nFEEDER 01"
+        comm: IEC61850_fiber
+        connected_to: gw_A
+      - id: PMCC_IED03
+        label: "PMCC IED 03\nFEEDER 02"
+        comm: IEC61850_fiber
+        connected_to: gw_B
+
+  solar_storage:
+    enabled: false
+
+# ── 通訊樣式定義（comm_styles）───────────────────────────────
+comm_styles:
+  PRP_LAN_A:
+    label: "PRP LAN-A  IEC 62439-3"
+    stroke: "#008EC3"
+    stroke_width: 2
+    stroke_dash: 0
+  PRP_LAN_B:
+    label: "PRP LAN-B  IEC 62439-3"
+    stroke: "#0C3467"
+    stroke_width: 2
+    stroke_dash: 0
+  OPC_UA_A:
+    label: "IEC 61850 MMS  LAN-A"
+    stroke: "#008EC3"
+    stroke_width: 2
+    stroke_dash: 3
+  OPC_UA_B:
+    label: "IEC 61850 MMS  LAN-B"
+    stroke: "#0C3467"
+    stroke_width: 2
+    stroke_dash: 3
+  IEEE1588_A:
+    label: "SNTP / PTPv2  LAN-A"
+    stroke: "#F5A623"
+    stroke_width: 1
+    stroke_dash: 5
+  IEEE1588_B:
+    label: "SNTP / PTPv2  LAN-B"
+    stroke: "#F5A623"
+    stroke_width: 1
+    stroke_dash: 5
+  IEC61850_MMS:
+    label: "IEC 61850 MMS"
+    stroke: "#008EC3"
+    stroke_width: 2
+    stroke_dash: 0
+  IEC61850_fiber:
+    label: "IEC 61850  GOOSE / MMS  Fiber"
+    stroke: "#0C3467"
+    stroke_width: 2
+    stroke_dash: 0
+  Modbus_TCP:
+    label: "DNP3 / Modbus TCP"
+    stroke: "#9B9B9B"
+    stroke_width: 1
+    stroke_dash: 3
+  PRP_fiber_A:
+    label: "PRP Fiber  LAN-A"
+    stroke: "#008EC3"
+    stroke_width: 2
+    stroke_dash: 0
+  PRP_fiber_B:
+    label: "PRP Fiber  LAN-B"
+    stroke: "#0C3467"
+    stroke_width: 2
+    stroke_dash: 0
+  RS485_modbus:
+    label: "RS-485  Serial"
+    stroke: "#9B9B9B"
+    stroke_width: 1
+    stroke_dash: 5
+  DNP3_IEC104:
+    label: "DNP3 / IEC 60870-5-104"
+    stroke: "#F5A623"
+    stroke_width: 2
+    stroke_dash: 3
+  DNP3_PSTN:
+    label: "DNP3  PSTN 專線"
+    stroke: "#9B9B9B"
+    stroke_width: 1
+    stroke_dash: 5
+  IT_ethernet:
+    label: "IT Ethernet / SSH / HTTPS"
+    stroke: "#9B9B9B"
+    stroke_width: 1
+    stroke_dash: 3

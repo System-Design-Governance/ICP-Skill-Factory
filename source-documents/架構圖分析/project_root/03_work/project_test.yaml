@@ -1,0 +1,274 @@
+# ============================================================
+# 整合測試用 project.yaml
+# 來源：OT_Architecture_Framework_v1.0.md §4.2 完整範例
+# 用於 T14 gen_d2.py 整合測試
+# ============================================================
+
+project:
+  name: "OT 架構圖標準化框架"
+  site: "測試場站 HSUEH"
+  client: "TPC"
+  site_code: "HSUEH"
+  rev: "1.0"
+  date: "2026-03-04"
+  standard: "IEC 62443"
+
+scada:
+  hmi_count: 2
+  hmi_model: "DA-820"
+  hmi_redundancy: true
+
+  historian: true
+  historian_model: ""
+
+  engineering_ws: true
+  engineering_ws_model: "DHI6C400 / OMCRON"
+
+  ntp: true
+  ntp_model: "IEEE 1588 PTP"
+  gnss: true
+
+  ups_l3: true
+  ups_l3_capacity: "10kVA"
+
+dmz:
+  firewall_model: "EDR-GN010"
+  l3_switch_model: "PT-G7728"
+
+  remote_access: true
+  remote_type: "PSTN+4G"
+  modem_model: ""
+
+enterprise:
+  enabled: true
+  erp: true
+  adcc: true
+  scada_ws: true
+
+network:
+  prp_enabled: true
+  core_switch_model: ""
+
+  feeder_groups:
+    - id: "M1"
+      label: "M1"
+      description: "161kV TR"
+      mcc_panels: "16/17"
+    - id: "M2"
+      label: "M2"
+      description: "161kV BPT / General"
+      mcc_panels: "01/02/03"
+    - id: "M3"
+      label: "M3"
+      description: "161kV LINE / TR"
+      mcc_panels: "04/05/06"
+    - id: "M4"
+      label: "M4"
+      description: "53.4kV MAIN / BPT"
+      mcc_panels: "07/08/09/10"
+    - id: "M5"
+      label: "M5"
+      description: "53.4kV STATCOM"
+      mcc_panels: "11/12/13"
+    - id: "M6"
+      label: "M6"
+      description: "23kV"
+      mcc_panels: "14/15"
+
+field_control:
+
+  gateways:
+    enabled: true
+    count: 2
+    model: "IEC-7442 / Advantech"
+    protocol_conversion:
+      - "IEC61850 → Modbus RTU"
+      - "IEC61850 → RS-485"
+
+  rtu_panels:
+    - id: "TPC"
+      label: "TPC RTU 盤"
+      rtu_model: "RSG-007R"
+      redbox: true
+      ieds:
+        - id: "IED_87L1"
+          label: "87L1\n線路保護"
+          protocol: "IEC61850"
+        - id: "IED_87L2"
+          label: "87L2\n線路保護"
+          protocol: "IEC61850"
+        - id: "IED_60BF"
+          label: "60BF\n斷路器失效"
+          protocol: "IEC61850"
+      connected_to_feeder: "M1"
+
+  statcom:
+    enabled: true
+    osc_model: "BPX-B1"
+    module_count: 3
+    protocol: "Modbus TCP"
+
+field_devices:
+
+  protection_ieds:
+    enabled: true
+    group_label: "R 群（保護電驛 IED）"
+    ieds:
+      - id: "IED_87T"
+        label: "87T1 / 87T2\n變壓器差動保護"
+        comm: "IEC61850_fiber"
+        connected_to: "gw_A"
+      - id: "IED_87B"
+        label: "87B\n匯流排保護"
+        comm: "IEC61850_fiber"
+        connected_to: "gw_A"
+      - id: "IED_87L"
+        label: "87L\n線路差動保護"
+        comm: "IEC61850_fiber"
+        connected_to: "gw_B"
+      - id: "IED_50BF"
+        label: "50BF-1/2\n斷路器失效保護"
+        comm: "RS485_modbus"
+        connected_to: "rtu_TPC"
+      - id: "IED_50S"
+        label: "50/51-1/2\n過電流保護"
+        comm: "RS485_modbus"
+        connected_to: "rtu_TPC"
+      - id: "IED_D7"
+        label: "87D / 87D2\n其他差動保護"
+        comm: "IEC61850_fiber"
+        connected_to: "gw_A"
+
+  solar_storage:
+    enabled: true
+    group_label: "太陽能 / 儲能設備"
+    devices:
+      - id: "INV_A"
+        label: "Inverter 群 A\nDC → AC"
+        type: "inverter"
+        comm: "RS485_modbus"
+        connected_to: "mcc_M4"
+      - id: "INV_B"
+        label: "Inverter 群 B\nDC → AC"
+        type: "inverter"
+        comm: "RS485_modbus"
+        connected_to: "mcc_M5"
+      - id: "DC_CHG"
+        label: "DC CHARGE\n充放電系統"
+        type: "plc"
+        comm: "RS485"
+        connected_to: "gw_B"
+      - id: "RF_MOD"
+        label: "RF Solar Module\n無線監測"
+        type: "gateway"
+        comm: "RF_wireless"
+        connected_to: "gw_B"
+      - id: "UPS_FIELD"
+        label: "UPS（現場）\nSerial RS485"
+        type: "ups"
+        comm: "RS485_modbus"
+        connected_to: null
+
+comm_styles:
+
+  PRP_LAN_A:
+    label: "PRP LAN-A"
+    stroke: "#008EC3"
+    stroke_width: 2
+    stroke_dash: 0
+
+  PRP_LAN_B:
+    label: "PRP LAN-B"
+    stroke: "#0C3467"
+    stroke_width: 2
+    stroke_dash: 3
+
+  IEC61850_fiber:
+    label: "IEC 61850 GOOSE  Fiber SM"
+    stroke: "#0C3467"
+    stroke_width: 3
+    stroke_dash: 0
+
+  IEC61850_MMS:
+    label: "IEC 61850 MMS"
+    stroke: "#008EC3"
+    stroke_width: 2
+    stroke_dash: 0
+
+  PRP_fiber_A:
+    label: "PRP LAN-A  Fiber MM"
+    stroke: "#008EC3"
+    stroke_width: 2
+    stroke_dash: 0
+
+  PRP_fiber_B:
+    label: "PRP LAN-B  Fiber MM"
+    stroke: "#0C3467"
+    stroke_width: 2
+    stroke_dash: 3
+
+  OPC_UA_A:
+    label: "OPC-UA / ICCP  LAN-A"
+    stroke: "#008EC3"
+    stroke_width: 2
+    stroke_dash: 0
+
+  OPC_UA_B:
+    label: "OPC-UA / ICCP  LAN-B"
+    stroke: "#0C3467"
+    stroke_width: 2
+    stroke_dash: 3
+
+  IT_ethernet:
+    label: "Ethernet / OPC-UA"
+    stroke: "#9B9B9B"
+    stroke_width: 1
+    stroke_dash: 3
+
+  RS485_modbus:
+    label: "RS-485  Modbus RTU"
+    stroke: "#9B9B9B"
+    stroke_width: 1
+    stroke_dash: 3
+
+  RS485:
+    label: "RS-485"
+    stroke: "#9B9B9B"
+    stroke_width: 1
+    stroke_dash: 3
+
+  Modbus_TCP:
+    label: "Modbus TCP"
+    stroke: "#008EC3"
+    stroke_width: 1
+    stroke_dash: 0
+
+  VPN_PSTN:
+    label: "PSTN 備援 / RF"
+    stroke: "#F5A623"
+    stroke_width: 1
+    stroke_dash: 4
+
+  RF_wireless:
+    label: "RF Wireless"
+    stroke: "#F5A623"
+    stroke_width: 1
+    stroke_dash: 4
+
+  IRIG_B:
+    label: "IRIG-B / PPS  Fiber"
+    stroke: "#0C3467"
+    stroke_width: 3
+    stroke_dash: 0
+
+  IEEE1588_A:
+    label: "IEEE 1588 PTP  LAN-A"
+    stroke: "#008EC3"
+    stroke_width: 2
+    stroke_dash: 0
+
+  IEEE1588_B:
+    label: "IEEE 1588 PTP  LAN-B"
+    stroke: "#0C3467"
+    stroke_width: 2
+    stroke_dash: 3

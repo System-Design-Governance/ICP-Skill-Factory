@@ -1,0 +1,271 @@
+# ============================================================
+# OT 系統架構圖專案設定檔 — project_template.yaml
+# 版本：v1.0  |  2026-03-04
+# 填完後執行：python gen_d2.py this_file.yaml
+# 所有欄位說明見 OT_Architecture_Framework_v1.0.md §4
+# ============================================================
+
+project:
+  name: "[專案名稱]"             # Title Bar 第一行，主標題
+  site: "[場站名稱]"             # Title Bar 第二行
+  client: "[客戶代碼]"           # 用於檔案命名，例：TPC
+  site_code: "[場站代碼]"        # 用於檔案命名，例：HSUEH
+  rev: "1.0"                    # 圖面版次，用於 Title Bar 與檔案命名
+  date: "YYYY-MM-DD"            # 圖面日期
+  standard: "IEC 62443"         # Title Bar 第三行，顯示適用標準
+
+
+# ══════════════════════════════════════════════════
+# LEVEL 3：SCADA 監控站（Supervisory Zone）
+# 對應 Purdue L3，監控/操作工作站、歷史資料庫、時間同步
+# ══════════════════════════════════════════════════
+scada:
+  hmi_count: 2                  # 1 = 只有主站（HMI_A）
+                                # 2 = 主站+備援（HMI_A + HMI_B）
+  hmi_model: ""                 # 設備型號，對應 component_library.yaml 的 model
+                                # 例：DA-820；空白 = 圖面不顯示型號
+  hmi_redundancy: true          # true = 顯示「主站/備援」標記
+
+  historian: true               # true = 包含 Historian 節點
+  historian_model: ""           # 空白 = 不顯示型號
+
+  engineering_ws: true          # true = 包含工程師工作站
+  engineering_ws_model: ""      # 例：DHI6C400 / OMCRON
+
+  ntp: true                     # true = 包含 NTP/GPS 時間伺服器節點
+  ntp_model: ""                 # 例：IEEE 1588 PTP
+  gnss: true                    # true = 顯示 GNSS 天線節點（ntp: true 時有效）
+
+  ups_l3: true                  # true = L3 有 UPS 節點
+  ups_l3_capacity: ""           # 例：10kVA；空白 = 不顯示容量標籤
+
+
+# ══════════════════════════════════════════════════
+# DMZ / 邊界防護
+# 位於 OT 與 IT 之間，放置防火牆、遠端存取裝置
+# ══════════════════════════════════════════════════
+dmz:
+  firewall_model: ""            # 對應 component_library.yaml 的 model，例：EDR-GN010
+  l3_switch_model: ""           # DMZ 內 L3 交換機型號，例：PT-G7728
+
+  remote_access: true           # true = 有遠端通訊備援（PSTN/4G/RF）
+  remote_type: "PSTN+4G"        # "PSTN+4G" | "4G" | "PSTN" | "RF"
+  modem_model: ""               # 空白 = 依 remote_type 自動填寫設備標籤
+
+
+# ══════════════════════════════════════════════════
+# LEVEL 4：企業層（可選）
+# 對應 Purdue L4，ERP/ADCC/企業 SCADA 工作站
+# enabled: false 則整個 L4 Zone 及所有 L4↔DMZ 連線均省略（T-07）
+# ══════════════════════════════════════════════════
+enterprise:
+  enabled: true                 # false = 完全省略 L4 Zone 及所有 L4 連線
+  erp: true                     # true = 包含 ERP 系統節點
+  adcc: true                    # true = 包含 ADCC（電力調度中心）節點
+  scada_ws: true                # true = 包含企業層 SCADA 工作站節點
+
+
+# ══════════════════════════════════════════════════
+# LEVEL 2：控制網路層
+# 核心交換機 + 饋線 edge switch，提供雙網 PRP 冗餘
+# ══════════════════════════════════════════════════
+network:
+  prp_enabled: true             # true  = PRP 雙網，每個 feeder 產生 SW_A + SW_B
+                                # false = 單網，每個 feeder 只產生 SW_A，RTU 盤無 REDBOX（T-01）
+  core_switch_model: ""         # 核心交換機型號，空白 = 圖面不顯示型號
+
+  # 每個 feeder_group 對應：
+  #   L2 一對邊緣 switch（LAN-A + LAN-B，prp_enabled=false 時只有 LAN-A）
+  #   L1 一個 MCC 節點
+  # 新增饋線：複製貼上一個 block，id 和 label 不可重複
+  feeder_groups:
+    - id: "F1"                  # 唯一 ID，用於 connected_to 引用（mcc_F1）
+      label: "F1"               # 圖面上的標籤
+      description: "[描述]"     # 例：161kV TR；圖面上顯示在 label 下方
+      mcc_panels: "[盤號]"      # 例：16/17；圖面上標示 MCC 所含盤號
+    # - id: "F2"
+    #   label: "F2"
+    #   description: "[描述]"
+    #   mcc_panels: "[盤號]"
+
+
+# ══════════════════════════════════════════════════
+# LEVEL 1：現場控制層
+# Protocol Gateway、RTU 盤（含 IED）、STATCOM
+# ══════════════════════════════════════════════════
+field_control:
+
+  # Protocol Gateway
+  gateways:
+    enabled: true               # false = 不產生 Gateway 節點（罕見）
+    count: 2                    # 1 = 單 GW（GW_A）；2 = 雙 GW 備援（GW_A + GW_B）（T-03）
+    model: ""                   # 例：IEC-7442 / Advantech
+    protocol_conversion:        # 僅用於 DWG-L3 標注，不影響拓撲
+      - ""                      # 例："IEC61850 → Modbus RTU"
+      # - "IEC61850 → RS-485"
+
+  # RTU 盤（每個 block 對應一個實體盤）
+  # 可定義多個 RTU 盤，各自有獨立 IED 群
+  rtu_panels:
+    - id: "[盤ID]"              # 唯一 ID，用於 connected_to 引用（rtu_[id]）
+      label: "[RTU 盤標籤]"     # 圖面上的標籤
+      rtu_model: ""             # 例：RSG-007R
+
+      redbox: true              # true = 此盤有 REDBOX PRP 橋接器
+                                # prp_enabled: false 時此設定自動忽略（T-01）
+
+      # 掛在此 RTU 盤下的 IED 節點（L1 層）
+      ieds:
+        - id: "[IED_ID]"        # 唯一 ID
+          label: "[標籤]"       # 例："87L1\n線路保護"（注意：\n 在 D2 節點內有效）
+          protocol: "IEC61850"  # "IEC61850" | "Modbus_RTU" | "Modbus_TCP" | "RS485"
+
+      connected_to_feeder: "[feeder_id]"  # 對應 network.feeder_groups 的 id
+
+  # STATCOM 系統（可選）
+  # statcom.enabled: false 時整個子群組省略（T-08）
+  statcom:
+    enabled: false              # true = 產生 STATCOM 節點群
+    osc_model: ""               # OSC 控制器型號，例：BPX-B1
+    module_count: 3             # OSC Module 數量（LNK-A/B/C）
+    protocol: "Modbus TCP"
+
+
+# ══════════════════════════════════════════════════
+# LEVEL 0：現場設備層
+# 保護電驛 IED（R 群）、太陽能/儲能設備
+# ══════════════════════════════════════════════════
+field_devices:
+
+  # 保護電驛 IED 群（R 群）
+  protection_ieds:
+    enabled: true               # false = 省略整個 r_group
+    group_label: "R 群（保護電驛 IED）"
+    ieds:
+      - id: "[IED_ID]"          # 唯一 ID
+        label: "[標籤]"         # 例："87T1 / 87T2\n變壓器差動保護"
+        comm: "[comm_style_key]"  # 引用下方 comm_styles 的 key
+        connected_to: "[target]"  # "gw_A" | "gw_B" | "rtu_[panel_id]" | null
+                                  # null = 省略此連線，避免長線穿圖（T-06）
+
+  # 太陽能 / 儲能設備（可選）
+  solar_storage:
+    enabled: false              # true = 產生太陽能/儲能設備群組
+    group_label: "太陽能 / 儲能設備"
+    devices:
+      - id: "[DEV_ID]"
+        label: "[標籤]"
+        type: "inverter"        # "inverter" | "plc" | "gateway" | "ups"
+        comm: "[comm_style_key]"
+        connected_to: "[target]"  # "gw_A" | "gw_B" | "mcc_[feeder_id]" | null
+
+
+# ══════════════════════════════════════════════════
+# 通訊方式樣式庫
+# 在這裡集中定義，各設備 comm 欄位只引用 key 名稱
+# 新增通訊方式：加一個 block，定義 label/stroke/stroke_width/stroke_dash
+# stroke_dash: 0 = 實線；> 0 = 虛線間距（注意 D2 會乘以 stroke_width，見 KB-02）
+# ══════════════════════════════════════════════════
+comm_styles:
+
+  PRP_LAN_A:
+    label: "PRP LAN-A"
+    stroke: "#008EC3"           # Sky Blue（R-BR-01）
+    stroke_width: 2
+    stroke_dash: 0              # 實線
+
+  PRP_LAN_B:
+    label: "PRP LAN-B"
+    stroke: "#0C3467"           # Navy Primary（R-BR-01）
+    stroke_width: 2
+    stroke_dash: 3              # SVG 實際 dasharray = 3×2 = 6
+
+  IEC61850_fiber:
+    label: "IEC 61850 GOOSE  Fiber SM"
+    stroke: "#0C3467"
+    stroke_width: 3
+    stroke_dash: 0
+
+  IEC61850_MMS:
+    label: "IEC 61850 MMS"
+    stroke: "#008EC3"
+    stroke_width: 2
+    stroke_dash: 0
+
+  PRP_fiber_A:
+    label: "PRP LAN-A  Fiber MM"
+    stroke: "#008EC3"
+    stroke_width: 2
+    stroke_dash: 0
+
+  PRP_fiber_B:
+    label: "PRP LAN-B  Fiber MM"
+    stroke: "#0C3467"
+    stroke_width: 2
+    stroke_dash: 3
+
+  OPC_UA_A:
+    label: "OPC-UA / ICCP  LAN-A"
+    stroke: "#008EC3"
+    stroke_width: 2
+    stroke_dash: 0
+
+  OPC_UA_B:
+    label: "OPC-UA / ICCP  LAN-B"
+    stroke: "#0C3467"
+    stroke_width: 2
+    stroke_dash: 3
+
+  IT_ethernet:
+    label: "Ethernet / OPC-UA"
+    stroke: "#9B9B9B"           # Gray（R-BR-01）
+    stroke_width: 1
+    stroke_dash: 3
+
+  RS485_modbus:
+    label: "RS-485  Modbus RTU"
+    stroke: "#9B9B9B"
+    stroke_width: 1
+    stroke_dash: 3
+
+  RS485:
+    label: "RS-485"
+    stroke: "#9B9B9B"
+    stroke_width: 1
+    stroke_dash: 3
+
+  Modbus_TCP:
+    label: "Modbus TCP"
+    stroke: "#008EC3"
+    stroke_width: 1
+    stroke_dash: 0
+
+  VPN_PSTN:
+    label: "PSTN 備援 / RF"
+    stroke: "#F5A623"           # Amber（R-BR-01）
+    stroke_width: 1
+    stroke_dash: 4
+
+  RF_wireless:
+    label: "RF Wireless"
+    stroke: "#F5A623"
+    stroke_width: 1
+    stroke_dash: 4
+
+  IRIG_B:
+    label: "IRIG-B / PPS  Fiber"
+    stroke: "#0C3467"
+    stroke_width: 3
+    stroke_dash: 0
+
+  IEEE1588_A:
+    label: "IEEE 1588 PTP  LAN-A"
+    stroke: "#008EC3"
+    stroke_width: 2
+    stroke_dash: 0
+
+  IEEE1588_B:
+    label: "IEEE 1588 PTP  LAN-B"
+    stroke: "#0C3467"
+    stroke_width: 2
+    stroke_dash: 3

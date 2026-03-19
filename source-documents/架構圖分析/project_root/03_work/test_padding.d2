@@ -1,0 +1,45 @@
+# 測試方案 B: 用隱形 spacer 節點模擬 top-padding
+# 測試 spacer 是否能推開連線避開標題
+
+direction: down
+
+# --- B1: 有 spacer ---
+zone_b1: "Zone 02/03｜PRP Dual-LAN (with spacer)" {
+  style.fill: "#e8f5e9"
+  style.stroke: "#2e7d32"
+
+  spacer: " " {
+    style.opacity: 0
+    style.stroke: "transparent"
+    style.fill: "transparent"
+    width: 10
+    height: 1
+  }
+  sw_a: "SW_CORE_A" { shape: rectangle }
+  sw_b: "SW_CORE_B" { shape: rectangle }
+  spacer -> sw_a: { style.opacity: 0 }
+  spacer -> sw_b: { style.opacity: 0 }
+}
+
+# --- B2: 無 spacer（對照組）---
+zone_b2: "Zone 02/03｜PRP Dual-LAN (no spacer)" {
+  style.fill: "#e8f5e9"
+  style.stroke: "#2e7d32"
+
+  sw_c: "SW_CORE_C" { shape: rectangle }
+  sw_d: "SW_CORE_D" { shape: rectangle }
+}
+
+# --- 跨容器連線 ---
+top_1: "HMI_A" { shape: rectangle }
+top_2: "HMI_B" { shape: rectangle }
+bot_1: "IED_1" { shape: rectangle }
+bot_2: "IED_2" { shape: rectangle }
+
+top_1 -> zone_b1.sw_a: "LAN-A" { style.stroke: "#008EC3"; style.stroke-dash: 5 }
+top_2 -> zone_b1.sw_b: "LAN-B" { style.stroke: "#F5A623"; style.stroke-dash: 5 }
+zone_b1.sw_a -> bot_1: "PRP-A" { style.stroke: "#008EC3"; style.stroke-dash: 5 }
+zone_b1.sw_b -> bot_2: "PRP-B" { style.stroke: "#F5A623"; style.stroke-dash: 5 }
+
+top_1 -> zone_b2.sw_c: "cross-A" { style.stroke: "#008EC3"; style.stroke-dash: 5 }
+top_2 -> zone_b2.sw_d: "cross-B" { style.stroke: "#F5A623"; style.stroke-dash: 5 }

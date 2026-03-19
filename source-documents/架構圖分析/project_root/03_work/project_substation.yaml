@@ -1,0 +1,199 @@
+project:
+  name: "XX 161kV 變電所 OT 架構圖"
+  site: "XX_SS"
+  rev: "1.0"
+  date: "2026-03-04"
+  engineer: "OT Security Engineer"
+
+# ── L3 監控站 ──────────────────────────────────────────────────
+scada:
+  hmi_model: "HMI-ADV-DA820"
+  hmi_count: 2                          # 主站 HMI_A + 備援 HMI_B
+  historian: true
+  historian_model: "HIST-ADV-DA820"
+  engineering_ws: true
+  ntp: true
+  ntp_model: "NTP-MEIN-M600"
+  gnss: true                            # 衛星對時天線
+  ups_l3: true
+  ups_l3_capacity: "10kVA"
+
+# ── DMZ 邊界防護 ────────────────────────────────────────────────
+dmz:
+  firewall_model: "FW-MOXA-EDR-GN010"
+  l3_switch_model: "SW-MOXA-EDS-408A"
+  remote_access: true
+  remote_type: "PSTN+4G"               # 緊急遠端維護通道
+
+# ── L4 企業層 ───────────────────────────────────────────────────
+enterprise:
+  enabled: true
+  erp: false
+  adcc: true                           # TPC 電力調度中心連線
+  scada_ws: true                       # 調度員工作站
+
+# ── L2 控制網路（PRP 冗餘）────────────────────────────────────────
+network:
+  prp_enabled: true                    # IEC 62439-3 PRP 雙網冗餘
+  core_switch_model: "SW-MOXA-PT-G7728"
+  feeder_groups:
+    - id: F101
+      label: "F101"
+      description: "甲線 161kV 進線"
+      mcc_panels: "1A~3A"
+    - id: F102
+      label: "F102"
+      description: "乙線 161kV 進線"
+      mcc_panels: "4A~6A"
+    - id: F103
+      label: "F103"
+      description: "丙線 69kV 出線"
+      mcc_panels: "7A~9A"
+    - id: F104
+      label: "F104"
+      description: "丁線 69kV 出線"
+      mcc_panels: "10A~12A"
+    - id: F105
+      label: "F105"
+      description: "戊線 69kV 出線"
+      mcc_panels: "13A~15A"
+    - id: F106
+      label: "F106"
+      description: "己線 22.8kV 配電"
+      mcc_panels: "16A~18A"
+
+# ── L1 現場控制 ─────────────────────────────────────────────────
+field_control:
+  gateways:
+    enabled: true
+    count: 2                           # GW_A + GW_B 冗餘
+    model: "GW-ADV-IEC7442"
+    protocol_conversion:
+      - "IEC 61850 → DNP3.0"
+      - "GOOSE → Modbus TCP"
+      - "IEC 61850 → IEC 60870-5-104"
+
+  rtu_panels:
+    - id: TPC
+      label: "TPC RTU 盤（台電標準規範）"
+      rtu_model: "RTU-TPRI-RSG007R"
+      redbox: true                     # PRP RedBox（IEC 62439-3）
+      connected_to_feeder: F101
+      ieds:
+        - id: IED_87T1
+          label: "87T1\n主變差動保護"
+          comm: IEC61850_fiber
+          connected_to: gw_A
+        - id: IED_51NT
+          label: "51NT\n中性點過電流"
+          comm: IEC61850_fiber
+          connected_to: gw_A
+        - id: IED_IRIG
+          label: "IRIG-B\n時間同步盤"
+          comm: IEC61850_fiber
+          connected_to: gw_A
+
+  statcom:
+    enabled: false
+
+# ── L0 現場設備（保護電驛）────────────────────────────────────────
+field_devices:
+  protection_ieds:
+    enabled: true
+    group_label: "R 群（線路保護電驛 IED）"
+    ieds:
+      - id: R_F101_21
+        label: "21L 距離電驛\nF101 甲線進線"
+        comm: IEC61850_fiber
+        connected_to: gw_A
+      - id: R_F102_21
+        label: "21L 距離電驛\nF102 乙線進線"
+        comm: IEC61850_fiber
+        connected_to: gw_A
+      - id: R_F103_67N
+        label: "67N 方向 OC\nF103 丙線出線"
+        comm: IEC61850_fiber
+        connected_to: gw_B
+      - id: R_F104_67N
+        label: "67N 方向 OC\nF104 丁線出線"
+        comm: IEC61850_fiber
+        connected_to: gw_B
+      - id: R_F105_5051
+        label: "50/51 過電流\nF105 戊線出線"
+        comm: IEC61850_fiber
+        connected_to: gw_A
+      - id: R_F106_5051
+        label: "50/51 過電流\nF106 己線配電"
+        comm: IEC61850_fiber
+        connected_to: gw_B
+
+  solar_storage:
+    enabled: false
+
+# ── 通訊樣式定義（comm_styles）────────────────────────────────────
+comm_styles:
+  PRP_LAN_A:
+    label: "PRP LAN-A  IEC 62439-3"
+    stroke: "#008EC3"
+    stroke_width: 2
+    stroke_dash: 0
+  PRP_LAN_B:
+    label: "PRP LAN-B  IEC 62439-3"
+    stroke: "#0C3467"
+    stroke_width: 2
+    stroke_dash: 0
+  OPC_UA_A:
+    label: "OPC-UA  LAN-A"
+    stroke: "#008EC3"
+    stroke_width: 2
+    stroke_dash: 3
+  OPC_UA_B:
+    label: "OPC-UA  LAN-B"
+    stroke: "#0C3467"
+    stroke_width: 2
+    stroke_dash: 3
+  IEEE1588_A:
+    label: "IEEE 1588 PTP  LAN-A"
+    stroke: "#F5A623"
+    stroke_width: 1
+    stroke_dash: 5
+  IEEE1588_B:
+    label: "IEEE 1588 PTP  LAN-B"
+    stroke: "#F5A623"
+    stroke_width: 1
+    stroke_dash: 5
+  IEC61850_MMS:
+    label: "IEC 61850 MMS"
+    stroke: "#008EC3"
+    stroke_width: 2
+    stroke_dash: 0
+  IEC61850_fiber:
+    label: "IEC 61850  Fiber"
+    stroke: "#0C3467"
+    stroke_width: 2
+    stroke_dash: 0
+  Modbus_TCP:
+    label: "Modbus TCP"
+    stroke: "#9B9B9B"
+    stroke_width: 1
+    stroke_dash: 3
+  PRP_fiber_A:
+    label: "PRP Fiber  LAN-A"
+    stroke: "#008EC3"
+    stroke_width: 2
+    stroke_dash: 0
+  PRP_fiber_B:
+    label: "PRP Fiber  LAN-B"
+    stroke: "#0C3467"
+    stroke_width: 2
+    stroke_dash: 0
+  RS485_modbus:
+    label: "RS-485  Modbus RTU"
+    stroke: "#9B9B9B"
+    stroke_width: 1
+    stroke_dash: 5
+  IT_ethernet:
+    label: "IT Ethernet"
+    stroke: "#9B9B9B"
+    stroke_width: 1
+    stroke_dash: 3
