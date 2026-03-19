@@ -660,79 +660,35 @@ SND (Simple Network Diagram) 為架構圖的簡化版，用於概念設計階段
 
 ---
 
-## 20. OT 架構圖自動化工具鏈
+## 20. OT 架構圖排版與風格規範
 
-### 20.1 YAML → D2 → SVG 管線
+本章定義 OT/電力系統架構圖的視覺標準，確保不同專案、不同繪圖者產出一致的圖面風格。
+參考風格基準：`substation_final.svg`（161kV 變電所 OT 架構圖）。
 
-大型 OT/電力系統架構圖建議使用自動化管線取代手動編寫 D2：
+### 20.1 Purdue 層級排列規則
+
+OT 架構圖嚴格遵循 Purdue Model 由上至下排列：
 
 ```
-Step 1: project.yaml     ← 使用者填寫專案配置（純 YAML，無需 D2 語法）
-Step 2: gen_d2.py         ← Python 腳本將 YAML 轉換為 .d2 原始碼
-Step 3: d2 CLI            ← D2 渲染引擎產出 raw SVG
-Step 4: optimize_svg.py   ← SVG 後處理（標題列、圖例、Label 背景）
-Step 5: check_collision.py ← A-class 碰撞偵測品質檢查
+L4 Enterprise（企業層）     ← 最上方
+  ↓
+DMZ（邊界防護層）
+  ↓
+L3 Supervisory（監控站層）
+  ↓
+L2 Distribution（通訊骨幹層）
+  ↓
+L1 Field Control（現場控制層）
+  ↓
+L0 Field Devices（現場設備層） ← 最下方
 ```
 
-**工具鏈檔案**（見 `references/` 目錄）：
-- `component_library.yaml` — 設備元件庫（34+ 設備，含協定/認證/冗餘資訊）
-- `project_template.yaml` — 專案配置 YAML 範本（含完整中文註解）
+**子群組宣告順序（影響水平位置）**：
+- L1 固定順序：`gw`（閘道器）→ `rtu_panels`（RTU 盤）→ `mcc`（MCC 群）→ `statcom`（STATCOM，選配）
+- L0 固定順序：`r_group`（保護電驛群）→ `solar`（太陽能/儲能，選配）
+- **原因**：dagre 引擎按宣告順序由左至右排列，不依 YAML 欄位順序
 
-### 20.2 project.yaml 配置結構
-
-```yaml
-project:
-  name: "場站名稱"
-  site_code: "SITE"
-  date: "YYYY-MM-DD"
-  standard: "IEC 62443"
-
-enterprise:
-  enabled: true/false      # false = 省略整個 L4 Zone
-
-dmz:
-  firewall_model: "FW-MOXA-EDR-GN010"
-  remote_access: true/false
-
-scada:
-  hmi_count: 1 | 2
-  hmi_model: "DA-820"
-  historian: true/false
-  ntp: true/false
-
-network:
-  prp_enabled: true/false   # true = 雙 PRP 骨幹（LAN-A + LAN-B）
-  core_switch_model: "PT-G7728"
-  feeder_groups:
-    - id: "M1"
-      label: "M1"
-      description: "161kV TR"
-
-field_control:
-  gateways:
-    count: 1 | 2            # 閘道器冗餘
-    model: "IEC-7442"
-  rtu_panels:
-    - id: "TPC"
-      rtu_model: "RSG-007R"
-      ieds:
-        - id: "IED_87L1"
-          label: "87L1\n線路保護"
-          protocol: "IEC61850"
-          connected_to: "gw_A"  # null = 省略連線
-  statcom:
-    enabled: true/false     # false = 省略 STATCOM 子群組
-
-field_devices:
-  protection_ieds:
-    enabled: true/false
-    ieds:
-      - id: "IED_87T"
-        label: "87T1 / 87T2\n變壓器差動保護"
-        comm: "IEC61850_fiber"
-```
-
-### 20.3 D2 生成規則（Rulebook）
+### 20.2 D2 排版規則（Rulebook）
 
 | 規則 ID | 規則 | 說明 |
 |---------|------|------|
@@ -761,49 +717,70 @@ field_devices:
 
 ---
 
-## 21. SVG 後處理管線（R-PP 規則）
+## 21. SVG 最終產出風格規範
 
-D2 CLI 產出的 raw SVG 需經 8 步後處理：
+D2 CLI 產出的 raw SVG 尚未達到交付品質。最終 SVG 必須包含以下視覺元素：
 
-| Step | 函數 | 轉換內容 |
-|------|------|---------|
-| 1 | parse_svg() | 提取 viewBox、計算 bounding box |
-| 2 | remove_d2_artifacts() | 刪除 D2 自動產生的 title/legend 群組 |
-| 3 | shift_content(+110px) | 所有元素下移 110px（為標題列留空間） |
-| 4 | inject_title_bar() | 注入品牌標題列（Navy 背景、3 行文字） |
-| 5 | fix_dasharray() | 修正 dasharray > 8 → 6,4（D2 已知問題） |
-| 6 | inject_legend() | 動態偵測空白區域放置雙欄圖例（480px 寬） |
-| 7 | add_label_backgrounds() | 連線標籤加白底（fill-opacity=0.85） |
-| 8 | update_canvas() | 更新 viewBox 尺寸以容納所有元素 |
+**風格參考基準**：
+- `substation_final.svg` — 161kV 變電所 OT 架構圖（6 饋線、PRP 雙網、完整 L0-L4）
+- `icp_lab_final.svg` — ICP 實驗室 OT 架構圖（較小規模，含標題列 + 圖例）
 
-### 21.1 標題列規格（R-PP-02）
+### 21.1 標題列規格
+
+標題列位於 SVG 最上方，高度固定 110px：
 
 ```
 ┌──────────────────────────────────────────────────┐
-│ ▌ [Project Name]                    [Revision]   │  ← height: 110px
-│ ▌ [Site Name]                       [Date]       │  ← bg: #0C3467 (Navy)
-│ ▌ [Standard: IEC 62443]                          │  ← left border: 6px #008EC3
+│ ▌ [專案名稱 OT 架構圖]              (Line 1)     │  ← font-size: 21, bold, white
+│ ▌ [SITE_CODE  Rev X.Y  YYYY-MM-DD]  (Line 2)     │  ← font-size: 12, #93c5fd (淺藍)
+│ ▌ [Purdue Model / IEC 62443 ...]     (Line 3)     │  ← font-size: 10, #94a3b8 (灰藍)
 └──────────────────────────────────────────────────┘
 ```
 
-### 21.2 圖例放置規則（R-PP-03/06）
+| 屬性 | 值 |
+|------|------|
+| 高度 | 110px |
+| 背景 | `#0C3467` (Navy)，全寬 |
+| 左邊裝飾 | 6px 寬 `#008EC3` (Sky Blue) |
+| 文字對齊 | `text-anchor: middle`（水平置中） |
+| 字型 | `Arial, sans-serif` |
+| Line 1 y | 40px（專案名稱，21pt bold white） |
+| Line 2 y | 66px（站碼 + 版本 + 日期，12pt `#93c5fd`） |
+| Line 3 y | 88px（適用標準，10pt `#94a3b8`） |
+
+### 21.2 圖例規格
 
 - 寬度 480px，雙欄浮動層
-- 位置由 find_empty_zone() 動態掃描（100px 步進）
-- **禁止硬編碼座標**；若找不到空白區域，fallback 至 (30, y_start)
-- 內容：元件形狀（矩形/菱形/六角形） + 連線樣式（實線/虛線/顏色）
+- **位置**：動態偵測空白區域放置，**禁止硬編碼座標**
+- **左欄**：元件形狀（矩形=伺服器/PLC、菱形=防火牆、六角形=交換器/閘道器、圓柱=資料庫）
+- **右欄**：連線樣式（協定名稱 + 對應顏色/線型）
 
-### 21.3 Dasharray 修正（R-PP-04）
+### 21.3 連線標籤背景
 
-D2/dagre 渲染時會將 stroke-dash 值乘以 stroke-width：
-- `stroke-dash: 3` + `stroke-width: 2` → SVG 中 `stroke-dasharray: 6`
-- **修正規則**：dasharray > 8 → 強制 normalize 為 `6,4`
+所有含協定名稱的連線標籤必須加白底以確保可讀性：
+- 背景色：`fill: white`，`fill-opacity: 0.85`，`rx: 2`
+- 適用關鍵字：LAN、PRP、Modbus、IEC61850、OPC-UA、DNP3、PTP
 
-### 21.4 A1 紙張輸出
+### 21.4 虛線修正規則
 
-大型電力系統架構圖建議輸出 A1 尺寸：
-- SVG 注入 `width="841mm" height="594mm"` (A1 landscape)
-- 字型放大：Zone 16pt、子群組 13pt、設備 12pt
+D2/dagre 渲染時會將 `stroke-dash` 值乘以 `stroke-width`，導致虛線過粗：
+- **修正規則**：SVG 中 `stroke-dasharray > 8` → normalize 為 `6,4`
+
+### 21.5 紙張與字型尺寸
+
+| 輸出尺寸 | SVG 屬性 | 適用場景 |
+|---------|---------|---------|
+| A1 landscape | `width="841mm" height="594mm"` | 大型電力系統架構圖（≥6 饋線） |
+| A3 landscape | `width="420mm" height="297mm"` | 中小型 IT/OT 架構圖 |
+
+**字型尺寸標準**（A1 輸出）：
+
+| 元素 | font-size | bold |
+|------|----------|------|
+| Zone 標題 | 16pt | Yes |
+| 子群組標題 | 13pt | No |
+| 設備標籤 | 12-13pt | No |
+| 連線標籤 | 10-12pt | No |
 
 ---
 
@@ -873,8 +850,8 @@ A-class 碰撞 = 連線路徑穿越或觸碰非 Zone 標題的文字標籤（距
 - IT-SW: IT 交換器、FW: 防火牆、GW: 閘道器、RTU: 遠端終端
 - IED: 智慧電子裝置、HMI: 人機介面、SW-MOXA: MOXA 交換器
 
-完整元件庫見 `references/component_library.yaml`（34+ 設備）。
-完整專案配置範本見 `references/project_template.yaml`。
+完整元件庫見 `references/component_library.yaml`（34+ 設備，含協定、認證、Purdue Level 標示）。
+專案配置 YAML 範本見 `references/project_template.yaml`（272 行，含完整中文註解，定義所有可配置的拓撲參數）。
 
 ---
 
