@@ -1,16 +1,22 @@
 ---
 name: security-monitoring-incident-response
 description: >
-  安全監控與事件回應。
-  Configure Security Information and Event Management (SIEM) systems for OT/ICS environments, including log source integration, correlation rule develop。Design security alarm rules and correlation logic for detecting cybersecurity threats in OT/ICS env
-  MANDATORY TRIGGERS: SIEM 配置與調校, 安全事件調查與鑑識, 安全告警規則設計, 持續安全監控, 事件回應程序撰寫, 安全監控與事件回應, 威脅情資蒐集與分析, alerting, anomaly-detection, OT-forensics, threat-analysis, evidence-preservation, SIEM Configuration and Tuning, log-aggregation, vulnerability-intelligence.
-  Use this skill for security monitoring incident response tasks in OT/ICS/SCADA cybersecurity and energy infrastructure projects.
+  Execute comprehensive security monitoring and incident response for OT/ICS environments.
+  Covers SIEM configuration and tuning, security alarm rule design, incident response procedure
+  development, security incident investigation and forensics, continuous security monitoring,
+  and threat intelligence collection and analysis.
+  MANDATORY TRIGGERS: 安全監控, security monitoring, SIEM, 事件回應, incident response,
+  告警規則, alarm rules, correlation rules, 事件調查, incident investigation,
+  數位鑑識, digital forensics, 持續監控, continuous monitoring, 威脅情資,
+  threat intelligence, SOC, 安全事件, security event, 日誌分析, log analysis,
+  IDS, anomaly detection, 異常偵測.
+  Use this skill for security monitoring, SIEM, incident response, forensics, and threat
+  intelligence tasks in OT/ICS/SCADA cybersecurity projects.
 ---
 
-# 安全監控與事件回應
+# 安全監控與事件回應 (Security Monitoring & Incident Response)
 
-本 Skill 整合 6 個工程技能定義，提供安全監控與事件回應的完整工作流程。
-適用領域：OT Cybersecurity（D01）。
+本 Skill 整合 6 個工程技能定義，提供 OT/ICS 環境安全監控與事件回應的完整工作流程——從 SIEM 建置到威脅情資持續運營。適用於 IEC 62443 生命週期 R3–R4。
 
 ---
 
@@ -18,222 +24,282 @@ description: >
 
 執行前確認：
 
-1. **專案背景**：已取得專案範圍定義與系統邊界
-2. **輸入文件**：下方§1 列出的輸入已備齊或已標註為 TBD
-3. **適用標準**：已確認本專案適用的 IEC 62443 / ISO 標準版本
-4. **前置依賴**：確認以下 SK 產出已可用：SK-D01-001, SK-D01-002, SK-D01-005, SK-D01-006, SK-D01-007, SK-D01-009
+1. **Zone/Conduit 架構**：已完成 (SK-D01-001)，SL-T 已指定
+2. **資產清冊**：已完成 (SK-D01-005)，含所有 log source 設備
+3. **風險評估**：DTRA (SK-D01-007) 產出可用——驅動監控優先級
+4. **加固完成**：端點加固 (SK-D01-019) 已啟用 logging
+5. **SIEM 平台**：已選定並部署 (Splunk/Graylog/QRadar/等)
 
 ---
 
 ## 1. 輸入
 
-- Security Alarm Rule Design specification (from SK-D01-015: Security Alarm Rule Design)
-- Approved Zone/Conduit Architecture (from SK-D01-001: Zone/Conduit Architecture Design)
-- Inventory of OT/ICS assets and systems that generate logs (asset inventory with system types, locations, protocols)
-- Network and data flow diagrams showing log source locations (from SK-D02-004 ⏳)
-- Security monitoring requirements (from SK-D01-009 ⏳: Security Monitoring Plan Development)
-- SIEM platform specifications (vendor documentation, available integrations, storage capacity, retention policy)
-- Security Level Targets (SL-T) per zone (from SK-D01-010 ⏳: Security Level Target Assessment)
-- Preliminary and Detailed Threat and Risk Assessment reports (from SK-D01-006 ⏳ and SK-D01-007 ⏳)
-- Approved network and data flow diagrams (from SK-D02-004 ⏳)
-- Asset inventory with system criticality and function (from SK-D01-005 ⏳)
-- Security monitoring requirements and KPIs (from SK-D01-009 ⏳: Security Monitoring Plan Development)
-- Organization's information security policy framework (ISMS context)
+| 類別 | 輸入項目 | 來源 |
+|------|---------|------|
+| 架構 | Zone/Conduit 圖 + SL-T | SK-D01-001 |
+| 資產 | 資產清冊 (log source 對照) | SK-D01-005 |
+| 風險 | DTRA 風險登錄冊 | SK-D01-007 |
+| 威脅 | STRIDE Threat Catalog | SK-D01-008 |
+| 組態 | 加固後設備 logging 設定 | SK-D01-019 |
+| 政策 | 安全政策與程序計畫 | SK-D01-030 |
+| 標準 | FR/SR 對照表 | Plugin 共用 references/ |
 
 ---
 
 ## 2. 工作流程
 
-### Step 1: SIEM 配置與調校
-**SK 來源**：SK-D01-014 — SIEM Configuration and Tuning
+### Step 1: SIEM 配置與調校 (SK-D01-014)
 
-執行SIEM 配置與調校：Configure Security Information and Event Management (SIEM) systems for OT/ICS environments, including log source integration, correlation rule develop
+**目標**：設定 SIEM 系統，整合所有 log source，建立基線。
 
-**本步驟交付物**：
-- SIEM configuration baseline (XML, JSON, or native format exports per SIEM vendor)
-- Log source integration checklist: source ID, source type, protocol/method, data format, sample validation
-- Correlation rule library: rule ID, trigger condition, severity level, action (alert, escalation, block), testing results
+**操作步驟**：
 
-### Step 2: 安全告警規則設計
-**SK 來源**：SK-D01-015 — Security Alarm Rule Design
+1. **Log Source 盤點與整合**：
+   ```markdown
+   | Log Source | 類型 | 協定 | 頻率 | Zone | 優先級 |
+   |-----------|------|------|------|------|--------|
+   | Edge Firewall | FW | Syslog/TLS | Real-time | DMZ | High |
+   | Windows AD | Auth | WEF/WinRM | Real-time | Server | High |
+   | SCADA HMI | App | Syslog | 5-min | OT | Critical |
+   | ICS PLC | Device | OPC UA audit | Event-driven | OT | Critical |
+   | Switch/WAP | Network | SNMP/Syslog | Real-time | All | Medium |
+   ```
 
-執行安全告警規則設計：Design security alarm rules and correlation logic for detecting cybersecurity threats in OT/ICS environments. This skill defines the abstract alarm ca
+2. **SIEM 基線配置**：
+   - Log parsing rules (per OT protocol: Modbus, DNP3, IEC 61850, OPC UA)
+   - Log normalization and field mapping
+   - Storage and retention policy (最少 1 年 per IEC 62443-2-1 §7.8.4.2)
+   - Dashboard 建立：事件趨勢、告警分布、false positive 追蹤
 
-**本步驟交付物**：
-- Alarm Category Specification: list of security events to monitor (authentication events, access control violations, anomalous data flows, policy breac
-- Alarm Hierarchy and Severity Classification Table: alarm ID, alarm name, trigger condition (English description), severity level (Critical/High/Medium
-- Correlation Rule Specification: rule ID, rule name, component events (alarm triggers that feed the rule), time window, aggregation logic, resulting al
+3. **初始調校**：收集 2-4 週基線數據後調整閾值
 
-### Step 3: 事件回應程序撰寫
-**SK 來源**：SK-D01-016 — Incident Response Procedure Development
+**⚠️ 避坑**：OT 協定 (Modbus/DNP3) 缺少 native logging——需 network tap + protocol-aware parser；不要將 IT SIEM rules 直接套用到 OT
 
-執行事件回應程序撰寫：Develop a comprehensive incident response procedure that defines the end-to-end workflow for identifying, classifying, responding to, and recovering f
+---
 
-**本步驟交付物**：
-- Incident Response Procedure Document (structured per ID24 exemplar format):
-- Incident definition and scope (affecting confidentiality, integrity, availability of systems/services/networks)
-- Incident response workflow flowchart (threat intelligence → evaluation → notification → emergency → restoration → improvement → record keeping)
+### Step 2: 安全告警規則設計 (SK-D01-015)
 
-### Step 4: 安全事件調查與鑑識
-**SK 來源**：SK-D01-017 — Security Incident Investigation and Forensics
+**目標**：設計偵測 OT/ICS 威脅的告警規則與關聯邏輯。
 
-執行安全事件調查與鑑識：- **Pitfall:** Modifying evidence during analysis, compromising chain of custody. **Guidance:** Use write-blocking tools for disk imaging; analyze evi
+**操作步驟**：
 
-**本步驟交付物**：
-- Investigation Authorization Document:** Formal approval to conduct forensic investigation with scope and constraints defined
-- Volatile Data Preservation Log:** Documentation of memory capture, running processes, network connections captured with timestamps
-- Forensic Image Inventory:** Listing of all systems imaged with timestamps, hash values (MD5/SHA-256), acquisition tool, and storage location
+1. **告警分類框架** (5 類)：
 
-### Step 5: 持續安全監控
-**SK 來源**：SK-D01-018 — Continuous Security Monitoring
+| 類別 | 範例場景 | 嚴重度 |
+|------|---------|--------|
+| Authentication | 暴力登入、異常時段登入、預設帳號使用 | High |
+| Network | 未授權跨 Zone 流量、新設備出現、協定異常 | Critical |
+| Configuration | 組態變更、firmware 更新、服務啟停 | High |
+| Malware | AV 告警、異常 process、C2 通訊 | Critical |
+| Operational | 效能異常、資源耗盡、通訊中斷 | Medium |
 
-執行持續安全監控：- **Pitfall:** Deploying SIEM without establishing baselines, leading to excessive false positive alerts. **Guidance:** Establish operational baseline
+2. **關聯規則設計**：
+   - 單一事件規則 (threshold-based)
+   - 多事件關聯 (sequence-based)
+   - 異常偵測 (baseline deviation)
 
-**本步驟交付物**：
-- SIEM Configuration Documentation:** Data sources configured, collection validation, log retention policy, access controls, integrity protection
-- Operational Baseline Report:** Established baselines for user behavior, network traffic, system performance, and data access patterns (from SK-D08-007
-- Detection Rule Library:** Documented collection of anomaly detection rules, threat intelligence signatures, alert thresholds, and tuning decisions
+3. **與 SK-D05-006 整合**：安全告警層級需與 OT alarm hierarchy 對齊——避免 alarm flooding
 
-### Step 6: 威脅情資蒐集與分析
-**SK 來源**：SK-D01-032 — Threat Intelligence Collection and Analysis
+**⚠️ 避坑**：規則太嚴會造成 alert fatigue (false positive flood)；規則太鬆會漏掉真正威脅——需持續 tuning
 
-執行威脅情資蒐集與分析：- **Pitfall:** Collecting threat intelligence without analysis, leading to information overload. **Guidance:** Filter threat intelligence by organizat
+---
 
-**本步驟交付物**：
-- Threat Intelligence Program Charter:** Defined intelligence requirements, collection sources, roles/responsibilities, database standards, disseminatio
-- Threat Intelligence Collection Plan:** Sources subscribed, collection frequency, update schedule, points of contact for each source
-- Threat Intelligence Database:** Maintained registry of vulnerabilities, threat actors, IOCs, and attack patterns with analysis and sources
+### Step 3: 事件回應程序 (SK-D01-016)
+
+**目標**：建立端到端事件回應程序。
+
+**事件嚴重度分類** (4 級 per ID24)：
+
+| Level | 標準 | RTO 目標 |
+|-------|------|---------|
+| L1 | 低影響，單一系統 | 72 hr |
+| L2 | 中影響，局部功能 | 72 hr |
+| L3 | 高影響，多系統 | 36 hr |
+| L4 | 關鍵影響，全面中斷 | 36 hr 或依合約 |
+
+**事件回應流程**：
+```
+偵測 → 分類 (L1-L4) → 通報 → 圍堵 → 調查 → 根因分析 → 修復 → 復原 → 事後檢討
+```
+
+**損害控制任務** (A-G per ID24)：
+- A: 停止未授權存取
+- B: 隔離受影響系統
+- C: 保全證據
+- D: 通知利害關係人
+- E: 啟動備份復原
+- F: 修復弱點
+- G: 驗證系統完整性
+
+**事後改善**：1 個月內完成改善措施 (per ID24 §5.7.8)
+
+**⚠️ 避坑**：OT 環境的圍堵不能隨意斷網——可能影響 safety system；需 safety engineer 確認
+
+---
+
+### Step 4: 安全事件調查與鑑識 (SK-D01-017)
+
+**目標**：使用數位鑑識方法調查 OT/ICS 安全事件。
+
+**六階段方法論**：
+
+1. **調查授權**：取得正式授權、定義範圍
+2. **Volatile Data 保全**：記憶體、執行中 process、網路連線
+   ```bash
+   # Linux volatile data collection
+   date > /tmp/forensics/timestamp.txt
+   ps auxww > /tmp/forensics/processes.txt
+   netstat -anp > /tmp/forensics/netstat.txt
+   cat /proc/meminfo > /tmp/forensics/meminfo.txt
+   ```
+3. **系統穩定 + Non-Volatile 取得**：磁碟映像、日誌備份
+4. **證據分析 + 時間線重建**：Master Timeline 建構
+5. **根因判定**：攻擊向量、影響範圍
+6. **調查報告 + 證據歸檔**：Chain of Custody 維護
+
+**⚠️ 避坑**：OT 設備的 volatile data 取得需考慮 real-time 控制影響；不要在 live PLC 上執行深度鑑識
+
+---
+
+### Step 5: 持續安全監控 (SK-D01-018)
+
+**目標**：建立並運營 R4 階段的持續安全監控。
+
+**六階段運營模式**：
+1. 監控基礎設施部署與設定
+2. 基線建立與異常偵測規則開發
+3. 告警產生與初始分類 (Triage)
+4. 事件關聯與模式分析
+5. 威脅情資整合與規則精煉
+6. 營運報告與持續改善
+
+**關鍵報告週期**：
+- **月報**：安全事件趨勢、告警分布、false positive rate
+- **季報**：威脅情資更新、控制效能、改善建議
+- **年報**：監控效能總評、SL-A 驗證
+
+**⚠️ 避坑**：監控不是 set-and-forget——需持續 tuning 和 rule 更新
+
+---
+
+### Step 6: 威脅情資蒐集與分析 (SK-D01-032)
+
+**目標**：建立 OT/ICS 威脅情資持續蒐集與分析能力。
+
+**情資來源**：
+- ICS-CERT / CISA advisories
+- 廠商安全公告 (Siemens ProductCERT, ABB, Schneider)
+- MITRE ATT&CK for ICS
+- 商用威脅情資 feed
+- OSINT 平台
+
+**情資分析流程**：CVE 分析 → 威脅演員 profiling → 攻擊模式分析 → IOC enrichment → 與組織 OT 環境的相關性評估
+
+**情資發布**：
+- SOC/工程團隊：月報
+- 管理層：季報
+- 零日/緊急：即時告警
+
+**⚠️ 避坑**：未過濾的威脅情資會造成資訊過載——必須按組織 OT 環境相關性篩選
 
 ---
 
 ## 3. 輸出 / 交付物
 
-| # | 交付物 | 格式 |
-|---|--------|------|
-| 1 | SIEM configuration baseline (XML, JSON, or native format exports per SIEM vendor) | 依需求 |
-| 2 | Log source integration checklist: source ID, source type, protocol/method, data format, sample validation | Markdown |
-| 3 | Correlation rule library: rule ID, trigger condition, severity level, action (alert, escalation, block), testing results | 依需求 |
-| 4 | Alert threshold tuning documentation: metric, baseline, threshold value, justification, anomaly detection parameters | 依需求 |
-| 5 | SIEM dashboard specifications: dashboard name, key metrics, alert aggregation, SLA indicators | 依需求 |
-| 6 | Operational runbook: log data retention policy, archive procedure, search methodology, backup/recovery | 依需求 |
-| 7 | Alarm Category Specification: list of security events to monitor (authentication events, access control violations, anomalous data flows, policy breac | Markdown |
-| 8 | Alarm Hierarchy and Severity Classification Table: alarm ID, alarm name, trigger condition (English description), severity level (Critical/High/Medium | 依需求 |
-| 9 | Correlation Rule Specification: rule ID, rule name, component events (alarm triggers that feed the rule), time window, aggregation logic, resulting al | 依需求 |
-| 10 | Anomaly Detection Baseline Specification: metric (e.g., event rate, data volume, user behavior), baseline value (derived from historical data or opera | 依需求 |
-| 11 | Alarm-to-Incident Mapping: which alarms trigger incident classification per D07.3 (Incident Severity Classification) | 依需求 |
-| 12 | Integration mapping with SK-D05-006 (Alarm Hierarchy) documenting how functional alarms and security alarms coexist in the unified alarm system | 依需求 |
+| # | 交付物 | 步驟 | 格式 |
+|---|--------|------|------|
+| 1 | SIEM Configuration Baseline | 1 | Markdown |
+| 2 | Log Source Integration Checklist | 1 | Markdown |
+| 3 | Alarm Category Specification | 2 | Markdown |
+| 4 | Correlation Rule Library | 2 | Markdown/SIEM export |
+| 5 | Incident Response Procedure | 3 | Markdown/Word |
+| 6 | Incident Reporting Templates | 3 | Markdown |
+| 7 | Investigation Authorization Template | 4 | Markdown |
+| 8 | Forensic Evidence Chain of Custody | 4 | Markdown |
+| 9 | Investigation Report Template | 4 | Markdown |
+| 10 | Monthly Security Event Report | 5 | Markdown |
+| 11 | Threat Intelligence Program Charter | 6 | Markdown |
+| 12 | Monthly Threat Intelligence Report | 6 | Markdown |
 
 ---
 
 ## 4. 適用標準
 
-- IEC 62443-3-3: System Security Requirements — security monitoring and detection as a control requirement
-- IEC 62443-4-1: Component Security Requirements — secure configuration and hardening of SIEM appliances
-- IEC 62443-2-4: Technical Security Measures — monitoring, logging, and audit requirements
-- NIST SP 800-82 Rev. 3: Guide to OT Security — logging and event monitoring guidance (supplementary)
-- NIST Cybersecurity Framework (CSF): Detect function — event detection and analysis
-- IEC 62443-3-3: System Security Requirements — security monitoring and detection as a foundational control
-- IEC 62443-3-2: Security Risk Assessment for System Design — threat identification drives alarm rule design
-- IEC 62443-1-1: Terminology, concepts and models — alarm terminology and classification
-- NIST SP 800-82 Rev. 3: Guide to OT Security — event and anomaly detection guidance (supplementary)
-- NIST Cybersecurity Framework (CSF): Detect function — continuous monitoring and anomaly detection
+| 標準 | 用途 |
+|------|------|
+| IEC 62443-2-1 §6.5.2.5-6 | 事件調查與鑑識 |
+| IEC 62443-2-1 §7.8.4.2 | 日誌保留 (最少 1 年) |
+| IEC 62443-3-3 FR6 (TRE) | 及時事件回應 |
+| IEC 62443-2-4 | 安全服務提供者要求 |
+| NIST SP 800-61 Rev. 3 | 事件回應指南 |
+| NIST SP 800-82 Rev. 3 | OT 安全 |
+| NIST SP 800-86 | 數位鑑識指南 |
+| NIST SP 800-150 | 威脅情資共享 |
+| ISO/IEC 27035 | 資安事件管理 |
+| MITRE ATT&CK for ICS | 威脅分類框架 |
 
 ---
 
 ## 5. 驗收標準
 
-| # | 驗收項目 | 通過條件 |
-|---|---------|---------|
-| 1 | All log sources specified in the alarm rule design are integrated into SIEM and  | ✅ 已驗證 |
-| 2 | At least 80% of log entries are successfully parsed and normalized into searchab | ✅ 已驗證 |
-| 3 | Every correlation rule has been tested with synthetic/historical data and produc | ✅ 已驗證 |
-| 4 | Alert threshold tuning baseline is documented with rationale; false positive rat | ✅ 已驗證 |
-| 5 | SIEM dashboards display key metrics (active alerts, event throughput, zone-level | ✅ 已驗證 |
-| 6 | Operational runbook includes step-by-step procedures for dashboard review, alert | ✅ 已驗證 |
-| 7 | Integration testing confirms end-to-end alert flow: trigger condition → alert ge | ✅ 已驗證 |
-| 8 | Every material threat from the detailed risk assessment has at least one corresp | ✅ 已驗證 |
-| 9 | Alarm hierarchy covers at least 5 security event categories: authentication, aut | ✅ 已驗證 |
-| 10 | Severity levels are consistently applied: Critical (immediate escalation, busine | ✅ 已驗證 |
-| 11 | Correlation rules are technically feasible (e.g., multi-event correlation window | ✅ 已驗證 |
-| 12 | Alarm categories are validated by SAC and OT operations stakeholders; feedback i | ✅ 已驗證 |
-| 13 | Mapping to SK-D05-006 is complete; no naming conflicts or ambiguities in unified | ✅ 已驗證 |
-| 14 | Design includes documented rationale for threshold values and anomaly detection  | ✅ 已驗證 |
-| 15 | Procedure covers the complete incident lifecycle: identification → classificatio | ✅ 已驗證 |
+| # | 項目 | 條件 |
+|---|------|------|
+| 1 | Log Source 覆蓋 | 100% 資產清冊設備已整合至 SIEM |
+| 2 | 日誌保留 | ≥1 年保留，符合 IEC 62443-2-1 §7.8.4.2 |
+| 3 | 告警分類 | ≥5 告警類別，每類有嚴重度定義 |
+| 4 | 關聯規則 | ≥10 條 correlation rules，涵蓋 STRIDE 6 類 |
+| 5 | 事件回應 | 4 級嚴重度+RTO 目標+損害控制任務 A-G |
+| 6 | 鑑識程序 | 6 階段方法論+Chain of Custody+Master Timeline |
+| 7 | 持續監控 | 月/季/年報週期已定義 |
+| 8 | 威脅情資 | ≥3 情資來源已整合+月報產出 |
+| 9 | False Positive | 追蹤機制建立，目標 <20% FP rate |
+| 10 | 演練 | 至少 1 次 tabletop exercise 已完成 |
 
 ---
 
 ## 6. 工時參考
 
-| SK | 估算基準 |
-|----|---------|
-| SK-D01-014 | | Junior (< 2 yr) | 12–18 person-days | Assumes ~30 log sources, 15–20 correlation rules, basic dash |
-| SK-D01-014 | | Senior (5+ yr) | 5–8 person-days | Same scope; senior can leverage SIEM templates, automated tunin |
-| SK-D01-014 | Notes: Complex OT environments with diverse protocols (Modbus, IEC 60870-5-104, DNP3) may require cu |
-| SK-D01-015 | | Junior (< 2 yr) | 8–12 person-days | Assumes ~20–30 alarm categories, 10–15 correlation rules, mod |
-| SK-D01-015 | | Senior (5+ yr) | 3–5 person-days | Same scope; senior can leverage threat libraries and alarm temp |
-| SK-D01-016 | | Junior (< 2 yr) | 8–12 person-days | Assumes adaptation of ICP template to project-specific contex |
-| SK-D01-016 | | Senior (5+ yr) | 4–6 person-days | Same scope; senior efficiently maps organizational ISMS to proj |
-| SK-D01-016 | Notes: Effort increases significantly if the customer requires sector-specific regulatory compliance |
+| 步驟 | Junior | Senior | 備註 |
+|------|--------|--------|------|
+| Step 1 SIEM 配置 | 12-18 pd | 5-8 pd | 含 OT protocol parser |
+| Step 2 告警規則 | 8-12 pd | 3-5 pd | 含 tuning |
+| Step 3 事件回應 | 8-12 pd | 4-6 pd | 含演練 |
+| Step 4 鑑識程序 | 6-10 pd | 3-5 pd | 程序設計 |
+| Step 5 持續監控 | 8-12 pd | 4-6 pd | 初始建置 |
+| Step 6 威脅情資 | 6-10 pd | 3-5 pd | 程序+首次報告 |
 
 ---
 
-## 7. 品質檢查清單
-
-| # | 檢查項目 | 通過條件 |
-|---|---------|---------|
-| 1 | 輸入完整性 | 所有必要輸入文件已讀取並摘要 |
-| 2 | 流程覆蓋 | 6 個工作步驟皆已執行並有產出 |
-| 3 | 輸出完整性 | 所有交付物已產出、格式正確、非空白 |
-| 4 | 標準合規 | 產出引用的標準版本正確 |
-| 5 | 術語一致 | 專案術語、縮寫與 glossary 一致 |
-| 6 | 跨步驟一致 | 各步驟產出間無矛盾（如數量、SL等級） |
-| 7 | 依賴追溯 | 外部依賴 SK 的輸入已驗證可用 |
-
----
-
-## 8. 人類審核閘門
-
-完成所有工作步驟後，暫停並向使用者提交審核：
+## 7. 人類審核閘門
 
 ```
 安全監控與事件回應已完成。
-📋 執行範圍：6 個工程步驟（SK-D01-014, SK-D01-015, SK-D01-016, SK-D01-017, SK-D01-018, SK-D01-032）
-📊 交付物清單：
-  - SIEM configuration baseline (XML, JSON, or native format exports per SIEM vendor)
-  - Log source integration checklist: source ID, source type, protocol/method, data format, sample validation
-  - Correlation rule library: rule ID, trigger condition, severity level, action (alert, escalation, block), testing results
-  - Alert threshold tuning documentation: metric, baseline, threshold value, justification, anomaly detection parameters
-  - SIEM dashboard specifications: dashboard name, key metrics, alert aggregation, SLA indicators
-⚠️ 待確認事項：{列出 TBD 項目或需人工判斷的假設}
-👉 請審核以上成果，確認 PASS / FAIL / PASS with Conditions。
+📋 範圍：6 步驟（SIEM→告警→IR→鑑識→持續監控→威脅情資）
+📊 數據：Log Sources {n} | Rules {r} | IR Level L1-L4 | 情資源 {s}
+⚠️ 待確認：{SIEM tuning 週期/演練排程}
+👉 請 SAC 審核 PASS / FAIL / PASS with Conditions。
 ```
 
-**判定標準**：
-- **PASS**：成果完整且正確，可進入下一階段或歸檔
-- **FAIL**：發現重大缺漏或錯誤，需返工後重新提交
-- **PASS with Conditions**：整體接受，但需補充特定項目後完成
+---
+
+## 8. IEC 62443 生命週期
+
+| Phase | 角色 | 步驟 |
+|-------|------|------|
+| R3 | 部署：SIEM 配置、規則建立、程序撰寫 | 1-4, 6 |
+| R4 | 營運：持續監控、事件回應、情資更新 | 3-6 持續 |
 
 ---
 
-## 9. IEC 62443 生命週期對應
+## 9. Source Traceability
 
-| 項目 | 值 |
-|------|---|
-| 主要生命週期階段 | 依專案階段 |
-| Domain | D01 (OT Cybersecurity) |
-| SK 覆蓋 | SK-D01-014, SK-D01-015, SK-D01-016, SK-D01-017, SK-D01-018, SK-D01-032 |
+| SK | 名稱 | 核心知識 |
+|----|------|---------|
+| SK-D01-014 | SIEM Configuration and Tuning | Log source 整合、correlation rules、dashboard |
+| SK-D01-015 | Security Alarm Rule Design | 告警分類、關聯邏輯、anomaly detection |
+| SK-D01-016 | Incident Response Procedure | 4 級嚴重度、RTO、損害控制 A-G |
+| SK-D01-017 | Incident Investigation & Forensics | 6 階段鑑識、Chain of Custody、Timeline |
+| SK-D01-018 | Continuous Security Monitoring | 6 階段運營、月/季/年報 |
+| SK-D01-032 | Threat Intelligence Collection | 情資來源、CVE 分析、IOC、月報 |
 
----
-
-## 10. Source Traceability
-
-| SK 編號 | 英文名稱 | 中文名稱 | 核心知識 |
-|--------|---------|---------|---------|
-| SK-D01-014 | SIEM Configuration and Tuning | SIEM 配置與調校 | Configure Security Information and Event Management (SIEM) s |
-| SK-D01-015 | Security Alarm Rule Design | 安全告警規則設計 | Design security alarm rules and correlation logic for detect |
-| SK-D01-016 | Incident Response Procedure Development | 事件回應程序撰寫 | Develop a comprehensive incident response procedure that def |
-| SK-D01-017 | Security Incident Investigation and Forensics | 安全事件調查與鑑識 | - **Pitfall:** Modifying evidence during analysis, compromis |
-| SK-D01-018 | Continuous Security Monitoring | 持續安全監控 | - **Pitfall:** Deploying SIEM without establishing baselines |
-| SK-D01-032 | Threat Intelligence Collection and Analysis | 威脅情資蒐集與分析 | - **Pitfall:** Collecting threat intelligence without analys |
-
-<!-- Phase 5 Wave 2 deepened: SK-D01-014, SK-D01-015, SK-D01-016, SK-D01-017, SK-D01-018, SK-D01-032 -->
+<!-- Phase 6: Deep enhancement from 6 SK definitions. Enhanced 2026-03-19. -->

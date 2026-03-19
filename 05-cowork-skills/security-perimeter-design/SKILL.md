@@ -1,187 +1,182 @@
 ---
 name: security-perimeter-design
 description: >
-  安全邊界設計。
-  Translate the approved Zone/Conduit Architecture (SK-D01-001) into a detailed set of firewall rules and access control lists (ACLs) that enforce inter。Compile and integrate all network segmentation implementation artifacts into a comprehensive, verif
-  MANDATORY TRIGGERS: 安全邊界設計, 網路分段文件, 防火牆規則規劃, access-control, Network Segmentation Documentation, zone-conduit, IEC-62443, verification, network-segmentation, security perimeter design, documentation.
-  Use this skill for security perimeter design tasks in OT/ICS/SCADA cybersecurity and energy infrastructure projects.
+  Design and document security perimeters for OT/ICS environments including detailed firewall
+  rule planning and comprehensive network segmentation documentation for IEC 62443 compliance.
+  MANDATORY TRIGGERS: 防火牆規則, firewall rules, ACL, 網路分段, network segmentation,
+  安全邊界, security perimeter, 防火牆規劃, firewall planning, 分段文件,
+  segmentation documentation, zone boundary, conduit enforcement,
+  防火牆設計, firewall design, 存取控制清單.
+  Use this skill for firewall rule design and network segmentation documentation in OT/ICS projects.
 ---
 
-# 安全邊界設計
+# 安全邊界設計 (Security Perimeter Design)
 
-本 Skill 整合 2 個工程技能定義，提供安全邊界設計的完整工作流程。
-適用領域：OT Cybersecurity（D01）。
+本 Skill 整合 2 個工程技能定義，將 Zone/Conduit 架構轉換為具體防火牆規則和完整的網路分段文件包。適用於 R2 (詳細設計) 到 R3 (實施驗證)。
 
 ---
 
 ## 0. 初始化
 
-執行前確認：
-
-1. **專案背景**：已取得專案範圍定義與系統邊界
-2. **輸入文件**：下方§1 列出的輸入已備齊或已標註為 TBD
-3. **適用標準**：已確認本專案適用的 IEC 62443 / ISO 標準版本
-4. **前置依賴**：確認以下 SK 產出已可用：SK-D01-001, SK-D01-005, SK-D01-010, SK-D02-001, SK-D02-004
+1. **Zone/Conduit 架構**：已完成 (SK-D01-001)，含 Conduit Spec Table
+2. **資產清冊**：已完成 (SK-D01-005)，含 IP/MAC/Zone 對照
+3. **SL-T 評估**：已完成 (SK-D01-010)
+4. **資料流圖**：已完成 (SK-D02-004)
 
 ---
 
 ## 1. 輸入
 
-- Approved Zone/Conduit Architecture Diagram (from SK-D01-001: Zone/Conduit Architecture Design)
-- Conduit Specification Table: source zone → destination zone, allowed protocols, direction, authentication requirements (from SK-D01-001)
-- Asset Inventory Register with IP/MAC addresses and zone assignments (from SK-D01-005 ⏳: Asset Inventory Development)
-- Data Flow Diagram showing inter-asset communication flows (from SK-D02-004 ⏳: Data Flow Diagram Development)
-- Firewall device specifications and available rule formats (e.g., Palo Alto Networks, Fortinet, Cisco ASA)
-- Customer security policy and exception procedures
-- Approved Zone/Conduit Architecture Diagram and documentation (from SK-D01-001)
-- Detailed Firewall Rule Specification and priority matrix (from SK-D01-003 ⏳)
-- VLAN assignment table: VLAN ID, VLAN name, zone membership, IP subnet, routing scope
-- Network ACL specifications (router/switch-level access control lists)
-- Physical network topology diagram with device locations and interconnections (from SK-D02-001 ⏳)
-- Logical network topology diagram showing zone boundaries and inter-zone conduits
+| 類別 | 輸入項目 | 來源 |
+|------|---------|------|
+| 架構 | Zone/Conduit 架構圖 + Conduit Spec Table | SK-D01-001 |
+| 資產 | 資產清冊 (IP, MAC, Zone) | SK-D01-005 |
+| 架構 | 資料流圖 (DFD) | SK-D02-004 |
+| 風險 | SL-T 指定表 | SK-D01-010 |
+| 網路 | 實體網路拓撲 | SK-D02-001 |
+| 標準 | FR/SR 對照表 | Plugin 共用 references/ |
 
 ---
 
 ## 2. 工作流程
 
-### Step 1: 防火牆規則規劃
-**SK 來源**：SK-D01-003 — Firewall Rule Planning
+### Step 1: 防火牆規則規劃 (SK-D01-003)
 
-執行防火牆規則規劃：Translate the approved Zone/Conduit Architecture (SK-D01-001) into a detailed set of firewall rules and access control lists (ACLs) that enforce inter
+**目標**：將 Conduit Spec Table 轉換為詳細防火牆規則。
 
-**本步驟交付物**：
-- Detailed Firewall Rule Specification Table: rule ID, source zone/IP (or subnet), destination zone/IP (or subnet), protocol, port(s), action (allow/den
-- Firewall Rule Priority/Order Documentation: rule precedence and conflicts resolution matrix
-- Denial/Exception Log: any requested rules denied by security policy, with documented rationale and approval
+**操作步驟**：
 
-### Step 2: 網路分段文件
-**SK 來源**：SK-D01-004 — Network Segmentation Documentation
+1. **逐 Conduit 展開規則**：每條 Conduit 產生 ≥1 firewall rule
 
-執行網路分段文件：Compile and integrate all network segmentation implementation artifacts into a comprehensive, verification-ready documentation package that demonstrat
+   ```markdown
+   | Rule ID | 方向 | Source Zone/IP | Dest Zone/IP | Protocol | Port | Action | Logging | 理由 | Conduit Ref |
+   |---------|------|---------------|-------------|----------|------|--------|---------|------|------------|
+   | FW-001 | → | DMZ/10.0.0.1 | SRV/10.20.0.5 | TCP | 443 | ALLOW | Yes | SCADA Web UI | C2 |
+   | FW-002 | → | OT/10.30.0.0/24 | SRV/10.20.0.10 | TCP | 514 | ALLOW | Yes | Syslog | C3 |
+   | FW-003 | ← | SRV/10.20.0.5 | DMZ/10.0.0.1 | TCP | 443 | ALLOW | Yes | Response | C2 |
+   | FW-999 | * | Any | Any | Any | Any | DENY | Yes | Default deny | — |
+   ```
 
-**本步驟交付物**：
-- Network Segmentation Functional Design Specification: comprehensive narrative document covering zone definitions, conduit policies, firewall rule stra
-- Network Segmentation Design Verification Package: evidence matrix linking each design requirement (from ID02 Annex C.3) to implemented control, with s
-- Integrated Zone/Conduit Architecture Diagram with VLAN overlay: zones, conduits, firewall devices, key IP subnets labeled
+2. **規則排序**：具體→通用，default deny 在最後
+
+3. **雙向處理**：每條 Conduit 的 request + response 方向
+
+4. **Broadcast/Multicast**：明確處理（allow/deny + 安全理由）
+
+5. **Denial/Exception Log**：被拒絕的合理流量記錄例外
+
+**⚠️ 避坑**：
+- 不要用 `Any` 做 source/destination——每條規則要具體
+- 別忘記 return traffic 規則——stateful FW 可省略，stateless 需明確
+- 規則衝突檢查：不應有兩條規則對同一流量給出不同 action
+
+---
+
+### Step 2: 網路分段文件 (SK-D01-004)
+
+**目標**：編譯所有分段實施文件為 IEC 62443 合規的驗證包。
+
+**操作步驟**：
+
+1. **Network Segmentation FDS**：撰寫功能設計規格
+   - Zone 定義敘述 (含 SL-T 理由)
+   - Conduit 政策敘述
+   - 防火牆策略
+   - VLAN/ACL 架構
+
+2. **Design Verification Package** (per ID02 Annex C.3)：
+   ```markdown
+   | Evidence ID | 驗證項目 | 證據類型 | 文件位置 | 狀態 |
+   |------------|---------|---------|---------|------|
+   | DV-001 | Zone 邊界防火牆規則 | 設計文件 | FW Rule Table §2.1 | ✅ |
+   | DV-002 | VLAN 隔離設定 | 設備 Config | Switch-01 running-config | ✅ |
+   | DV-003 | ACL 實施 | 設備 Config | Router-01 ACL dump | ✅ |
+   ```
+
+3. **Master Device Config Reference Table**：設備→VLAN→規則→Firmware
+
+4. **變更管理程序**：分段架構的變更如何管控 (GOV-SD Gate 2)
+
+5. **Operational Handover Package**：給營運團隊的簡化版
+
+**⚠️ 避坑**：
+- 驗證包不是只列文件——需有 evidence mapping 到具體設備 config
+- 變更管理必須涵蓋 emergency change path
+- GOV-SD Gate 2 是 R3 prerequisite——分段文件需在 Gate 2 前完成
 
 ---
 
 ## 3. 輸出 / 交付物
 
-| # | 交付物 | 格式 |
+| # | 交付物 | 步驟 |
 |---|--------|------|
-| 1 | Detailed Firewall Rule Specification Table: rule ID, source zone/IP (or subnet), destination zone/IP (or subnet), protocol, port(s), action (allow/den | 依需求 |
-| 2 | Firewall Rule Priority/Order Documentation: rule precedence and conflicts resolution matrix | Markdown |
-| 3 | Denial/Exception Log: any requested rules denied by security policy, with documented rationale and approval | 依需求 |
-| 4 | Firewall Configuration Narrative Document: section within Security Implementation Specification (per ID02 Annex A.9 §10.1) | 依需求 |
-| 5 | Rule Testing Plan: test cases for verification that rules enforce intended communication paths and block unintended paths (per ID02 C.3 design verific | 依需求 |
-| 6 | Network Segmentation Functional Design Specification: comprehensive narrative document covering zone definitions, conduit policies, firewall rule stra | 依需求 |
-| 7 | Network Segmentation Design Verification Package: evidence matrix linking each design requirement (from ID02 Annex C.3) to implemented control, with s | Markdown |
-| 8 | Integrated Zone/Conduit Architecture Diagram with VLAN overlay: zones, conduits, firewall devices, key IP subnets labeled | 依需求 |
-| 9 | Master Device Configuration Reference Table: device ID, device type, interface VLAN assignments, relevant rules/ACLs, firmware/software version | 依需求 |
-| 10 | Network Segmentation Change Management Procedure: process for requesting, approving, and documenting changes to firewall rules, VLANs, and ACLs in pro | 依需求 |
-| 11 | Operational Handover Package: network segmentation summary for network operations and help desk (condensed, training-suitable version) | 依需求 |
+| 1 | Firewall Rule Specification Table | 1 |
+| 2 | Rule Priority/Order Documentation | 1 |
+| 3 | Denial/Exception Log | 1 |
+| 4 | Rule Testing Plan | 1 |
+| 5 | Network Segmentation FDS | 2 |
+| 6 | Design Verification Package | 2 |
+| 7 | Zone/Conduit Diagram with VLAN overlay | 2 |
+| 8 | Master Device Config Reference Table | 2 |
+| 9 | Change Management Procedure | 2 |
+| 10 | Operational Handover Package | 2 |
 
 ---
 
 ## 4. 適用標準
 
-- IEC 62443-3-2: Security Risk Assessment — firewall rule design as implementation of zone/conduit policies
-- IEC 62443-3-3: System Security Requirements and Security Levels — SL-specific access control enforcement
-- ID02 Annex A.9 §10.1: Network security device configuration and rule documentation standards
-- NIST SP 800-82 Rev. 3: OT Security — firewall best practices for industrial networks (supplementary)
-- IEC 62443-3-3: System Security Requirements and Security Levels — network segmentation as security requirement fulfilmen
-- ID01 §7.4.1.2: Network segmentation implementation documentation standards and scope
-- ID02 Annex C.3: Design Verification Checklist — completeness criteria and evidence matrix for network segmentation
-- ID02 Annex A.9 §10.1: Network security documentation and implementation standards
-- NIST SP 800-82 Rev. 3: OT Security — network segmentation best practices (supplementary)
+| 標準 | 用途 |
+|------|------|
+| IEC 62443-3-2 | Zone-based risk assessment |
+| IEC 62443-3-3 FR5 (RDF) | 受限資料流 |
+| ID01 §7.4.1.2 | 網路分段要求 |
+| ID02 Annex A.9 §10.1 | 安全實施規格 |
+| ID02 Annex C.3 | 設計驗證 |
+| NIST SP 800-82 Rev. 3 | OT 安全 |
+| GOV-SD | Gate 2 prerequisite |
 
 ---
 
 ## 5. 驗收標準
 
-| # | 驗收項目 | 通過條件 |
-|---|---------|---------|
-| 1 | Every allowed communication path defined in the approved Conduit Specification T | ✅ 已驗證 |
-| 2 | Every rule specifies: source (IP/zone), destination (IP/zone), protocol, port, a | ✅ 已驗證 |
-| 3 | No overlapping or conflicting rules exist (conflicts identified and resolved wit | ✅ 已驗證 |
-| 4 | Denial/exception log documents all requested rules that were denied by policy, w | ✅ 已驗證 |
-| 5 | Rule specification covers both unicast and any broadcast/multicast communication | ✅ 已驗證 |
-| 6 | All rules include default-deny catch-all rules at the end of each direction to e | ✅ 已驗證 |
-| 7 | Rule testing plan is complete and traceability to zone/conduit architecture is b | ✅ 已驗證 |
-| 8 | Network Segmentation Design Specification covers all zones and conduits with cle | ✅ 已驗證 |
-| 9 | Design Verification Package (ID02 C.3 checklist) shows evidence for 100% of appl | ✅ 已驗證 |
-| 10 | Integrated Zone/Conduit/VLAN diagram clearly shows all zones, inter-zone conduit | ✅ 已驗證 |
-| 11 | Master Device Configuration Reference Table covers all relevant network security | ✅ 已驗證 |
-| 12 | Change Management Procedure is documented and approved by operations team before | ✅ 已驗證 |
-| 13 | Operational Handover Package is prepared in condensed, training-suitable format  | ✅ 已驗證 |
-| 14 | All documentation is reviewed and signed off by SAC and PE/O, with approval date | ✅ 已驗證 |
+| # | 項目 | 條件 |
+|---|------|------|
+| 1 | 規則覆蓋 | Conduit Spec Table 每條 → ≥1 firewall rule |
+| 2 | 規則完整 | 每條規則含 source/dest/protocol/port/action/logging/理由 |
+| 3 | 無衝突 | 規則衝突已辨識並解決 |
+| 4 | Default deny | 每個方向末端有 catch-all deny |
+| 5 | 雙向追溯 | 防火牆規則↔Zone/Conduit 架構可雙向追溯 |
+| 6 | 驗證包 | Design Verification Evidence Matrix 完整 |
+| 7 | 設備 Config | Master Device Config Table 涵蓋所有分段設備 |
 
 ---
 
 ## 6. 工時參考
 
-| SK | 估算基準 |
-|----|---------|
-| SK-D01-003 | | Junior (< 2 yr) | 6–10 person-days | Assumes ~30 conduits, standard protocols; includes rule speci |
-| SK-D01-003 | | Senior (5+ yr) | 3–5 person-days | Same scope; senior leverages firewall vendor knowledge and patt |
-| SK-D01-004 | | Junior (< 2 yr) | 10–16 person-days | Assumes ~30 conduits, 5–8 zones, 2 major firewall devices; i |
-| SK-D01-004 | | Senior (5+ yr) | 5–8 person-days | Same scope; senior leverages template systems and efficient doc |
+| 步驟 | Junior | Senior | 備註 |
+|------|--------|--------|------|
+| Step 1 FW 規則 | 6-10 pd | 3-5 pd | ~50 devices |
+| Step 2 分段文件 | 10-16 pd | 5-8 pd | 含驗證包 |
 
 ---
 
-## 7. 品質檢查清單
-
-| # | 檢查項目 | 通過條件 |
-|---|---------|---------|
-| 1 | 輸入完整性 | 所有必要輸入文件已讀取並摘要 |
-| 2 | 流程覆蓋 | 2 個工作步驟皆已執行並有產出 |
-| 3 | 輸出完整性 | 所有交付物已產出、格式正確、非空白 |
-| 4 | 標準合規 | 產出引用的標準版本正確 |
-| 5 | 術語一致 | 專案術語、縮寫與 glossary 一致 |
-| 6 | 跨步驟一致 | 各步驟產出間無矛盾（如數量、SL等級） |
-
----
-
-## 8. 人類審核閘門
-
-完成所有工作步驟後，暫停並向使用者提交審核：
+## 7. 人類審核閘門
 
 ```
 安全邊界設計已完成。
-📋 執行範圍：2 個工程步驟（SK-D01-003, SK-D01-004）
-📊 交付物清單：
-  - Detailed Firewall Rule Specification Table: rule ID, source zone/IP (or subnet), destination zone/IP (or subnet), protocol, port(s), action (allow/den
-  - Firewall Rule Priority/Order Documentation: rule precedence and conflicts resolution matrix
-  - Denial/Exception Log: any requested rules denied by security policy, with documented rationale and approval
-  - Firewall Configuration Narrative Document: section within Security Implementation Specification (per ID02 Annex A.9 §10.1)
-  - Rule Testing Plan: test cases for verification that rules enforce intended communication paths and block unintended paths (per ID02 C.3 design verific
-⚠️ 待確認事項：{列出 TBD 項目或需人工判斷的假設}
-👉 請審核以上成果，確認 PASS / FAIL / PASS with Conditions。
+📋 範圍：防火牆規則規劃 + 網路分段文件
+📊 數據：FW Rules {n} 條 | Conduits {c} 條 | VLANs {v} 個 | 驗證項 {dv} 個
+⚠️ 待確認：{規則衝突/例外/待確認 IP}
+👉 請 SAC + SYS 審核 PASS / FAIL / PASS with Conditions。
 ```
 
-**判定標準**：
-- **PASS**：成果完整且正確，可進入下一階段或歸檔
-- **FAIL**：發現重大缺漏或錯誤，需返工後重新提交
-- **PASS with Conditions**：整體接受，但需補充特定項目後完成
-
 ---
 
-## 9. IEC 62443 生命週期對應
+## 8. Source Traceability
 
-| 項目 | 值 |
-|------|---|
-| 主要生命週期階段 | 依專案階段 |
-| Domain | D01 (OT Cybersecurity) |
-| SK 覆蓋 | SK-D01-003, SK-D01-004 |
+| SK | 名稱 | 核心知識 |
+|----|------|---------|
+| SK-D01-003 | Firewall Rule Planning | Conduit→FW rule 轉換、規則排序、default deny |
+| SK-D01-004 | Network Segmentation Documentation | FDS、驗證包、VLAN overlay、變更管理 |
 
----
-
-## 10. Source Traceability
-
-| SK 編號 | 英文名稱 | 中文名稱 | 核心知識 |
-|--------|---------|---------|---------|
-| SK-D01-003 | Firewall Rule Planning | 防火牆規則規劃 | Translate the approved Zone/Conduit Architecture (SK-D01-001 |
-| SK-D01-004 | Network Segmentation Documentation | 網路分段文件 | Compile and integrate all network segmentation implementatio |
-
-<!-- Phase 5 Wave 2 deepened: SK-D01-003, SK-D01-004 -->
+<!-- Phase 6: Deep enhancement from 2 SK definitions. Enhanced 2026-03-19. -->

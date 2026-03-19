@@ -1,155 +1,151 @@
 ---
 name: sis-security-control
 description: >
-  安全儀控系統實施。
-  Design and implement cybersecurity controls for Safety Instrumented Systems (SIS) that enforce IEC 62443 security requirements while preserving the Sa
-  MANDATORY TRIGGERS: 安全儀控系統實施, SIS 安全控制實施, IEC-61511, access-control, IEC-62443, safety-security, functional-safety, network-isolation, SIS Security Control Implementation, sis.
-  Use this skill for sis security control tasks in OT/ICS/SCADA cybersecurity and energy infrastructure projects.
+  Design and implement cybersecurity controls for Safety Instrumented Systems (SIS) that
+  enforce IEC 62443 security while preserving SIL certification and IEC 61511 functional safety.
+  MANDATORY TRIGGERS: SIS, safety instrumented system, 安全儀控, SIL, 安全完整性,
+  safety integrity level, SIS 安全, SIS security, 安全系統隔離,
+  safety system isolation, 功能安全, functional safety, IEC 61511,
+  安全控制系統, safety control system, SIS 網路隔離.
+  Use this skill when cybersecurity controls must coexist with functional safety requirements.
 ---
 
-# 安全儀控系統實施
+# SIS 安全控制 (Safety Instrumented System Security Controls)
 
-本 Skill 整合 1 個工程技能定義，提供安全儀控系統實施的完整工作流程。
-適用領域：OT Cybersecurity（D01）。
+本 Skill 處理 OT/ICS 環境中安全控制與功能安全的特殊衝突域——在實施 IEC 62443 安全要求的同時，確保不影響 IEC 61511 安全系統的 SIL 認證和功能安全保障。
 
 ---
 
 ## 0. 初始化
 
-執行前確認：
-
-1. **專案背景**：已取得專案範圍定義與系統邊界
-2. **輸入文件**：下方§1 列出的輸入已備齊或已標註為 TBD
-3. **適用標準**：已確認本專案適用的 IEC 62443 / ISO 標準版本
-4. **前置依賴**：確認以下 SK 產出已可用：SK-D01-001, SK-D01-003, SK-D01-007, SK-D01-010
+1. **SIS 識別**：資產清冊中已標記 SIS 設備
+2. **Zone/Conduit**：SIS 已被指定為獨立高 SL Zone
+3. **功能安全工程師**：已指定並可參與 dual sign-off
+4. **SIL 認證**：現有 SIL 認證文件可參考
 
 ---
 
 ## 1. 輸入
 
-- Approved SIS System Architecture (safety system P&ID, functional safety block diagrams from IEC 61511 engineering phase)
-- SIS Safety Requirements Specification (SIL targets per IEC 61511 Annex B)
-- Zone/Conduit Architecture Design with SIS zone definition (from SK-D01-001, where SIS is designated as a dedicated high-SL zone)
-- IEC 62443 Security Requirements for the SIS zone (SL-T assignment, from SK-D01-007 ⏳)
-- Existing SIS network topology, communication protocols, and device list (HMI, PLC, RTU, I/O modules, operator interfaces)
-- Safety-critical network communication requirements: latency bounds, reliability requirements, diagnostic message frequencies
+| 類別 | 輸入 | 來源 |
+|------|------|------|
+| 資產 | SIS 設備清冊 | SK-D01-005 |
+| 架構 | Zone/Conduit (SIS Zone) | SK-D01-001 |
+| 安全 | SL-T for SIS Zone | SK-D01-010 |
+| 功能安全 | SIL 認證文件 | 功能安全團隊 |
+| 標準 | IEC 61511 Annex B | 標準文庫 |
 
 ---
 
 ## 2. 工作流程
 
-### Step 1: SIS 安全控制實施
-**SK 來源**：SK-D01-027 — SIS Security Control Implementation
+### Step 1: SIS 安全控制設計 (SK-D01-027)
 
-執行SIS 安全控制實施：Design and implement cybersecurity controls for Safety Instrumented Systems (SIS) that enforce IEC 62443 security requirements while preserving the Sa
+**核心衝突**：安全措施可能影響 safety 系統回應時間、可用性或測試程序。
 
-**本步驟交付物**：
-- SIS Security Architecture Specification: dedicated network segmentation for SIS, isolation mechanisms (air gap, demilitarized zone, application-level 
-- SIS Network Isolation Design: network topology with firewall rules separating SIS from non-safety OT and IT networks, conduit specifications for SIS-t
-- SIS Change Management Procedure: change process for SIS security controls, including change impact assessment for functional safety, SIL re-validation
+**操作步驟**：
 
----
+1. **SIS 網路隔離設計**：
 
-## 3. 輸出 / 交付物
+| 隔離機制 | 適用場景 | 優點 | 限制 |
+|---------|---------|------|------|
+| Air Gap | 最高 SIL | 完全隔離 | 無法遠端監控 |
+| DMZ + App Gateway | SIL-2/3 | 可監控+隔離 | 需驗證延遲 |
+| Dedicated Firewall | SIL-1/2 | 靈活 | 需嚴格規則管理 |
 
-| # | 交付物 | 格式 |
-|---|--------|------|
-| 1 | SIS Security Architecture Specification: dedicated network segmentation for SIS, isolation mechanisms (air gap, demilitarized zone, application-level  | 依需求 |
-| 2 | SIS Network Isolation Design: network topology with firewall rules separating SIS from non-safety OT and IT networks, conduit specifications for SIS-t | 依需求 |
-| 3 | SIS Change Management Procedure: change process for SIS security controls, including change impact assessment for functional safety, SIL re-validation | 依需求 |
-| 4 | Security-Safety Conflict Resolution Log: documented cases where security requirements and safety requirements compete, the chosen resolution (security | 依需求 |
-| 5 | SIS Cybersecurity Assessment Report: mapping of IEC 62443 security requirements to SIS control implementation, verification that SIL certification is  | Markdown |
-| 6 | SIS Operator Training Plan: administrative access control, authentication procedures, and security awareness training with explicit coverage of safety | 依需求 |
+2. **SIS 存取控制**：
+   - 僅允許透過定義的認證路徑進行管理存取
+   - **不得**影響手動安全覆寫 (manual safety override)
+   - 測試方式：模擬認證失敗→驗證手動覆寫仍可用
 
----
+3. **SIS Conduit 規格**：
+   ```markdown
+   | Conduit | 來源 | 目標 | 協定 | 延遲上限 | 可靠性 | 安全措施 |
+   |---------|------|------|------|---------|--------|---------|
+   | C-SIS-01 | SIS Zone | DCS Zone | OPC UA | <100ms | 99.99% | App Gateway + 加密 |
+   | C-SIS-02 | SIS Zone | HMI | Modbus TCP | <50ms | 99.99% | Dedicated FW |
+   ```
+   **關鍵**：每條 Conduit 需文件化延遲和可靠性保證，並驗證安全控制不會降低這些指標。
 
-## 4. 適用標準
+4. **SIS 變更管理程序**：
+   - **Dual Sign-off**：每個 SIS 安全控制變更需 Security Architect + Functional Safety Engineer 雙簽
+   - SIL 再驗證觸發條件：安全控制變更是否影響 safety function
+   - 需 PtW (Permit to Work) 核准
 
-- IEC 62443-3-3: System Security Requirements and Security Levels — SIS security requirements
-- IEC 62443-1-1: Terminology, concepts and models — security vs. safety concepts and boundaries
-- IEC 61511-1: Functional Safety: Safety Instrumented Systems for the Process Industry Sector — SIL definition, certificat
-- IEC 61508: Functional Safety of Electrical/Electronic/Programmable Electronic Safety-Related Systems — foundational safe
-- IEC 62443-2-1: Security Management System for IACS — security governance including SIS domain
-- ID01 §7.4.1.7: SIS-specific security requirements and safety-security conflict resolution procedures
-- ID02 Annex A.9 §12: SIS security control documentation and approval procedures
+5. **Security-Safety 衝突解決**：
+   ```markdown
+   | 衝突 ID | 安全要求 | Safety 要求 | 解決方案 | 取捨 | 核准人 |
+   |---------|---------|-----------|---------|------|--------|
+   | SC-001 | 加密 SIS↔DCS | <50ms 延遲 | 硬體加速加密 | 成本增加 | PM+SAC+FSE |
+   | SC-002 | 強制 MFA 登入 | 緊急手動覆寫 | MFA bypass for safety override | 安全降級 | Engineering Mgmt |
+   ```
 
----
+6. **SIS 資安評估報告**：
+   - IEC 62443 安全要求→SIS 控制映射
+   - SIL 認證不受影響的確認聲明
+   - 功能安全工程師書面確認
 
-## 5. 驗收標準
-
-| # | 驗收項目 | 通過條件 |
-|---|---------|---------|
-| 1 | SIS is designated as a dedicated high-SL security zone with explicit isolation f | ✅ 已驗證 |
-| 2 | Network isolation mechanism is specified and documented: air gap, dedicated fire | ✅ 已驗證 |
-| 3 | SIS access control policy permits administrative access only through defined aut | ✅ 已驗證 |
-| 4 | SIS communication conduits specify protocols, latency bounds, and reliability gu | ✅ 已驗證 |
-| 5 | SIS Change Management Procedure defines dual-sign-off requirement (Security Arch | ✅ 已驗證 |
-| 6 | Security-Safety Conflict Resolution Log documents at least one identified confli | ✅ 已驗證 |
-| 7 | Functional Safety Engineer has reviewed SIS security architecture and issued wri | ✅ 已驗證 |
-
----
-
-## 6. 工時參考
-
-| SK | 估算基準 |
-|----|---------|
-| SK-D01-027 | | Junior (< 2 yr) | 12–18 person-days | Requires collaboration with safety engineer; includes confli |
-| SK-D01-027 | | Senior (5+ yr) | 8–12 person-days | Same scope; senior leverages prior safety-security integration |
-| SK-D01-027 | Notes: New SIS deployments (greenfield) typically require moderate effort. Upgrades to existing SIL- |
+**⚠️ 避坑**：
+- **絕對不要**在 SIS 上部署可能影響 real-time 回應的安全控制（如 deep packet inspection on safety bus）
+- 加密可能增加延遲——需硬體加速或驗證延遲在 tolerance 內
+- SIS firmware 更新需 SIL 再驗證——不能像一般 OT 設備一樣 patch
+- 每個 SIS 安全控制決策都需 FSE 書面確認——口頭同意不夠
+- 既有 SIL 認證系統的安全升級工時可能是新建的 1.5-2 倍
 
 ---
 
-## 7. 品質檢查清單
+## 3. 輸出
 
-| # | 檢查項目 | 通過條件 |
-|---|---------|---------|
-| 1 | 輸入完整性 | 所有必要輸入文件已讀取並摘要 |
-| 2 | 流程覆蓋 | 1 個工作步驟皆已執行並有產出 |
-| 3 | 輸出完整性 | 所有交付物已產出、格式正確、非空白 |
-| 4 | 標準合規 | 產出引用的標準版本正確 |
-| 5 | 術語一致 | 專案術語、縮寫與 glossary 一致 |
-| 6 | 跨步驟一致 | 各步驟產出間無矛盾（如數量、SL等級） |
+| # | 交付物 |
+|---|--------|
+| 1 | SIS Security Architecture Specification |
+| 2 | SIS Network Isolation Design |
+| 3 | SIS Conduit Specification (含延遲/可靠性保證) |
+| 4 | SIS Change Management Procedure (dual sign-off) |
+| 5 | Security-Safety Conflict Resolution Log |
+| 6 | SIS Cybersecurity Assessment Report |
+| 7 | Functional Safety Engineer 書面確認 |
 
 ---
 
-## 8. 人類審核閘門
+## 4. 驗收標準
 
-完成所有工作步驟後，暫停並向使用者提交審核：
+| # | 項目 | 條件 |
+|---|------|------|
+| 1 | SIS 隔離 | SIS 為獨立高 SL Zone，與 non-safety 網路有明確隔離 |
+| 2 | 存取控制 | 管理存取僅透過認證路徑，手動覆寫不受影響 (已測試) |
+| 3 | Conduit 保證 | 延遲/可靠性指標已文件化，安全控制不降低指標 |
+| 4 | Dual Sign-off | 變更管理需 SAC + FSE 雙簽 |
+| 5 | 衝突記錄 | ≥1 衝突已辨識 (如有)，含解決方案+核准 |
+| 6 | SIL 確認 | FSE 已書面確認 SIL 認證不受影響 |
+
+---
+
+## 5. 工時參考
+
+| 場景 | Junior | Senior | 備註 |
+|------|--------|--------|------|
+| Greenfield SIS | 12-18 pd | 8-12 pd | 含衝突分析+雙簽流程 |
+| 既有 SIL 系統升級 | 18-27 pd | 12-18 pd | ×1.5 due to SIL re-validation |
+
+---
+
+## 6. 人類審核閘門
 
 ```
-安全儀控系統實施已完成。
-📋 執行範圍：1 個工程步驟（SK-D01-027）
-📊 交付物清單：
-  - SIS Security Architecture Specification: dedicated network segmentation for SIS, isolation mechanisms (air gap, demilitarized zone, application-level 
-  - SIS Network Isolation Design: network topology with firewall rules separating SIS from non-safety OT and IT networks, conduit specifications for SIS-t
-  - SIS Change Management Procedure: change process for SIS security controls, including change impact assessment for functional safety, SIL re-validation
-  - Security-Safety Conflict Resolution Log: documented cases where security requirements and safety requirements compete, the chosen resolution (security
-  - SIS Cybersecurity Assessment Report: mapping of IEC 62443 security requirements to SIS control implementation, verification that SIL certification is 
-⚠️ 待確認事項：{列出 TBD 項目或需人工判斷的假設}
-👉 請審核以上成果，確認 PASS / FAIL / PASS with Conditions。
+SIS 安全控制已完成。
+📋 SIS 設備數：{n} 台 | 隔離方式：{type}
+📊 衝突：{c} 個已辨識+已解決 | Conduit 延遲驗證：{pass/fail}
+⚠️ 關鍵：FSE 書面確認 SIL 認證不受影響？{是/否}
+👉 請 SAC + FSE 審核 PASS / FAIL / PASS with Conditions。
 ```
 
-**判定標準**：
-- **PASS**：成果完整且正確，可進入下一階段或歸檔
-- **FAIL**：發現重大缺漏或錯誤，需返工後重新提交
-- **PASS with Conditions**：整體接受，但需補充特定項目後完成
-
 ---
 
-## 9. IEC 62443 生命週期對應
+## 7. Source Traceability
 
-| 項目 | 值 |
-|------|---|
-| 主要生命週期階段 | 依專案階段 |
-| Domain | D01 (OT Cybersecurity) |
-| SK 覆蓋 | SK-D01-027 |
+| SK | 名稱 | 核心知識 |
+|----|------|---------|
+| SK-D01-027 | SIS Security Control Implementation | SIS 隔離、安全-安全衝突、dual sign-off、SIL 保護 |
 
----
-
-## 10. Source Traceability
-
-| SK 編號 | 英文名稱 | 中文名稱 | 核心知識 |
-|--------|---------|---------|---------|
-| SK-D01-027 | SIS Security Control Implementation | SIS 安全控制實施 | Design and implement cybersecurity controls for Safety Instr |
-
-<!-- Phase 5 Wave 2 deepened: SK-D01-027 -->
+<!-- Phase 6: Deep enhancement from 1 SK definition. Enhanced 2026-03-19. -->
