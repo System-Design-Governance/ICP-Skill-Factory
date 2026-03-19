@@ -1,16 +1,15 @@
 ---
 name: project-coordination
 description: >
-  專案協調與追蹤。
-  Technical clarification meetings serve as a quality gate between customer/stakeholder expectations and engineering deliverables, preventing requiremen。Contract technical scope tracking is a primary control point for project success, preventing hidden
-  MANDATORY TRIGGERS: 專案協調與追蹤, technical, contract, Contract Technical Scope Tracking, facilitation, clarification, meeting, scope, project coordination.
+  專案協調 — 涵蓋合約技術範圍管理與系統除役規劃。
+  MANDATORY TRIGGERS: 專案協調, project coordination, 合約範圍, contract scope, 除役, decommissioning, 系統除役, system decommissioning
   Use this skill for project coordination tasks in OT/ICS/SCADA cybersecurity and energy infrastructure projects.
 ---
 
-# 專案協調與追蹤
+# 專案協調 Project Coordination
 
-本 Skill 整合 2 個工程技能定義，提供專案協調與追蹤的完整工作流程。
-適用領域：Project Engineering（D10）。
+本 Skill 整合 2 個工程技能定義，提供專案協調的完整工作流程。
+適用領域：Project & Requirements Management（D10）。
 
 ---
 
@@ -19,49 +18,71 @@ description: >
 執行前確認：
 
 1. **專案背景**：已取得專案範圍定義與系統邊界
-2. **輸入文件**：下方§1 列出的輸入已備齊或已標註為 TBD
+2. **輸入文件**：下方 §1 列出的輸入已備齊或已標註為 TBD
 3. **適用標準**：已確認本專案適用的 IEC 62443 / ISO 標準版本
-4. **前置依賴**：確認以下 SK 產出已可用：SK-D01-006, SK-D01-007, SK-D02-001, SK-D02-009, SK-D10-002, SK-D10-003
+4. **前置依賴**：確認 SK-D10-001, SK-D10-002, SK-D10-003 產出已可用
 
 ---
 
 ## 1. 輸入
 
-- Customer/stakeholder requirements documentation with identified ambiguities
-- Project schedule and resource availability
-- Design and implementation approach documentation (if available)
-- Previous technical clarification records and meeting minutes
-- Risk register and change log
-- Contract statement of work (SOW) with technical scope definition
-- Project charter and approved project plan
-- Work breakdown structure (WBS) and product breakdown structure (PBS)
-- Stakeholder requirements documentation
-- Change request log and approved change register
-- Risk register with scope-related risks
+- 合約文件（SOW、技術規格、交付物清單）
+- 專案計畫與工作分解結構 (WBS / PBS)
+- 範圍基線與變更控制記錄
+- 系統資產清冊與組態基線
+- IEC 62443 生命週期需求 (ID01 §6.5.3)
+- 系統架構文件與 Zone/Conduit 圖
 
 ---
 
 ## 2. 工作流程
 
-### Step 1: 
-**SK 來源**：SK-D10-004 — Technical Clarification Meeting Facilitation
+### Step 1 — 合約技術範圍管理 (SK-D10-005)
 
-執行：Technical clarification meetings serve as a quality gate between customer/stakeholder expectations and engineering deliverables, preventing requiremen
+| 項目 | 內容 |
+|------|------|
+| 目的 | 追蹤並管理合約技術範圍，監控範圍基線與實際交付的差異 |
+| 範圍 | 專案全生命週期的範圍管理 |
+| 執行者 | Project Manager |
 
-**本步驟交付物**：
-- Technical clarification meeting agenda (with pre-meeting information package)
-- Technical clarification records (ambiguity → clarification mapping)
-- Action items list with assignments and tracking status
+**交付物**：
+- 核准範圍基線（含追溯矩陣）
+- 範圍狀態報告（含差異分析）
+- 範圍變更請求與影響評估
+- 更新後 WBS/PBS（反映核准變更）
+- 範圍完成驗證記錄
+- 範圍對交付物追溯矩陣
 
-### Step 2: 
-**SK 來源**：SK-D10-005 — Contract Technical Scope Tracking
+**常見陷阱**：
+- 隱性範圍蔓延 → 建立正式變更控制門檻
+- 安全相關範圍被無意縮減 → 與風險管理協調確認
 
-執行：Contract technical scope tracking is a primary control point for project success, preventing hidden commitments and misalignment between customer expe
+| 範圍管理活動 | 頻率 |
+|-------------|------|
+| 範圍基線定義與核准 | 專案啟動 |
+| 範圍監控與差異報告 | 每週/雙週/月 |
+| 範圍變更控制 | 按需（透過 SK-D10-002） |
+| 範圍完成驗證 | 各階段 Gate |
 
-**本步驟交付物**：
-- Approved scope baseline with traceability matrix
-- Scope status reports with variance analysis
-- Scope change requests and impacts
+### Step 2 — 系統除役規劃 (SK-D10-006)
+
+| 項目 | 內容 |
+|------|------|
+| 目的 | 規劃 OT/ICS 系統的安全除役，確保無殘餘安全漏洞 |
+| 依據 | IEC 62443 ID01 §6.5.3 |
+| 執行者 | System Engineer / Security Engineer |
+
+**交付物**：
+- 資料銷毀認證報告（媒體類型、銷毀方法 per NIST SP 800-88、驗證證據、監管鏈）
+- 憑證與證書撤銷日誌（撤銷帳號、過期證書、銷毀金鑰、時間戳確認）
+- 實體設備移除記錄（設備 ID、處置方法、接收方、環保合規）
+- 系統封存包（最終組態快照、營運歷程、維護記錄）
+- 除役後安全驗證報告（掃描結果確認零殘餘存取向量）
+- 更新後資產清冊
+
+**常見陷阱**：
+- 遺漏憑證撤銷 → 使用完整憑證清冊逐項確認
+- 未考慮營運連續性 → 須含移除步驟排序與回滾計畫
 
 ---
 
@@ -69,24 +90,22 @@ description: >
 
 | # | 交付物 | 格式 |
 |---|--------|------|
-| 1 | Technical clarification meeting agenda (with pre-meeting information package) | 依需求 |
-| 2 | Technical clarification records (ambiguity → clarification mapping) | 依需求 |
-| 3 | Action items list with assignments and tracking status | Markdown |
-| 4 | Meeting minutes with decisions, decisions rationale, and attendee sign-off | 依需求 |
-| 5 | Stakeholder acceptance confirmation of clarifications | 依需求 |
-| 6 | Approved scope baseline with traceability matrix | Markdown |
-| 7 | Scope status reports with variance analysis | Markdown |
-| 8 | Scope change requests and impacts | 依需求 |
-| 9 | Updated WBS/PBS reflecting approved scope changes | 依需求 |
-| 10 | Scope completion verification records | 依需求 |
-| 11 | Scope-to-deliverables traceability matrix | Markdown |
+| 1 | 範圍基線與追溯矩陣 | Excel |
+| 2 | 範圍狀態報告與差異分析 | Markdown |
+| 3 | 更新後 WBS/PBS | Excel |
+| 4 | 資料銷毀認證報告 | Markdown |
+| 5 | 憑證撤銷日誌 | Excel |
+| 6 | 除役後安全驗證報告 | Markdown |
+| 7 | 系統封存包 | Archive |
 
 ---
 
 ## 4. 適用標準
 
-- IEC 62443-4-1 (SD-2: Systems Security Requirements), IEC 62443-3-3 (System Security Audit), and organizational governanc
-- IEC 62443-4-1 (SD-2: Systems Security Requirements and Impact Analysis), IEC 62443-3-3 (Verification and Validation), an
+- IEC 62443 ID01 §6.5.3 — 系統除役
+- NIST SP 800-88 — 媒體清除指引
+- ISO 27001 Annex A.8 — 資產管理
+- GOV-SD — 階段閘門治理流程
 
 ---
 
@@ -94,21 +113,16 @@ description: >
 
 | # | 驗收項目 | 通過條件 |
 |---|---------|---------|
-| 1 | Technical clarification meeting agenda is prepared with identified ambiguity ite | ✅ 已驗證 |
-| 2 | Ambiguity items are classified by impact area (requirements, design, implementat | ✅ 已驗證 |
-| 3 | Meeting duration, attendees, and scope are agreed upon in advance with customer/ | ✅ 已驗證 |
-| 4 | Meeting facilitator guides discussion to systematically address each agenda item | ✅ 已驗證 |
-| 5 | Technical clarification is recorded in real-time with agreed-upon terminology an | ✅ 已驗證 |
-| 6 | Conflicting viewpoints are acknowledged, discussed, and resolved or escalated wi | ✅ 已驗證 |
-| 7 | Meeting outcome is summarized with participants confirming understanding of clar | ✅ 已驗證 |
-| 8 | Action items are assigned to responsible parties with defined due dates, priorit | ✅ 已驗證 |
-| 9 | Contract technical scope is documented with clear delineation of included delive | ✅ 已驗證 |
-| 10 | Scope baseline is approved by customer/stakeholder and project management and do | ✅ 已驗證 |
-| 11 | Scope is mapped to work breakdown structure (WBS) and product breakdown structur | ✅ 已驗證 |
-| 12 | Success criteria for scope completion are defined and measurable. | ✅ 已驗證 |
-| 13 | Actual delivery progress is compared against scope baseline at defined reporting | ✅ 已驗證 |
-| 14 | Scope variance is calculated and reported with root cause analysis for deviation | ✅ 已驗證 |
-| 15 | Scope status is communicated to project management and customer/stakeholder thro | ✅ 已驗證 |
+| 1 | 合約技術範圍已文件化 | 含包含/排除項目與假設 |
+| 2 | 範圍基線經客戶與 PM 核准 | 有簽核記錄 |
+| 3 | 範圍對應 WBS/PBS 含追溯 | 有可量測完成標準 |
+| 4 | 範圍差異有根因分析 | 於定義報告週期內提交 |
+| 5 | 所有敏感資料已不可回復銷毀 | per NIST SP 800-88 含驗證 |
+| 6 | 100% 憑證、證書、金鑰已撤銷 | 確認非功能性 |
+| 7 | 除役後網路掃描確認零殘餘存取向量 | 有掃描報告 |
+| 8 | 實體設備已安全移除 | 符合法規與環保要求 |
+| 9 | 系統封存包已產出 | 儲存於指定長期保留設施 |
+| 10 | 資產清冊已更新 | 反映所有除役元件 |
 
 ---
 
@@ -116,54 +130,33 @@ description: >
 
 | # | 檢查項目 | 通過條件 |
 |---|---------|---------|
-| 1 | 輸入完整性 | 所有必要輸入文件已讀取並摘要 |
+| 1 | 輸入完整性 | 所有必要輸入已讀取並摘要 |
 | 2 | 流程覆蓋 | 2 個工作步驟皆已執行並有產出 |
-| 3 | 輸出完整性 | 所有交付物已產出、格式正確、非空白 |
-| 4 | 標準合規 | 產出引用的標準版本正確 |
-| 5 | 術語一致 | 專案術語、縮寫與 glossary 一致 |
-| 6 | 跨步驟一致 | 各步驟產出間無矛盾（如數量、SL等級） |
+| 3 | 輸出完整性 | 所有交付物已產出且非空白 |
+| 4 | 標準合規 | 引用標準版本正確 |
+| 5 | 跨步驟一致 | 各步驟產出間無矛盾 |
 
 ---
 
 ## 7. 人類審核閘門
 
-完成所有工作步驟後，暫停並向使用者提交審核：
+完成所有工作步驟後，**暫停**並向使用者提交審核：
 
 ```
-專案協調與追蹤已完成。
-📋 執行範圍：2 個工程步驟（SK-D10-004, SK-D10-005）
-📊 交付物清單：
-  - Technical clarification meeting agenda (with pre-meeting information package)
-  - Technical clarification records (ambiguity → clarification mapping)
-  - Action items list with assignments and tracking status
-  - Meeting minutes with decisions, decisions rationale, and attendee sign-off
-  - Stakeholder acceptance confirmation of clarifications
-⚠️ 待確認事項：{列出 TBD 項目或需人工判斷的假設}
-👉 請審核以上成果，確認 PASS / FAIL / PASS with Conditions。
+專案協調已完成。
+執行範圍：2 個工程步驟（SK-D10-005, SK-D10-006）
+交付物：範圍基線與狀態報告、除役規劃文件
+待確認事項：{列出 TBD 項目或需人工判斷的假設}
+請審核以上成果，確認 PASS / FAIL / PASS with Conditions。
 ```
 
-**判定標準**：
-- **PASS**：成果完整且正確，可進入下一階段或歸檔
-- **FAIL**：發現重大缺漏或錯誤，需返工後重新提交
-- **PASS with Conditions**：整體接受，但需補充特定項目後完成
+判定：PASS / FAIL / PASS with Conditions
 
 ---
 
-## 8. IEC 62443 生命週期對應
+## 8. Source Traceability
 
-| 項目 | 值 |
-|------|---|
-| 主要生命週期階段 | 依專案階段 |
-| Domain | D10 (Project Engineering) |
-| SK 覆蓋 | SK-D10-004, SK-D10-005 |
-
----
-
-## 9. Source Traceability
-
-| SK 編號 | 英文名稱 | 中文名稱 | 核心知識 |
-|--------|---------|---------|---------|
-| SK-D10-004 | Technical Clarification Meeting Facilitation |  | Technical clarification meetings serve as a quality gate bet |
-| SK-D10-005 | Contract Technical Scope Tracking |  | Contract technical scope tracking is a primary control point |
-
-<!-- Phase 5 Wave 2 deepened: SK-D10-004, SK-D10-005 -->
+| SK 編號 | 英文名稱 | 中文名稱 |
+|--------|---------|---------|
+| SK-D10-005 | Contract Technical Scope Management | 合約技術範圍管理 |
+| SK-D10-006 | System Decommissioning Planning | 系統除役規劃 |

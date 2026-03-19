@@ -1,16 +1,15 @@
 ---
 name: system-decommissioning
 description: >
-  系統除役管理。
-  Execute the secure decommissioning of OT/ICS systems from active operation per IEC 62443 lifecycle requirements (ID01 §6.5.3), ensuring no residual se
-  MANDATORY TRIGGERS: 系統除役執行, 系統除役管理, credential-revocation, IEC-62443, System Decommissioning Execution, system decommissioning, decommissioning, lifecycle, data-destruction.
-  Use this skill for system decommissioning tasks in OT/ICS/SCADA cybersecurity and energy infrastructure projects.
+  除役執行 — 涵蓋 OT/ICS 系統除役的工作許可管理與安全除役執行。
+  MANDATORY TRIGGERS: 除役執行, decommissioning execution, 資料銷毀, data destruction, 媒體清除, media sanitization, 設備處置, equipment disposal
+  Use this skill for system decommissioning execution tasks in OT/ICS/SCADA cybersecurity and energy infrastructure projects.
 ---
 
-# 系統除役管理
+# 除役執行 System Decommissioning
 
-本 Skill 整合 1 個工程技能定義，提供系統除役管理的完整工作流程。
-適用領域：Project Engineering（D10）。
+本 Skill 整合 1 個工程技能定義，提供系統除役執行的完整工作流程。
+適用領域：Project & Requirements Management（D10）。
 
 ---
 
@@ -18,35 +17,64 @@ description: >
 
 執行前確認：
 
-1. **專案背景**：已取得專案範圍定義與系統邊界
-2. **輸入文件**：下方§1 列出的輸入已備齊或已標註為 TBD
-3. **適用標準**：已確認本專案適用的 IEC 62443 / ISO 標準版本
-4. **前置依賴**：確認以下 SK 產出已可用：SK-D01-005, SK-D01-007, SK-D02-004, SK-D10-004, SK-D10-005
+1. **專案背景**：已取得除役核准與系統範圍定義
+2. **輸入文件**：下方 §1 列出的輸入已備齊或已標註為 TBD
+3. **適用標準**：已確認本專案適用的 IEC 62443 / NIST SP 800-88 標準版本
+4. **前置依賴**：確認 SK-D10-005 (Contract Technical Scope) 與 SK-D10-006 (Decommissioning Planning) 產出已可用
 
 ---
 
 ## 1. 輸入
 
-- Approved decommissioning plan with sequencing schedule (from SK-D10-005: System Decommissioning Planning)
-- Current system configuration documentation and asset inventory (from SK-D01-005: Asset Inventory Development)
-- Active credential and certificate registry for the target system
-- Vendor contract and license inventory for affected components
-- Risk assessment for system removal impact (from SK-D01-007: Detailed Risk Assessment)
-- Network dependency mapping showing interconnections with remaining systems (from SK-D02-004: Data Flow Diagram Development)
+- 除役核准文件 (from SK-D10-006 除役規劃)
+- 系統資產清冊與組態基線
+- 憑證、證書與金鑰清冊
+- 廠商授權與支援合約清單
+- 危害識別與風險評估結果
+- 營運連續性計畫
+- ID04 §12.0 工作許可程序需求
 
 ---
 
 ## 2. 工作流程
 
-### Step 1: 系統除役執行
-**SK 來源**：SK-D10-006 — System Decommissioning Execution
+### Step 1 — 工作許可流程管理與除役執行 (SK-D10-007)
 
-執行系統除役執行：Execute the secure decommissioning of OT/ICS systems from active operation per IEC 62443 lifecycle requirements (ID01 §6.5.3), ensuring no residual se
+| 項目 | 內容 |
+|------|------|
+| 目的 | 建立正式授權程序控制對營運 OT/ICS 系統的存取，執行安全除役 |
+| 依據 | ID04 §12.0, IEC 62443 ID01 §6.5.3, NIST SP 800-88 |
+| 執行者 | System Engineer / Security Engineer / Operations Lead |
 
-**本步驟交付物**：
-- Data Destruction Certification Report: media type, destruction method (per NIST SP 800-88), verification evidence, chain of custody
-- Credential and Certificate Revocation Log: revoked accounts, expired certificates, destroyed keys, timestamped confirmation
-- Physical Equipment Removal Record: equipment ID, disposal method, receiving party, environmental compliance
+**階段 A — 工作許可 (PtW) 建立**：
+
+| 許可類型 | 風險評估要點 |
+|---------|------------|
+| 熱工作 (Hot Work) | 火災風險、鄰近設備保護 |
+| 電氣作業 | 隔離程序、能量釋放驗證 |
+| 受限空間 | 通風、氣體偵測、救援計畫 |
+| 系統修改 | 組態影響、安全等級維持 |
+
+**交付物 A**：PtW 流程程序、各類型許可範本、風險評估範本、授權矩陣與核准鏈、許可追蹤與關閉驗證清單
+
+**階段 B — 安全除役執行**：
+
+| 除役步驟 | 驗證要點 |
+|---------|---------|
+| 資料銷毀 | per NIST SP 800-88，媒體類型對應銷毀方法，監管鏈完整 |
+| 憑證撤銷 | 100% 帳號/證書/金鑰已撤銷並確認非功能性 |
+| 授權停用 | 廠商授權與支援合約已停用 |
+| 實體移除 | 設備安全移除，符合環保法規 |
+| 系統封存 | 最終組態快照、營運歷程、維護記錄 |
+| 驗證掃描 | 除役後網路掃描確認零殘餘存取向量 |
+
+**交付物 B**：資料銷毀認證報告、憑證撤銷日誌、實體設備移除記錄、系統封存包、除役後安全驗證報告、更新後資產清冊
+
+**常見陷阱**：
+- 未等計畫核准即開始除役 → 須有正式除役授權
+- 遺漏遠端存取憑證 → 使用完整憑證清冊含遠端/VPN/API 金鑰
+- 許可關閉驗證不足 → 須含系統狀態恢復簽核
+- 媒體清除方法不符規格 → 須依媒體類型對應 NIST SP 800-88 方法
 
 ---
 
@@ -54,22 +82,24 @@ description: >
 
 | # | 交付物 | 格式 |
 |---|--------|------|
-| 1 | Data Destruction Certification Report: media type, destruction method (per NIST SP 800-88), verification evidence, chain of custody | Markdown |
-| 2 | Credential and Certificate Revocation Log: revoked accounts, expired certificates, destroyed keys, timestamped confirmation | 依需求 |
-| 3 | Physical Equipment Removal Record: equipment ID, disposal method, receiving party, environmental compliance | 依需求 |
-| 4 | System Archive Package: final configuration snapshots, operational history, maintenance records for long-term retention | 依需求 |
-| 5 | Post-Decommissioning Security Verification Report: scan results confirming zero residual access vectors | Markdown |
-| 6 | Updated asset inventory reflecting removed systems | 依需求 |
+| 1 | PtW 流程程序與許可範本 | Markdown / Word |
+| 2 | 風險評估範本與授權矩陣 | Excel |
+| 3 | 資料銷毀認證報告 | Markdown |
+| 4 | 憑證撤銷日誌 | Excel |
+| 5 | 實體設備移除記錄 | Excel |
+| 6 | 系統封存包 | Archive |
+| 7 | 除役後安全驗證報告 | Markdown |
+| 8 | 更新後資產清冊 | Excel |
 
 ---
 
 ## 4. 適用標準
 
-- IEC 62443-2-1: Security Management System — decommissioning procedures
-- IEC 62443-2-4: Security Program Requirements for IACS Service Providers — secure disposal requirements
-- NIST SP 800-88 Rev. 1: Guidelines for Media Sanitization — data destruction methods and verification
-- NIST SP 800-82 Rev. 3: Guide to OT Security — lifecycle management guidance
-- Local regulatory requirements for hazardous material disposal and data privacy
+- IEC 62443 ID01 §6.5.3 — 系統除役
+- ID04 §12.0 — 工作許可程序
+- NIST SP 800-88 Rev. 1 — 媒體清除指引
+- ISO 27001 Annex A.8 — 資產管理
+- ISO 27001 Annex A.11 — 實體安全
 
 ---
 
@@ -77,76 +107,51 @@ description: >
 
 | # | 驗收項目 | 通過條件 |
 |---|---------|---------|
-| 1 | All sensitive data on decommissioned systems is irrecoverably destroyed with doc | ✅ 已驗證 |
-| 2 | 100% of system credentials, certificates, and cryptographic keys are revoked and | ✅ 已驗證 |
-| 3 | Post-decommissioning network scan confirms zero residual access vectors from rem | ✅ 已驗證 |
-| 4 | Physical equipment is securely removed and disposed per applicable regulatory an | ✅ 已驗證 |
-| 5 | Complete system archive package is produced and stored in designated long-term r | ✅ 已驗證 |
-| 6 | Updated asset inventory accurately reflects the removal of all decommissioned co | ✅ 已驗證 |
-| 7 | All vendor licenses and support contracts for decommissioned systems are deactiv | ✅ 已驗證 |
+| 1 | PtW 程序對齊 ID04 §12.0 所有強制要求 | 通過合規審查 |
+| 2 | 四類許可（熱工作、電氣、受限空間、系統修改）皆有完整範本 | 含風險評估 |
+| 3 | 風險評估整合許可授權決策 | 有危害對應記錄 |
+| 4 | 許可關閉驗證防止不安全狀態轉換 | 含簽核權限 |
+| 5 | 稽核追蹤記錄所有許可生命週期事件 | 含時間戳與角色 |
+| 6 | 所有敏感資料已不可回復銷毀 | per NIST SP 800-88 含驗證 |
+| 7 | 100% 憑證、證書、金鑰已撤銷 | 確認非功能性 |
+| 8 | 除役後掃描確認零殘餘存取向量 | 有掃描報告 |
+| 9 | 實體設備安全移除與處置 | 符合法規與環保要求 |
+| 10 | 系統封存包完整 | 儲存於指定長期保留設施 |
+| 11 | 資產清冊已更新 | 反映所有除役元件 |
+| 12 | 廠商授權與合約已停用 | 有書面確認 |
 
 ---
 
-## 6. 工時參考
-
-| SK | 估算基準 |
-|----|---------|
-| SK-D10-006 | | Junior (< 2 yr) | 5–8 person-days | Single system, standard IT/OT equipment; requires senior overs |
-| SK-D10-006 | | Senior (5+ yr) | 2–4 person-days | Same scope; experienced with media sanitization standards and c |
-
----
-
-## 7. 品質檢查清單
+## 6. 品質檢查清單
 
 | # | 檢查項目 | 通過條件 |
 |---|---------|---------|
-| 1 | 輸入完整性 | 所有必要輸入文件已讀取並摘要 |
-| 2 | 流程覆蓋 | 1 個工作步驟皆已執行並有產出 |
-| 3 | 輸出完整性 | 所有交付物已產出、格式正確、非空白 |
-| 4 | 標準合規 | 產出引用的標準版本正確 |
-| 5 | 術語一致 | 專案術語、縮寫與 glossary 一致 |
-| 6 | 跨步驟一致 | 各步驟產出間無矛盾（如數量、SL等級） |
+| 1 | 輸入完整性 | 所有必要輸入已讀取並摘要 |
+| 2 | 流程覆蓋 | PtW 與除役執行皆已執行並有產出 |
+| 3 | 輸出完整性 | 所有交付物已產出且非空白 |
+| 4 | 標準合規 | NIST SP 800-88 與 ID04 §12.0 正確引用 |
+| 5 | 安全驗證 | 除役後掃描已執行 |
 
 ---
 
-## 8. 人類審核閘門
+## 7. 人類審核閘門
 
-完成所有工作步驟後，暫停並向使用者提交審核：
+完成所有工作步驟後，**暫停**並向使用者提交審核：
 
 ```
-系統除役管理已完成。
-📋 執行範圍：1 個工程步驟（SK-D10-006）
-📊 交付物清單：
-  - Data Destruction Certification Report: media type, destruction method (per NIST SP 800-88), verification evidence, chain of custody
-  - Credential and Certificate Revocation Log: revoked accounts, expired certificates, destroyed keys, timestamped confirmation
-  - Physical Equipment Removal Record: equipment ID, disposal method, receiving party, environmental compliance
-  - System Archive Package: final configuration snapshots, operational history, maintenance records for long-term retention
-  - Post-Decommissioning Security Verification Report: scan results confirming zero residual access vectors
-⚠️ 待確認事項：{列出 TBD 項目或需人工判斷的假設}
-👉 請審核以上成果，確認 PASS / FAIL / PASS with Conditions。
+除役執行已完成。
+執行範圍：1 個工程步驟（SK-D10-007）含 PtW 建立與安全除役執行
+交付物：PtW 程序、資料銷毀認證、憑證撤銷日誌、設備移除記錄、安全驗證報告
+待確認事項：{列出 TBD 項目或需人工判斷的假設}
+請審核以上成果，確認 PASS / FAIL / PASS with Conditions。
 ```
 
-**判定標準**：
-- **PASS**：成果完整且正確，可進入下一階段或歸檔
-- **FAIL**：發現重大缺漏或錯誤，需返工後重新提交
-- **PASS with Conditions**：整體接受，但需補充特定項目後完成
+判定：PASS / FAIL / PASS with Conditions
 
 ---
 
-## 9. IEC 62443 生命週期對應
+## 8. Source Traceability
 
-| 項目 | 值 |
-|------|---|
-| 主要生命週期階段 | 依專案階段 |
-| Domain | D10 (Project Engineering) |
-| SK 覆蓋 | SK-D10-006 |
-
----
-
-## 10. Source Traceability
-
-| SK 編號 | 英文名稱 | 中文名稱 | 核心知識 |
-|--------|---------|---------|---------|
-| SK-D10-006 | System Decommissioning Execution | 系統除役執行 | Execute the secure decommissioning of OT/ICS systems from ac |
-
-<!-- Phase 5 Wave 2 deepened: SK-D10-006 -->
+| SK 編號 | 英文名稱 | 中文名稱 |
+|--------|---------|---------|
+| SK-D10-007 | Permit to Work Process & Decommissioning Execution | 工作許可流程與除役執行 |

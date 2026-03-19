@@ -1,16 +1,15 @@
 ---
 name: requirements-traceability
 description: >
-  需求與變更管理。
-  - Analyze post-test gap closure data: which requirement types consistently show late closure? Refine requirement specification approach。- Analyze post-implementation change data: which impact areas consistently show estimation errors? Refine estimati
-  MANDATORY TRIGGERS: 需求與變更管理, 工作許可流程管理, 變更申請評估與影響分析, 需求追溯矩陣管理, 變更管理執行, Change Request Evaluation and Impact Analysis, requirements, requirements traceability, permit, moc, Requirements Traceability Matrix Management, analysis, management.
+  需求追溯與變更管理 — 涵蓋需求管理、變更管理、技術協調及合約技術管理。
+  MANDATORY TRIGGERS: 需求追溯, requirements traceability, RTM, 需求管理, requirements management, 變更管理, change management, MOC, 技術協調, technical coordination, 合約技術, contract technical
   Use this skill for requirements traceability tasks in OT/ICS/SCADA cybersecurity and energy infrastructure projects.
 ---
 
-# 需求與變更管理
+# 需求追溯與變更管理 Requirements Traceability
 
-本 Skill 整合 4 個工程技能定義，提供需求與變更管理的完整工作流程。
-適用領域：Project Engineering（D10）。
+本 Skill 整合 4 個工程技能定義，提供需求追溯與變更管理的完整工作流程。
+適用領域：Project & Requirements Management（D10）。
 
 ---
 
@@ -19,55 +18,87 @@ description: >
 執行前確認：
 
 1. **專案背景**：已取得專案範圍定義與系統邊界
-2. **輸入文件**：下方§1 列出的輸入已備齊或已標註為 TBD
+2. **輸入文件**：下方 §1 列出的輸入已備齊或已標註為 TBD
 3. **適用標準**：已確認本專案適用的 IEC 62443 / ISO 標準版本
-4. **前置依賴**：確認以下 SK 產出已可用：SK-D10-004, SK-D10-005
+4. **前置依賴**：確認 SK-D01-001, SK-D11-001, SK-D11-020 產出已可用
 
 ---
 
 ## 1. 輸入
 
-- Customer requirements specification (CRS) or functional specification document (FSD) approved and baselined
-- System requirements specification (SRS) complete and approved
-- High-level system architecture defined with major functional components identified
-- IEC 62443 security level (SL) target assigned
-- Verification and validation plan (V&V Plan) framework established: verification methods, test approach, acceptance criteria
-- RTM tool selected and configured: spreadsheet, dedicated requirements management tool, or integrated development environment (IDE)
-- Change request form and process defined: submission format, required information, routing procedures
-- CCB (Configuration Control Board) established with clear authority matrix: approvers by change type/scope
-- Baseline requirements, design, and test plan established and baselined
-- Project schedule, budget, and resource plan baselined
-- IEC 62443 security level (SL) target and threat model documented
-- Security impact assessment criteria defined: what constitutes a security-affecting change
+- 客戶需求文件（合約、SOW、技術規格）
+- IEC 62443 系列安全需求
+- 專案設計文件與架構圖
+- 變更請求（利害關係人、技術發現、稽核結果）
+- 現有 RTM（若有）
+- 組態管理基線
 
 ---
 
 ## 2. 工作流程
 
-### Step 1: 需求追溯矩陣管理
-**SK 來源**：SK-D10-001 — Requirements Traceability Matrix Management
+### Step 1 — 需求追溯矩陣管理 (SK-D10-001)
 
-執行需求追溯矩陣管理：- Analyze post-test gap closure data: which requirement types consistently show late closure? Refine requirement specification approach
+| 項目 | 內容 |
+|------|------|
+| 目的 | 建立並維護 RTM，連結客戶需求至設計元素、測試案例與驗證證據 |
+| 追溯 | 雙向追溯：需求 ↔ 設計 ↔ 測試 |
+| 執行者 | Requirements Engineer / System Architect |
 
-### Step 2: 變更申請評估與影響分析
-**SK 來源**：SK-D10-002 — Change Request Evaluation and Impact Analysis
+**交付物**：
+- RTM 結構定義（需求、設計回應、測試案例、驗證證據、狀態）
+- 100% 客戶需求已輸入並含可測試驗收標準
+- 雙向追溯驗證（無未對應需求、無孤立設計元素）
+- 變更控制流程（所有 RTM 變更需核准與影響分析）
+- RTM 基線核准（客戶、系統架構師、QA Lead 簽核）
 
-執行變更申請評估與影響分析：- Analyze post-implementation change data: which impact areas consistently show estimation errors? Refine estimation methods
+**常見陷阱**：需求不完整或模糊導致追溯缺口 → 須釐清並文件化所有假設；RTM 未隨變更更新 → 建立強制更新機制
 
-### Step 3: 變更管理執行
-**SK 來源**：SK-D10-003 — Management of Change (MOC) Execution
+### Step 2 — 變更請求評估 (SK-D10-002)
 
-執行變更管理執行：- Analyze MOC execution metrics: which types of changes consistently exceed schedule/cost estimates? Refine planning approach
+| 項目 | 內容 |
+|------|------|
+| 目的 | 系統性評估變更請求的技術、時程、成本與安全影響 |
+| 依據 | IEC 62443 ID01 §7.8.7 |
+| 執行者 | Change Manager / Design Lead |
 
-### Step 4: 工作許可流程管理
-**SK 來源**：SK-D10-007 — Permit to Work (PtW) Process Management
+**交付物**：
+- 變更請求表單（描述、理由、影響範圍、實施方案）
+- 技術可行性評估（設計影響、風險、緩解措施）
+- 安全影響評估（SL 影響、安全驗證活動、安全官簽核）
+- 時程影響分析（受影響活動、關鍵路徑影響、復原方案）
+- 成本影響分析（成本明細、預算評估、應急準備）
 
-執行工作許可流程管理：The Permit to Work (PtW) Process Management skill establishes and maintains formal authorization procedures for controlling access to operational OT/I
+**常見陷阱**：影響分析過於膚淺 → 須含所有影響維度；遺漏安全影響 → 安全影響評估為必要項
 
-**本步驟交付物**：
-- Permit to Work process procedure (ID04 §12.0-aligned)
-- Work permit templates (hot work, electrical, confined space, system modification)
-- Risk assessment templates for each permit type
+### Step 3 — 變更執行管理 MOC (SK-D10-003)
+
+| 項目 | 內容 |
+|------|------|
+| 目的 | 管理已核准變更從實施到驗證與文件更新的完整流程 |
+| 依據 | IEC 62443 ID01 §7.8.7.1, ID03 §5.7.1 |
+| 執行者 | Change Manager / Design Lead |
+
+**交付物**：
+- 變更實施計畫（任務、時程、資源、驗證方法、回滾程序）
+- 設計同儕審查記錄
+- 驗證測試結果（所有測試案例執行、pass/fail 狀態）
+- 文件基線更新（版本號、生效日、舊版存檔）
+- 正式簽核（Design Lead, QA Lead, Security Officer, PM）
+
+### Step 4 — 技術澄清會議 (SK-D10-004)
+
+| 項目 | 內容 |
+|------|------|
+| 目的 | 促進 ICP 團隊與客戶/利害關係人間的技術澄清 |
+| 產出 | 消除需求、設計與實施方法的模糊性 |
+| 執行者 | Project Manager |
+
+**交付物**：
+- 技術澄清會議議程（含預會資訊包）
+- 技術澄清記錄（模糊項 → 澄清對應）
+- 行動項目清單（含指派與追蹤狀態）
+- 會議紀錄（決策、理由、出席者簽核）
 
 ---
 
@@ -75,27 +106,19 @@ description: >
 
 | # | 交付物 | 格式 |
 |---|--------|------|
-| 1 | Permit to Work process procedure (ID04 §12.0-aligned) | 依需求 |
-| 2 | Work permit templates (hot work, electrical, confined space, system modification) | 依需求 |
-| 3 | Risk assessment templates for each permit type | 依需求 |
-| 4 | Authorization matrix and approval chain documentation | Markdown |
-| 5 | Permit tracking and closure verification checklists | Markdown |
-| 6 | Audit trail and record retention procedures | 依需求 |
+| 1 | 需求追溯矩陣 (RTM) | Excel |
+| 2 | 變更評估報告 | Markdown |
+| 3 | 變更實施計畫與驗證記錄 | Markdown |
+| 4 | 技術澄清記錄與會議紀錄 | Markdown |
 
 ---
 
 ## 4. 適用標準
 
-- IEC 62443-1-1: Terminology and concepts
-- IEC 62443-3-3: System design and engineering; requirements management and traceability
-- IEC 62443-4-1: Product development (establishes requirements for secure product design)
-- IEEE 830: Software requirements specification
-- ISO/IEC/IEEE 42010: Architecture description
-- Project Customer Requirements Specification (CRS) / Functional Specification Document (FSD)
-- Project System Requirements Specification (SRS)
-- Verification and Validation Plan (V&V Plan)
-- IEC 62443-3-3: System design and engineering; Management of Change (§7.8.7, §7.8.7.1)
-- IEC 62443-4-1: Product development (secure design practices)
+- IEC 62443-3-3 — 系統安全需求
+- IEC 62443 ID01 §7.8.7 — 變更管理
+- IEC 62443 ID03 §5.7.1 — MOC 程序
+- ISO/IEC/IEEE 29148 — 需求工程
 
 ---
 
@@ -103,94 +126,53 @@ description: >
 
 | # | 驗收項目 | 通過條件 |
 |---|---------|---------|
-| 1 | RTM structure defined with all required columns (requirement, design response, t | ✅ 已驗證 |
-| 2 | 100% of customer requirements identified, prioritized, and entered into RTM with | ✅ 已驗證 |
-| 3 | Backward traceability verified: every design element mapped to ≥1 requirement | ✅ 已驗證 |
-| 4 | Forward traceability verified: every requirement has ≥1 design response document | ✅ 已驗證 |
-| 5 | Verification traceability verified: every requirement has ≥1 test case and plann | ✅ 已驗證 |
-| 6 | Bi-directional traceability complete: no unmapped requirements, no orphan design | ✅ 已驗證 |
-| 7 | Change control process implemented: all RTM changes require approval and impact  | ✅ 已驗證 |
-| 8 | RTM baseline approved by customer, system architect, and QA lead | ✅ 已驗證 |
-| 9 | Change request form complete with clear description, rationale, affected items,  | ✅ 已驗證 |
-| 10 | Technical feasibility assessment documented: design impact, implementation appro | ✅ 已驗證 |
-| 11 | Security impact assessment completed and documented (if change is security-affec | ✅ 已驗證 |
-| 12 | Impact on target SL identified | ✅ 已驗證 |
-| 13 | Required security verification activities defined | ✅ 已驗證 |
-| 14 | Security officer sign-off obtained | ✅ 已驗證 |
-| 15 | Schedule impact analysis documented: affected activities, effort estimates, crit | ✅ 已驗證 |
+| 1 | RTM 結構含所有必要欄位 | 需求、設計、測試、證據、狀態 |
+| 2 | 100% 客戶需求已輸入 RTM | 含可測試驗收標準 |
+| 3 | 雙向追溯完整 | 無未對應需求、無孤立設計元素 |
+| 4 | RTM 基線已核准 | 客戶、SA、QA 簽核 |
+| 5 | 變更請求含完整影響分析 | 技術、時程、成本、安全四維度 |
+| 6 | 安全影響變更含安全官簽核 | SL 影響已評估 |
+| 7 | 變更實施計畫含回滾程序 | 所有任務有時程與資源 |
+| 8 | 驗證測試 100% 執行 | 結果已記錄、pass/fail 明確 |
+| 9 | 文件基線已更新 | 版本號正確、舊版存檔 |
+| 10 | 技術澄清記錄完整 | 模糊項已解決或升級 |
 
 ---
 
-## 6. 工時參考
-
-| SK | 估算基準 |
-|----|---------|
-| SK-D10-001 | Forward traceability: 100% of requirements have ≥1 design response; average design response time <3  |
-| SK-D10-001 | Verification traceability: 100% of requirements have test case(s); average test case development tim |
-| SK-D10-001 | Gap closure rate: all identified gaps tracked; 100% critical gaps closed; closure cycle time <5 busi |
-| SK-D10-001 | Audit findings: RTM audits identify <5% data inconsistencies; issues corrected within 3 days |
-| SK-D10-002 | Evaluation cycle time: average time from change submission to CCB decision ≤5 business days (for sta |
-| SK-D10-003 | Design peer review completion: 100% of design changes reviewed by qualified peer; average review cyc |
-| SK-D10-003 | Baseline release timeliness: new baseline released within 2 business days of change closure |
-| SK-D10-007 | | Role | Junior (hours) | Senior (hours) | |
-
----
-
-## 7. 品質檢查清單
+## 6. 品質檢查清單
 
 | # | 檢查項目 | 通過條件 |
 |---|---------|---------|
-| 1 | 輸入完整性 | 所有必要輸入文件已讀取並摘要 |
+| 1 | 輸入完整性 | 所有必要輸入已讀取並摘要 |
 | 2 | 流程覆蓋 | 4 個工作步驟皆已執行並有產出 |
-| 3 | 輸出完整性 | 所有交付物已產出、格式正確、非空白 |
-| 4 | 標準合規 | 產出引用的標準版本正確 |
-| 5 | 術語一致 | 專案術語、縮寫與 glossary 一致 |
-| 6 | 跨步驟一致 | 各步驟產出間無矛盾（如數量、SL等級） |
-| 7 | 依賴追溯 | 外部依賴 SK 的輸入已驗證可用 |
+| 3 | 輸出完整性 | 所有交付物已產出且非空白 |
+| 4 | 標準合規 | 引用標準版本正確 |
+| 5 | 跨步驟一致 | 各步驟產出間無矛盾 |
+| 6 | 依賴追溯 | 外部依賴 SK 的輸入已驗證可用 |
 
 ---
 
-## 8. 人類審核閘門
+## 7. 人類審核閘門
 
-完成所有工作步驟後，暫停並向使用者提交審核：
+完成所有工作步驟後，**暫停**並向使用者提交審核：
 
 ```
-需求與變更管理已完成。
-📋 執行範圍：4 個工程步驟（SK-D10-001, SK-D10-002, SK-D10-003, SK-D10-007）
-📊 交付物清單：
-  - Permit to Work process procedure (ID04 §12.0-aligned)
-  - Work permit templates (hot work, electrical, confined space, system modification)
-  - Risk assessment templates for each permit type
-  - Authorization matrix and approval chain documentation
-  - Permit tracking and closure verification checklists
-⚠️ 待確認事項：{列出 TBD 項目或需人工判斷的假設}
-👉 請審核以上成果，確認 PASS / FAIL / PASS with Conditions。
+需求追溯與變更管理已完成。
+執行範圍：4 個工程步驟（SK-D10-001, SK-D10-002, SK-D10-003, SK-D10-004）
+交付物：RTM、變更評估報告、變更實施計畫、技術澄清記錄
+待確認事項：{列出 TBD 項目或需人工判斷的假設}
+請審核以上成果，確認 PASS / FAIL / PASS with Conditions。
 ```
 
-**判定標準**：
-- **PASS**：成果完整且正確，可進入下一階段或歸檔
-- **FAIL**：發現重大缺漏或錯誤，需返工後重新提交
-- **PASS with Conditions**：整體接受，但需補充特定項目後完成
+判定：PASS / FAIL / PASS with Conditions
 
 ---
 
-## 9. IEC 62443 生命週期對應
+## 8. Source Traceability
 
-| 項目 | 值 |
-|------|---|
-| 主要生命週期階段 | 依專案階段 |
-| Domain | D10 (Project Engineering) |
-| SK 覆蓋 | SK-D10-001, SK-D10-002, SK-D10-003, SK-D10-007 |
-
----
-
-## 10. Source Traceability
-
-| SK 編號 | 英文名稱 | 中文名稱 | 核心知識 |
-|--------|---------|---------|---------|
-| SK-D10-001 | Requirements Traceability Matrix Management | 需求追溯矩陣管理 | - Analyze post-test gap closure data: which requirement type |
-| SK-D10-002 | Change Request Evaluation and Impact Analysis | 變更申請評估與影響分析 | - Analyze post-implementation change data: which impact area |
-| SK-D10-003 | Management of Change (MOC) Execution | 變更管理執行 | - Analyze MOC execution metrics: which types of changes cons |
-| SK-D10-007 | Permit to Work (PtW) Process Management | 工作許可流程管理 | The Permit to Work (PtW) Process Management skill establishe |
-
-<!-- Phase 5 Wave 2 deepened: SK-D10-001, SK-D10-002, SK-D10-003, SK-D10-007 -->
+| SK 編號 | 英文名稱 | 中文名稱 |
+|--------|---------|---------|
+| SK-D10-001 | Requirements Traceability Matrix Management | 需求追溯矩陣管理 |
+| SK-D10-002 | Change Request Evaluation | 變更請求評估 |
+| SK-D10-003 | Management of Change (MOC) Execution | 變更執行管理 |
+| SK-D10-004 | Technical Clarification Meeting Facilitation | 技術澄清會議促進 |

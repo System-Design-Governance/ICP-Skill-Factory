@@ -1,13 +1,12 @@
 ---
 name: process-development
 description: >
-  流程開發與優化。
-  Develop, maintain, and govern Standard Operating Procedures (SOPs) for engineering activities across all IEC 62443 project lifecycle stages (R0 throug。- Analysis paralysis delaying implementation actions。Integrate cybersecurity requirements into proc
-  MANDATORY TRIGGERS: 採購安全需求整合, SI/SM 專案安全管理計畫撰寫, 標準歸屬與例外裁定, 流程效率分析, 工程 SOP 制定, 流程開發與優化, ID06, SI/SM Project Security Management Plan Development, escalation, IEC-62443-2-4, procurement-security, SM, security-management-plan, Engineering SOP Development.
+  流程開發 — 涵蓋 SOP 制定、流程效率分析、教訓管理、技術知識庫開發及人員安全資格管理。
+  MANDATORY TRIGGERS: 流程開發, process development, SOP, 標準作業程序, 知識管理, knowledge capture, 教訓, lessons learned, 持續改善, continuous improvement, 訓練計畫, training program
   Use this skill for process development tasks in OT/ICS/SCADA cybersecurity and energy infrastructure projects.
 ---
 
-# 流程開發與優化
+# 流程開發 Process Development
 
 本 Skill 整合 5 個工程技能定義，提供流程開發與優化的完整工作流程。
 適用領域：Governance & Process（D11）。
@@ -19,75 +18,83 @@ description: >
 執行前確認：
 
 1. **專案背景**：已取得專案範圍定義與系統邊界
-2. **輸入文件**：下方§1 列出的輸入已備齊或已標註為 TBD
+2. **輸入文件**：下方 §1 列出的輸入已備齊或已標註為 TBD
 3. **適用標準**：已確認本專案適用的 IEC 62443 / ISO 標準版本
-4. **前置依賴**：確認以下 SK 產出已可用：SK-D01-001, SK-D01-006, SK-D01-007, SK-D01-024, SK-D08-001, SK-D11-001
+4. **前置依賴**：確認 SK-D11-001, SK-D11-011, SK-D11-012, SK-D11-013 產出已可用
 
 ---
 
 ## 1. 輸入
 
-- Project Charter and Security Policy framework (from project initialization, per ID01 §6.5.1.2)
-- Stakeholder roles and responsibilities matrix (RACI, from SK-D11-001)
-- Existing SOP templates and organizational process standards
-- Regulatory, contractual, and compliance requirements (from Scope Definition, ID01 §6.5.1.1)
-- Technical skill requirements and work instructions from SMEs across D01–D14 domains
-- Process change requests from project teams, audit findings, or management reviews
-- Security architecture and security level requirements from D01 design (specifically: Zone/Conduit Architecture SK-D01-001, Network Security Device Req
-- Procurement Security Procedure ID22 (organizational standard for security in vendor selection, RFQ/RFP requirements, vendor agreements, supply chain r
-- Preliminary vendor list and product options (identified during architectural design phase)
-- Risk assessment findings relevant to supply chain and third-party components (from SK-D01-006 ⏳)
-- Security control requirements and specifications (from detailed design, D01 domain skills)
-- Vendor certifications and security claims documentation (ISO 27001, IEC 62443, NIST compliance, etc.)
+- 專案章程與安全政策框架 (ID01 §6.5.1.2)
+- 利害關係人角色與職責矩陣 (RACI)
+- 現有 SOP 範本與組織流程標準
+- 法規、合約與合規要求
+- 各領域 (D01–D14) SME 技術技能需求與工作說明
+- 流程變更請求、稽核發現與管理審查結果
+- 人員安全程序 (ID21) 與人員安全需求 (ID06 §5.4)
 
 ---
 
 ## 2. 工作流程
 
-### Step 1: 工程 SOP 制定
-**SK 來源**：SK-D11-004 — Engineering SOP Development
+### Step 1 — 工程 SOP 制定 (SK-D11-004)
 
-執行工程 SOP 制定：Develop, maintain, and govern Standard Operating Procedures (SOPs) for engineering activities across all IEC 62443 project lifecycle stages (R0 throug
+| 項目 | 內容 |
+|------|------|
+| 目的 | 建立、維護並治理所有 IEC 62443 生命週期階段 (R0–R5) 的工程 SOP |
+| 範圍 | 各領域 D01–D14 的 SOP 套件 |
+| 執行者 | Governance Lead / Senior Engineer |
 
-**本步驟交付物**：
-- SOP Master Document Suite**: complete set of engineering SOPs organized by domain (D01–D14) and lifecycle stage (R0–R5), each in template format with:
-- Purpose, scope, applicability (which roles, which lifecycle stages)
-- Prerequisites and entry criteria
+**交付物**：SOP 主文件套件（含目的、範圍、先決條件、步驟流程、RACI、驗收標準）、SOP 版本控制日誌
 
-### Step 2: 流程效率分析
-**SK 來源**：SK-D11-005 — Process Efficiency Analysis
+**常見陷阱**：SOP 使用模糊語言（如「適當」）→ 須含可觀察、可量測的驗收標準；版本控制滯後 → 須於 5 日內更新
 
-執行流程效率分析：- Analysis paralysis delaying implementation actions
+### Step 2 — 流程效率分析 (SK-D11-005)
 
-### Step 3: 採購安全需求整合
-**SK 來源**：SK-D11-015 — Procurement Security Requirements Integration
+| 項目 | 內容 |
+|------|------|
+| 目的 | 分析工程流程效率，識別瓶頸、浪費與改善機會 |
+| 產出對接 | 分析結果饋入 SK-D11-004 實施改善 |
+| 執行者 | Process Analyst / Senior Engineer |
 
-執行採購安全需求整合：Integrate cybersecurity requirements into procurement processes per organizational procurement security procedure (ID22 Tier 3 standard), ensuring tha
+**交付物**：現狀流程圖、瓶頸根因分析、週期時間縮減機會量化、價值流分析、優先改善建議
 
-**本步驟交付物**：
-- Security Requirements Specification for Procurement (SRSP)**: document translating security control requirements into procurement language, including:
-- Required vendor certifications/attestations (ISO 27001, IEC 62443 Curve certification, NIST compliance, etc.)
-- Technical security specifications for products (e.g., encryption algorithms, key management, logging capabilities, FIPS compliance)
+**常見陷阱**：分析癱瘓延遲行動 → 設定分析時限；基於不完整流程理解提出建議 → 須充分訪談 SME
 
-### Step 4: SI/SM 專案安全管理計畫撰寫
-**SK 來源**：SK-D11-016 — SI/SM Project Security Management Plan Development
+### Step 3 — 教訓管理 (SK-D11-008)
 
-執行SI/SM 專案安全管理計畫撰寫：Develop the comprehensive Security Management Plan (SMP) for System Integrator (SI) and Security Maintenance (SM) projects per IEC 62443-2-4, using ID
+| 項目 | 內容 |
+|------|------|
+| 目的 | 管理教訓學習完整生命週期：收集、分類、根因分析、知識萃取與策略性傳播 |
+| 分類 | 技術、流程、商業 |
+| 執行者 | Project Lead / Knowledge Manager |
 
-**本步驟交付物**：
-- Security Management Plan document (per ID06 structure, 45+ pages):
-- Executive summary: project security governance overview, key stakeholders, lifecycle applicability
-- Security organization and roles: organizational structure, role definitions, responsibilities matrix (RACI: Responsible, Accountable, Consulted, Infor
+**交付物**：教訓記錄（含根因分析）、分類索引、與 SK-D11-009 知識庫的連結文件、組織學習進度報告
 
-### Step 5: 標準歸屬與例外裁定
-**SK 來源**：SK-D11-019 — Standards Ownership & Exception Arbitration
+**常見陷阱**：收集流程官僚化降低參與 → 簡化表單；根因分析不嚴謹 → 使用 5-Why 或魚骨圖
 
-執行標準歸屬與例外裁定：Manage the ownership, maintenance, and exception arbitration for engineering standards used across all projects, per GOV-SDP governance framework. Thi
+### Step 4 — 技術知識庫開發 (SK-D11-009)
 
-**本步驟交付物**：
-- Standards Register (living document): inventory of all active standards, with fields: standard ID, standard name, version, owner name/role, effective 
-- Standards Owner Assignment Matrix: ownership assignments per standard, with roles and contact information; covers all standards in register
-- Exception Request Decision Record (L1/L2/L3 per request): exception request ID, standard being deviated from, deviation description, business justific
+| 項目 | 內容 |
+|------|------|
+| 目的 | 建立並維護組織技術知識庫（設計模式、參考架構、已解決問題資料庫、廠商指南） |
+| 整合 | 與 SK-D11-008 教訓及 SK-D11-010 設計標準庫整合 |
+| 執行者 | Knowledge Manager / Domain Leads |
+
+**交付物**：知識庫結構文件、參考架構 (50+)、設計模式庫、已解決問題資料庫、廠商專用指南、內容提交與審查工作流
+
+**常見陷阱**：知識庫過時無人維護 → 建立季度稽核機制；搜尋困難導致使用率低 → 優化搜尋效能 (<1 秒)
+
+### Step 5 — 人員安全資格管理 (SK-D11-014)
+
+| 項目 | 內容 |
+|------|------|
+| 目的 | 管理人員安全資格：背景查核、安全等級追蹤、認證維護、角色授權 |
+| 依據 | ID21 人員安全程序、ID06 §5.4 |
+| 執行者 | Head of System Design / HR Coordinator |
+
+**交付物**：背景查核完成記錄、安全等級登記冊、認證追蹤登記冊、角色授權記錄、季度存取控制稽核報告
 
 ---
 
@@ -95,33 +102,21 @@ description: >
 
 | # | 交付物 | 格式 |
 |---|--------|------|
-| 1 | SOP Master Document Suite**: complete set of engineering SOPs organized by domain (D01–D14) and lifecycle stage (R0–R5), each in template format with: | 依需求 |
-| 2 | Purpose, scope, applicability (which roles, which lifecycle stages) | 依需求 |
-| 3 | Prerequisites and entry criteria | 依需求 |
-| 4 | Step-by-step process flow with decision points | 依需求 |
-| 5 | Roles and responsibilities (who performs, who reviews/approves) | 依需求 |
-| 6 | Quality acceptance criteria (observable, measurable) | 依需求 |
-| 7 | Security Requirements Specification for Procurement (SRSP)**: document translating security control requirements into procurement language, including: | 依需求 |
-| 8 | Required vendor certifications/attestations (ISO 27001, IEC 62443 Curve certification, NIST compliance, etc.) | 依需求 |
-| 9 | Technical security specifications for products (e.g., encryption algorithms, key management, logging capabilities, FIPS compliance) | 依需求 |
-| 10 | Vendor security evaluation criteria and scoring matrix (security features, audit results, industry reputation, response time to vulnerabilities) | Markdown |
-| 11 | Supply chain integrity requirements (secure delivery, tamper detection, software bill of materials (SBOM) requirements) | 依需求 |
-| 12 | Support and vulnerability response SLA expectations | 依需求 |
+| 1 | SOP 主文件套件與版本控制日誌 | Markdown / Word |
+| 2 | 流程效率分析報告 | Markdown |
+| 3 | 教訓記錄與分類索引 | Excel / Markdown |
+| 4 | 技術知識庫（參考架構、設計模式、已解決問題） | Wiki / Markdown |
+| 5 | 人員安全資格管理文件 | Excel |
 
 ---
 
 ## 4. 適用標準
 
-- IEC 62443-2-1: Security Management System — establishes requirements for documented procedures and process control
-- IEC 62443-3-2 §7.1.1: Specification of Security Requirements — procedures and controls required for security engineering
-- ISO 9001:2015 §4.4: Determination of Scope, §8.1 Operational Planning and Control — organizational process documentation
-- PRAC: Industry standard practice for IEC 62443 governance SOP structures and lifecycle management
-- Tier**: T3-Skill
-- Maturity Level**: Active
-- Version**: 1.0.0
-- Created Date**: 2026-03-16
-- Owner Role**: Head of System Design (GOV-SDP)
-- IEC 62443-2-1 §5.2.1 (Supply Chain Security) and §7.2 (Third-Party Risk Management) — framework for managing security th
+- IEC 62443-2-1 — 安全管理系統文件化程序要求
+- ISO 9001:2015 §4.4, §8.1 — 組織流程文件化
+- ID21 — 人員安全程序
+- ID06 §5.4 — 人員安全需求
+- GOV-SDP — 組織治理框架
 
 ---
 
@@ -129,95 +124,57 @@ description: >
 
 | # | 驗收項目 | 通過條件 |
 |---|---------|---------|
-| 1 | SOP Master Suite covers all mandatory activities for at least two consecutive li | ✅ 已驗證 |
-| 2 | Every SOP includes explicit entry criteria, step-by-step process, decision rules | ✅ 已驗證 |
-| 3 | Every SOP specifies roles with RACI accountability (Responsible, Accountable, Co | ✅ 已驗證 |
-| 4 | Version Control Log is current within 5 business days of any SOP change; all ver | ✅ 已驗證 |
-| 5 | 100% of in-scope stakeholders have completed SOP training with documented acknow | ✅ 已驗證 |
-| 6 | Compliance monitoring records for the past 90 days exist, showing at least one s | ✅ 已驗證 |
-| 7 | All SOPs are cross-referenced to applicable standards sections (IEC 62443, proje | ✅ 已驗證 |
-| 8 | Complete process maps documenting current-state workflows | ✅ 已驗證 |
-| 9 | Identified bottlenecks with root cause analysis | ✅ 已驗證 |
-| 10 | Quantified cycle time reduction opportunities | ✅ 已驗證 |
-| 11 | Value stream analysis with waste elimination strategies | ✅ 已驗證 |
-| 12 | Prioritized improvement recommendations with expected impact estimates | ✅ 已驗證 |
-| 13 | Baseline metrics and efficiency measurements established | ✅ 已驗證 |
-| 14 | Clear handoff to SK-D11-004 with actionable improvement recommendations | ✅ 已驗證 |
-| 15 | Stakeholder alignment on priority improvement initiatives | ✅ 已驗證 |
+| 1 | SOP 套件覆蓋至少兩個連續生命週期階段 | 有文件化的範圍說明 |
+| 2 | 每份 SOP 含進入條件、步驟流程、RACI | 無模糊語言 |
+| 3 | 版本控制日誌於 5 日內更新 | 所有版本可檢索 |
+| 4 | 100% 利害關係人已完成 SOP 訓練 | 有簽收記錄 |
+| 5 | 過去 90 天有合規監控記錄 | 至少一次抽樣稽核 |
+| 6 | 現狀流程圖已完成 | 含瓶頸與根因分析 |
+| 7 | 改善建議含預期影響估算 | 已排優先序 |
+| 8 | 100% 重大議題已記錄教訓與根因分析 | 有分類索引 |
+| 9 | 專案團隊教訓工作坊參與率 >=80% | 有出席記錄 |
+| 10 | 知識庫含 50+ 參考架構 | 有維護機制 |
+| 11 | 工程團隊知識庫採用率 >=70% | 有使用指標 |
+| 12 | 背景查核依角色分類定義 | 含通過/未通過判定 |
+| 13 | 安全等級登記冊完整 | 含到期日與更新時程 |
 
 ---
 
-## 6. 工時參考
-
-| SK | 估算基準 |
-|----|---------|
-| SK-D11-004 | | Junior (< 2 yr) | 10–15 person-days per SOP suite (R0–R2 scope) | Requires significant SME review  |
-| SK-D11-004 | | Senior (5+ yr) | 5–8 person-days per SOP suite | Leverages templates, can rapidly incorporate mult |
-| SK-D11-004 | Notes: Full R0–R5 portfolio (6 lifecycle suites) typically requires 60–90 person-days for an establi |
-| SK-D11-015 | | Junior (< 2 yr) | 6–10 person-days | Developing SRSP and RFQ/RFP appendix; assumes 3–5 primary ven |
-| SK-D11-015 | | Senior (5+ yr) | 3–5 person-days | Leverages procurement security templates and vendor scorecard p |
-| SK-D11-015 | Notes: Large vendor base (>10 vendors) or highly complex security specifications (e.g., cryptographi |
-| SK-D11-016 | | Junior (< 2 yr) | 12–18 person-days | Assumes single-site project, ~50–100 assets, with ID06 templ |
-| SK-D11-016 | | Senior (5+ yr) | 6–10 person-days | Same scope; senior leverages prior project SMP and ID06 templa |
-
----
-
-## 7. 品質檢查清單
+## 6. 品質檢查清單
 
 | # | 檢查項目 | 通過條件 |
 |---|---------|---------|
-| 1 | 輸入完整性 | 所有必要輸入文件已讀取並摘要 |
+| 1 | 輸入完整性 | 所有必要輸入已讀取並摘要 |
 | 2 | 流程覆蓋 | 5 個工作步驟皆已執行並有產出 |
-| 3 | 輸出完整性 | 所有交付物已產出、格式正確、非空白 |
-| 4 | 標準合規 | 產出引用的標準版本正確 |
-| 5 | 術語一致 | 專案術語、縮寫與 glossary 一致 |
-| 6 | 跨步驟一致 | 各步驟產出間無矛盾（如數量、SL等級） |
-| 7 | 依賴追溯 | 外部依賴 SK 的輸入已驗證可用 |
+| 3 | 輸出完整性 | 所有交付物已產出且非空白 |
+| 4 | 標準合規 | 引用標準版本正確 |
+| 5 | 跨步驟一致 | 各步驟產出間無矛盾 |
+| 6 | 依賴追溯 | 外部依賴 SK 的輸入已驗證可用 |
 
 ---
 
-## 8. 人類審核閘門
+## 7. 人類審核閘門
 
-完成所有工作步驟後，暫停並向使用者提交審核：
+完成所有工作步驟後，**暫停**並向使用者提交審核：
 
 ```
-流程開發與優化已完成。
-📋 執行範圍：5 個工程步驟（SK-D11-004, SK-D11-005, SK-D11-015, SK-D11-016, SK-D11-019）
-📊 交付物清單：
-  - SOP Master Document Suite**: complete set of engineering SOPs organized by domain (D01–D14) and lifecycle stage (R0–R5), each in template format with:
-  - Purpose, scope, applicability (which roles, which lifecycle stages)
-  - Prerequisites and entry criteria
-  - Step-by-step process flow with decision points
-  - Roles and responsibilities (who performs, who reviews/approves)
-⚠️ 待確認事項：{列出 TBD 項目或需人工判斷的假設}
-👉 請審核以上成果，確認 PASS / FAIL / PASS with Conditions。
+流程開發已完成。
+執行範圍：5 個工程步驟（SK-D11-004, SK-D11-005, SK-D11-008, SK-D11-009, SK-D11-014）
+交付物：SOP 套件、流程效率分析、教訓記錄、技術知識庫、人員安全資格文件
+待確認事項：{列出 TBD 項目或需人工判斷的假設}
+請審核以上成果，確認 PASS / FAIL / PASS with Conditions。
 ```
 
-**判定標準**：
-- **PASS**：成果完整且正確，可進入下一階段或歸檔
-- **FAIL**：發現重大缺漏或錯誤，需返工後重新提交
-- **PASS with Conditions**：整體接受，但需補充特定項目後完成
+判定：PASS（完整正確）/ FAIL（重大缺漏需返工）/ PASS with Conditions（需補充特定項目）
 
 ---
 
-## 9. IEC 62443 生命週期對應
+## 8. Source Traceability
 
-| 項目 | 值 |
-|------|---|
-| 主要生命週期階段 | 依專案階段 |
-| Domain | D11 (Governance & Process) |
-| SK 覆蓋 | SK-D11-004, SK-D11-005, SK-D11-015, SK-D11-016, SK-D11-019 |
-
----
-
-## 10. Source Traceability
-
-| SK 編號 | 英文名稱 | 中文名稱 | 核心知識 |
-|--------|---------|---------|---------|
-| SK-D11-004 | Engineering SOP Development | 工程 SOP 制定 | Develop, maintain, and govern Standard Operating Procedures  |
-| SK-D11-005 | Process Efficiency Analysis | 流程效率分析 | - Analysis paralysis delaying implementation actions |
-| SK-D11-015 | Procurement Security Requirements Integration | 採購安全需求整合 | Integrate cybersecurity requirements into procurement proces |
-| SK-D11-016 | SI/SM Project Security Management Plan Development | SI/SM 專案安全管理計畫撰寫 | Develop the comprehensive Security Management Plan (SMP) for |
-| SK-D11-019 | Standards Ownership & Exception Arbitration | 標準歸屬與例外裁定 | Manage the ownership, maintenance, and exception arbitration |
-
-<!-- Phase 5 Wave 2 deepened: SK-D11-004, SK-D11-005, SK-D11-015, SK-D11-016, SK-D11-019 -->
+| SK 編號 | 英文名稱 | 中文名稱 |
+|--------|---------|---------|
+| SK-D11-004 | Engineering SOP Development | 工程 SOP 制定 |
+| SK-D11-005 | Process Efficiency Analysis | 流程效率分析 |
+| SK-D11-008 | Lessons Learned Management | 教訓管理 |
+| SK-D11-009 | Technical Knowledge Base Development | 技術知識庫開發 |
+| SK-D11-014 | Personnel Security Qualification Management | 人員安全資格管理 |
