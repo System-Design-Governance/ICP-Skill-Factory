@@ -1,0 +1,382 @@
+[
+  {
+    "old_code": "0006000030",
+    "old_name": "(不再使用，此為0006000029的配件)ANT-LTE-OSM-05-2m BK",
+    "new_code": "",
+    "deprecation_reason": "discontinued",
+    "replacement_chain": "0006000030 -> (discontinued)",
+    "has_cycle": false,
+    "first_seen_date": "2025-01-06",
+    "last_seen_date": "2025-01-06"
+  },
+  {
+    "old_code": "0011000001",
+    "old_name": "(不再使用，改用0011000006)G102 PRODIGY (遊戲滑鼠)",
+    "new_code": "0011000006",
+    "deprecation_reason": "replaced",
+    "replacement_chain": "0011000001 -> 0011000006",
+    "has_cycle": false,
+    "first_seen_date": "2024-01-16",
+    "last_seen_date": "2024-07-23"
+  },
+  {
+    "old_code": "0016000072",
+    "old_name": "(不再使用,請用費用購買)P1Z1281",
+    "new_code": "",
+    "deprecation_reason": "warehouse_stock",
+    "replacement_chain": "0016000072 -> (discontinued)",
+    "has_cycle": false,
+    "first_seen_date": "2024-01-12",
+    "last_seen_date": "2024-01-12"
+  },
+  {
+    "old_code": "0017000003",
+    "old_name": "(不再使用,請用費用購買)AV線",
+    "new_code": "",
+    "deprecation_reason": "warehouse_stock",
+    "replacement_chain": "0017000003 -> (discontinued)",
+    "has_cycle": false,
+    "first_seen_date": "2024-04-23",
+    "last_seen_date": "2024-04-23"
+  },
+  {
+    "old_code": "0019000008",
+    "old_name": "(不再使用，改用0019000015)VGD-6000 (不斷電系統)",
+    "new_code": "0019000015",
+    "deprecation_reason": "replaced",
+    "replacement_chain": "0019000008 -> 0019000015",
+    "has_cycle": false,
+    "first_seen_date": "2024-01-17",
+    "last_seen_date": "2025-06-10"
+  },
+  {
+    "old_code": "0021000008",
+    "old_name": "(不再使用，改用0021000025)License iGW-VM#SubstationEmbedded (組)",
+    "new_code": "0021000025",
+    "deprecation_reason": "replaced",
+    "replacement_chain": "0021000008 -> 0021000025",
+    "has_cycle": false,
+    "first_seen_date": "2024-04-30",
+    "last_seen_date": "2024-04-30"
+  },
+  {
+    "old_code": "0021000026",
+    "old_name": "(不再使用，改用0021000028)iGW-VM#IEC61850(Embedded)",
+    "new_code": "0021000028",
+    "deprecation_reason": "replaced",
+    "replacement_chain": "0021000026 -> 0021000028",
+    "has_cycle": false,
+    "first_seen_date": "2024-07-31",
+    "last_seen_date": "2024-07-31"
+  },
+  {
+    "old_code": "0022000008",
+    "old_name": "(不再使用,請用費用購買)L型支架-掛勾式-新款",
+    "new_code": "",
+    "deprecation_reason": "warehouse_stock",
+    "replacement_chain": "0022000008 -> (discontinued)",
+    "has_cycle": false,
+    "first_seen_date": "2024-01-09",
+    "last_seen_date": "2025-05-15"
+  },
+  {
+    "old_code": "0026000033",
+    "old_name": "(不再使用，請改用0026000188)GE101-P(光電(纖)轉換器)",
+    "new_code": "0026000188",
+    "deprecation_reason": "replaced",
+    "replacement_chain": "0026000033 -> 0026000188",
+    "has_cycle": false,
+    "first_seen_date": "2024-02-15",
+    "last_seen_date": "2024-07-02"
+  },
+  {
+    "old_code": "0026000037",
+    "old_name": "(不再使用,請用費用購買)c6a 遮蔽水晶頭",
+    "new_code": "",
+    "deprecation_reason": "warehouse_stock",
+    "replacement_chain": "0026000037 -> (discontinued)",
+    "has_cycle": false,
+    "first_seen_date": "2024-03-04",
+    "last_seen_date": "2024-03-04"
+  },
+  {
+    "old_code": "0026000038",
+    "old_name": "(不再使用,請用費用購買)藍色護套",
+    "new_code": "",
+    "deprecation_reason": "warehouse_stock",
+    "replacement_chain": "0026000038 -> (discontinued)",
+    "has_cycle": false,
+    "first_seen_date": "2024-03-04",
+    "last_seen_date": "2024-03-04"
+  },
+  {
+    "old_code": "0026000079",
+    "old_name": "(不再使用)銅網遮蔽電纜(600V PVC) 22mm2/3C (黑)",
+    "new_code": "",
+    "deprecation_reason": "discontinued",
+    "replacement_chain": "0026000079 -> (discontinued)",
+    "has_cycle": false,
+    "first_seen_date": "2024-03-07",
+    "last_seen_date": "2024-09-11"
+  },
+  {
+    "old_code": "0026000087",
+    "old_name": "(不再使用請改選0026000081)機架式ODF 2U48C(耦合器滿)",
+    "new_code": "",
+    "deprecation_reason": "discontinued",
+    "replacement_chain": "0026000087 -> (discontinued)",
+    "has_cycle": false,
+    "first_seen_date": "2024-04-26",
+    "last_seen_date": "2024-04-26"
+  },
+  {
+    "old_code": "0026000088",
+    "old_name": "(不再使用,改選0026000240)LC-ST 單模9/125 雙芯 3M跳線 (光纖跳線)",
+    "new_code": "",
+    "deprecation_reason": "discontinued",
+    "replacement_chain": "0026000088 -> (discontinued)",
+    "has_cycle": false,
+    "first_seen_date": "2024-04-26",
+    "last_seen_date": "2025-05-26"
+  },
+  {
+    "old_code": "0026000185",
+    "old_name": "(不再使用，請改選0026000069)銅網遮蔽電纜(600V PVC) 2mm2/20C",
+    "new_code": "",
+    "deprecation_reason": "discontinued",
+    "replacement_chain": "0026000185 -> (discontinued)",
+    "has_cycle": false,
+    "first_seen_date": "2024-09-27",
+    "last_seen_date": "2025-05-13"
+  },
+  {
+    "old_code": "0026000190",
+    "old_name": "(不再使用,請改選0047000006)PVC電力線(IV) 38MM2-綠 (散裝)",
+    "new_code": "",
+    "deprecation_reason": "discontinued",
+    "replacement_chain": "0026000190 -> (discontinued)",
+    "has_cycle": false,
+    "first_seen_date": "2024-09-19",
+    "last_seen_date": "2024-09-19"
+  },
+  {
+    "old_code": "0031000006",
+    "old_name": "(不再使用，改用0061000005)RM024D-1C8C-6AM",
+    "new_code": "0061000005",
+    "deprecation_reason": "replaced",
+    "replacement_chain": "0031000006 -> 0061000005",
+    "has_cycle": false,
+    "first_seen_date": "2024-01-08",
+    "last_seen_date": "2024-01-08"
+  },
+  {
+    "old_code": "0031000007",
+    "old_name": "(不再使用，請改用0026000067)鋁箔銅網隔離 2MM2 *2C",
+    "new_code": "0026000067",
+    "deprecation_reason": "replaced",
+    "replacement_chain": "0031000007 -> 0026000067",
+    "has_cycle": false,
+    "first_seen_date": "2024-09-06",
+    "last_seen_date": "2024-09-06"
+  },
+  {
+    "old_code": "0034000002",
+    "old_name": "(不再使用，請改用0034000027)SP-161 DC125V",
+    "new_code": "0034000027",
+    "deprecation_reason": "replaced",
+    "replacement_chain": "0034000002 -> 0034000027",
+    "has_cycle": false,
+    "first_seen_date": "2024-02-26",
+    "last_seen_date": "2024-02-26"
+  },
+  {
+    "old_code": "0035000012",
+    "old_name": "(不再使用,改選0035000022)BFMII-HACS.4(E) (電錶)",
+    "new_code": "",
+    "deprecation_reason": "discontinued",
+    "replacement_chain": "0035000012 -> (discontinued)",
+    "has_cycle": false,
+    "first_seen_date": "2024-01-29",
+    "last_seen_date": "2024-01-29"
+  },
+  {
+    "old_code": "0035000028",
+    "old_name": "(不再使用，此為多項產品，請分開建立)BFM-II-HACS-60HZ-G-C6H",
+    "new_code": "",
+    "deprecation_reason": "discontinued",
+    "replacement_chain": "0035000028 -> (discontinued)",
+    "has_cycle": false,
+    "first_seen_date": "2025-03-12",
+    "last_seen_date": "2025-03-12"
+  },
+  {
+    "old_code": "0035000029",
+    "old_name": "(不再使用，此為多項產品，請分開建立)BFM-II-HACS-60HZ-G-C6H-C6H",
+    "new_code": "",
+    "deprecation_reason": "discontinued",
+    "replacement_chain": "0035000029 -> (discontinued)",
+    "has_cycle": false,
+    "first_seen_date": "2025-03-12",
+    "last_seen_date": "2025-03-12"
+  },
+  {
+    "old_code": "0035000031",
+    "old_name": "(不再使用，此為多項產品，請分開建立)BFM-II-HACS-60HZ-G-C18H-C6H",
+    "new_code": "",
+    "deprecation_reason": "discontinued",
+    "replacement_chain": "0035000031 -> (discontinued)",
+    "has_cycle": false,
+    "first_seen_date": "2025-03-12",
+    "last_seen_date": "2025-03-12"
+  },
+  {
+    "old_code": "0035000032",
+    "old_name": "(不再使用，此為多項產品，請分開建立)BFM-II-HACS-60HZ-G-C18H-C18H",
+    "new_code": "",
+    "deprecation_reason": "discontinued",
+    "replacement_chain": "0035000032 -> (discontinued)",
+    "has_cycle": false,
+    "first_seen_date": "2025-03-12",
+    "last_seen_date": "2025-03-12"
+  },
+  {
+    "old_code": "0035000046",
+    "old_name": "(不再使用，此為多項產品，請分開建立)BFM-II-HACS-60HZ-X-C18H",
+    "new_code": "",
+    "deprecation_reason": "discontinued",
+    "replacement_chain": "0035000046 -> (discontinued)",
+    "has_cycle": false,
+    "first_seen_date": "2025-04-08",
+    "last_seen_date": "2025-04-08"
+  },
+  {
+    "old_code": "0039000004",
+    "old_name": "(不再使用，改用0007000062) Arc A310 (顯示卡)",
+    "new_code": "0007000062",
+    "deprecation_reason": "replaced",
+    "replacement_chain": "0039000004 -> 0007000062",
+    "has_cycle": false,
+    "first_seen_date": "2025-06-30",
+    "last_seen_date": "2025-06-30"
+  },
+  {
+    "old_code": "0062000018",
+    "old_name": "(不再使用，改用0103000009)轉換器(JDA-WS-420)",
+    "new_code": "0103000009",
+    "deprecation_reason": "replaced",
+    "replacement_chain": "0062000018 -> 0103000009",
+    "has_cycle": false,
+    "first_seen_date": "2025-01-22",
+    "last_seen_date": "2025-01-22"
+  },
+  {
+    "old_code": "0069000001",
+    "old_name": "(不再使用，改用0069000004)CAT6A U/FTP 四對遮蔽(對對鋁箔) 305M 箱線 藍色",
+    "new_code": "0069000004",
+    "deprecation_reason": "replaced",
+    "replacement_chain": "0069000001 -> 0069000004",
+    "has_cycle": false,
+    "first_seen_date": "2024-01-17",
+    "last_seen_date": "2024-12-27"
+  },
+  {
+    "old_code": "0077000002",
+    "old_name": "(不再使用,請用費用購買)RS232轉RS485/422轉換器",
+    "new_code": "",
+    "deprecation_reason": "warehouse_stock",
+    "replacement_chain": "0077000002 -> (discontinued)",
+    "has_cycle": false,
+    "first_seen_date": "2024-01-11",
+    "last_seen_date": "2024-01-11"
+  },
+  {
+    "old_code": "0078000003",
+    "old_name": "(不再使用,請用費用購買)USB 2.0 傳真機印表機連接線-A公對B公(黑色2.7M)",
+    "new_code": "",
+    "deprecation_reason": "warehouse_stock",
+    "replacement_chain": "0078000003 -> (discontinued)",
+    "has_cycle": false,
+    "first_seen_date": "2024-01-18",
+    "last_seen_date": "2024-01-18"
+  },
+  {
+    "old_code": "0092000008",
+    "old_name": "(不再使用,請改用0026000143)XLPE/LSFH 鋁箔銅網5.5MM2*4C",
+    "new_code": "0026000143",
+    "deprecation_reason": "replaced",
+    "replacement_chain": "0092000008 -> 0026000143",
+    "has_cycle": false,
+    "first_seen_date": "2024-02-05",
+    "last_seen_date": "2024-02-05"
+  },
+  {
+    "old_code": "0110000002",
+    "old_name": "(不再使用,請用費用購買)帆布繩 1.5尺",
+    "new_code": "",
+    "deprecation_reason": "warehouse_stock",
+    "replacement_chain": "0110000002 -> (discontinued)",
+    "has_cycle": false,
+    "first_seen_date": "2024-01-11",
+    "last_seen_date": "2024-01-11"
+  },
+  {
+    "old_code": "0110000003",
+    "old_name": "(不再使用,請用費用購買)36KG 指針秤(傳統秤)",
+    "new_code": "",
+    "deprecation_reason": "warehouse_stock",
+    "replacement_chain": "0110000003 -> (discontinued)",
+    "has_cycle": false,
+    "first_seen_date": "2024-01-15",
+    "last_seen_date": "2024-01-15"
+  },
+  {
+    "old_code": "0110000004",
+    "old_name": "(不再使用,請用費用購買)PE伸縮膜",
+    "new_code": "",
+    "deprecation_reason": "warehouse_stock",
+    "replacement_chain": "0110000004 -> (discontinued)",
+    "has_cycle": false,
+    "first_seen_date": "2024-01-24",
+    "last_seen_date": "2024-01-24"
+  },
+  {
+    "old_code": "0112000002",
+    "old_name": "(不再使用,請用費用購買)DP轉HDMI轉換器",
+    "new_code": "",
+    "deprecation_reason": "warehouse_stock",
+    "replacement_chain": "0112000002 -> (discontinued)",
+    "has_cycle": false,
+    "first_seen_date": "2024-01-12",
+    "last_seen_date": "2024-05-02"
+  },
+  {
+    "old_code": "0113000001",
+    "old_name": "(不再使用,請用費用購買)USB to RS-422/485線",
+    "new_code": "",
+    "deprecation_reason": "warehouse_stock",
+    "replacement_chain": "0113000001 -> (discontinued)",
+    "has_cycle": false,
+    "first_seen_date": "2024-01-11",
+    "last_seen_date": "2024-01-11"
+  },
+  {
+    "old_code": "0114000002",
+    "old_name": "(不再使用,請用費用購買)PA-T6-5 頭燈",
+    "new_code": "",
+    "deprecation_reason": "warehouse_stock",
+    "replacement_chain": "0114000002 -> (discontinued)",
+    "has_cycle": false,
+    "first_seen_date": "2024-01-15",
+    "last_seen_date": "2024-01-15"
+  },
+  {
+    "old_code": "0119000001",
+    "old_name": "(不再使用,請用費用購買)TNC PLUG FOR LMR200",
+    "new_code": "",
+    "deprecation_reason": "warehouse_stock",
+    "replacement_chain": "0119000001 -> (discontinued)",
+    "has_cycle": false,
+    "first_seen_date": "2024-01-17",
+    "last_seen_date": "2024-01-17"
+  }
+]
