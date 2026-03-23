@@ -1,0 +1,6 @@
+{
+  "name": "icp-general",
+  "version": "1.0.0",
+  "description": "ICP 通用工具包 — 大型文件知識庫、跨角色輔助工具，適用所有 ICP 工程角色",
+  "author": { "name": "ICP System Design Dept" }
+}
