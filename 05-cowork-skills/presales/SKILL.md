@@ -95,8 +95,10 @@ T04 可行性評估
 T05 系統架構設計
   ↓ ↘
 T06 CBOM  T07 文件清冊
+  ↓         ↑
+  ├─→ T06a 精算回圈（觸發條件成立時回到 T06）
   ↓
-T08 全域審查 → T09 修正缺陷 → T10 打包交付
+T08 全域審查（含底層清帳）→ T09 修正缺陷 → T10 打包交付
 ```
 
 ### 隱性需求辨識
@@ -210,12 +212,37 @@ CBOM 品項需完整涵蓋：
 - 規劃設計人天（HLD/LLD、Gap Analysis、偏差聲明、事件程序）
 - 現場任務人天（場勘、FAT/SAT、訓練、竣工文件、營運文件編製、月維護、退場）
 - 專案管理人天 + 差旅 + 保險 + 運輸
-- 已知風險準備金（總額 3%）+ 保固費（總額 1%/年）
+- 已知風險準備金（大型案 5%、中小型案 3%）+ 保固費（總額 2%/年）
 
 **CBOM Excel 額外格式要求**：
 - 每個 Group 之間空一行
 - Group 標題行加粗
 - 品項按邏輯順序排列（非字母排序）：先核心設備、再周邊、再線材配件
+
+### T06a: 精算回圈（Iterative Refinement Loop）
+
+**F6 經驗**：CBOM 通常需要多次迭代（F6 實績 12 版），不是線性一次完成。
+
+**觸發條件**（任一成立即回到 T06 修正）：
+
+| # | 觸發條件 | 典型案例 |
+|---|---------|---------|
+| 1 | Scope 變更 | 客戶追加/移除子系統（如 DGA 移除 -3.2M） |
+| 2 | Port Budget 驗證失敗 | PRP 交換機數量需修正（如 15→27 台） |
+| 3 | 報價單比對差異 >15% | 供應商正式報價與估價有顯著差異 |
+| 4 | 架構變更連動 | T05 修正 Zone/Conduit 後影響設備清單 |
+| 5 | 底層清帳發現差異 | Python 加總與 Excel 公式不符 |
+
+**精算回圈流程**：
+```
+T06 CBOM 初版 → 交叉驗證（見 cbom-builder references/epci_substation_patterns.md §5）
+  → 發現差異？ → 是 → 修正 CBOM → 更新版本號 → 重新驗證
+                → 否 → 進入 T07
+```
+
+**注意**：每次修正須更新版本號（v0.1→v0.2→...），保留修正原因紀錄。
+
+---
 
 ### T07: 文件清冊 (`03_work/doc_inventory.md`)
 
@@ -262,6 +289,8 @@ CBOM 品項需完整涵蓋：
 | C. 合規性 | ER/標準條款是否在 arch 或 doc 中有應對 |
 | D. 數值一致性 | 元件數量、營運期間、成本範圍是否一致 |
 | E. 品質問題 | TBD 項目、術語不一致、邏輯缺口 |
+| **F. 底層清帳** | **Python 逐 Group 加總驗證、跨版本 diff 比對（必要步驟）** |
+| **G. Component-CBOM Mapping** | **架構設備清冊每項設備都有對應 CBOM 行項目** |
 
 ### 產出格式
 
@@ -279,12 +308,32 @@ CBOM 品項需完整涵蓋：
 - 🟢 Minor：選擇性修正
 - 需外部輸入的缺陷標記為 ⏳ Deferred
 
+### T09a: Open Items Register
+
+Presales 階段識別但無法在 Pre-Gate 0 解決的待定項目，須編入 Open Items Register 確保傳遞至 Detailed Design：
+
+```markdown
+| OI-ID | 描述 | 來源 | 影響（成本/時程/範圍） | 負責人 | 目標解決階段 |
+|-------|------|------|---------------------|--------|------------|
+| OI-001 | Cybersecurity scope 待定 | T05 | ±30-38M | SAC | R1 |
+| OI-002 | PAGA/Radio Mast 歸屬 | SOW | ±5M | PM | Gate 0 |
+```
+
+**傳遞規則**：
+- 所有 Open Items 必須出現在 Gate 0 Decision Package 中
+- 具成本影響的 OI 須在 CBOM 中預留對應金額或標記 `[TBD]`
+- R1 啟動時，Open Items Register 移交給 SYS/SAC 負責人
+
+---
+
 ### T10: 打包交付
 
 產出 `05_release/RELEASE_NOTE.md`，包含：
 - 交付物清單（檔案名 + 說明 + Self-Check 結果）
 - 缺陷修正狀態表
 - 關鍵數據摘要（CBOM 總額、feasibility 範圍、營運期間、品項數）
+- **CBOM 版本演化摘要**（初版→定版的金額變化軌跡、主要修正原因）
+- **Open Items Register**（待後續解決的待定項目）
 - 待後續確認事項
 
 ---
@@ -382,6 +431,7 @@ CBOM 品項需完整涵蓋：
 `references/` 目錄包含：
 
 - `review_checklist.md` — 審查檢查清單詳細版
+- `epci_workflow_pattern.md` — EPCI 變電所提案工作流模式（基於 F6 實績）
 
 
 <!-- optimization-v3: trimmed 2026-03-16 | removed 904 redundant lines | condensed to 230-line core sections -->
@@ -516,3 +566,4 @@ Phase {N} 已完成。
 | Tender Security Requirements | SK-D14-010 | SL-T 提案、安全交付物清單 |
 
 <!-- Phase 5 Wave 1: SK knowledge integrated from SK-D14-001~004, 008~010 -->
+<!-- F6 Optimization: iterative refinement loop, bottom-up reconciliation, Open Items Register -->

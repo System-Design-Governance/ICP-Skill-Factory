@@ -45,7 +45,7 @@ description: >
 
 **操作步驟**：
 
-1. **完整性檢查**：5 大必要輸入逐項驗證
+1. **完整性檢查**：6 大必要輸入逐項驗證
    ```markdown
    | # | 必要輸入 | 來源 SK | 文件位置 | 版本 | 狀態 |
    |---|---------|--------|---------|------|------|
@@ -54,7 +54,9 @@ description: >
    | 3 | 可行性評估 | SK-D14-003 | 03_work/feasibility.md | v1.0 | ✅ |
    | 4 | CBOM | SK-D14-005 | 03_work/cbom.xlsx | v1.0 | ✅ |
    | 5 | 概念架構 | SK-D14-013 | 03_work/architecture.md | v1.0 | ✅ |
+   | 6 | CBOM 版本演化摘要 | presales T10 | 05_release/RELEASE_NOTE.md | v1.0 | ✅ |
    ```
+   > 第 6 項為 F6 優化新增：決策者需要看到成本從初版到定版的變化軌跡，以評估估算可信度。
 
 2. **品質閾值評估**：每個閾值 Pass/Fail
 3. **交叉引用矩陣**：確保 5 大輸入間的數據一致
@@ -86,14 +88,16 @@ description: >
    | CR-005 | Legacy 整合困難 | 35% | 350,000 | 122,500 | Technical |
    ```
 
-2. **三情境模型**：
+2. **三情境模型**（F6 EPCI 實績校正）：
    ```markdown
    | 情境 | 基礎成本 | 風險調整 | Contingency % | 總計 |
    |------|---------|---------|-------------|------|
-   | Low (Optimistic) | 5,000,000 | +200,000 | 4% | 5,200,000 |
-   | Baseline (Expected) | 5,000,000 | +500,000 | 10% | 5,500,000 |
-   | High (Pessimistic) | 5,000,000 | +1,200,000 | 24% | 6,200,000 |
+   | Low (Optimistic) | 5,000,000 | +150,000 | 3% | 5,150,000 |
+   | Baseline (Expected) | 5,000,000 | +250,000 | 5% | 5,250,000 |
+   | High (Pessimistic) | 5,000,000 | +500,000 | 10% | 5,500,000 |
    ```
+   > F6 校正依據：大型 EPCI 案 Baseline contingency 約 5%（含 PRP 低估風險、scope 爭議、匯率），
+   > 對齊業界 EPC 慣例（3-10% range）。原有 4%/10%/24% 偏高，不符實際投標競爭力。
 
 3. **Contingency 分配**：按風險類別分配
 4. **成本敏感度分析**：辨識對總成本影響最大的 ≥3 個風險
@@ -101,10 +105,26 @@ description: >
 6. **Finance/PM 核准**：contingency 需正式核准
 7. **Contingency 在預算中正式分離**：不混入基礎成本
 
+**OT/EPCI 預定義風險驅動因子**（大型案可直接引用，詳見 `references/epci_cost_risk_drivers.md`）：
+
+| # | 風險因子 | 典型機率 | 典型影響 | 類別 |
+|---|---------|---------|---------|------|
+| 1 | PRP 設備數量低估 | 60% | 基礎×5-10% | Technical |
+| 2 | Cybersecurity scope 未定 | 40% | ±30-50M | Scope |
+| 3 | Scope boundary 爭議 | 30% | ±5-10M | Scope |
+| 4 | 供應商交期延遲 | 35% | 基礎×2-5% | Supply |
+| 5 | 現場環境限制 | 25% | 基礎×3-5% | Schedule |
+| 6 | 匯率波動 (EUR/USD) | 20% | 基礎×1-3% | Financial |
+| 7 | 電力系統整合複雜度 | 30% | 基礎×3-8% | Technical |
+| 8 | 業主介面需求變更 | 40% | 基礎×2-5% | Scope |
+| 9 | 離岸運輸/安裝風險 | 20% | 基礎×1-3% | Schedule |
+| 10 | 人力資源不足 | 25% | 基礎×2-4% | Resource |
+
 **⚠️ 避坑**：
 - Contingency 不是「加 10% 了事」——需有 risk-based 計算基礎
 - 三情境差異太小 → 低估風險；差異太大 → 不可信
 - 敏感度分析至少 3 個風險——識別哪些風險對預算影響最大
+- **PRP 低估是最常見的 EPCI 成本風險**——F6 實績交換機 +80%
 
 ---
 
@@ -128,7 +148,7 @@ description: >
 
 | # | 項目 | 條件 |
 |---|------|------|
-| 1 | 5 大輸入全部存在+驗證 current | ✓ |
+| 1 | 6 大輸入全部存在+驗證 current（含 CBOM 版本演化摘要） | ✓ |
 | 2 | 4 品質閾值每項有 Pass/Fail | ✓ |
 | 3 | 交叉引用一致 (成本/風險/範圍) | ✓ |
 | 4 | 已知缺口有 owner+解決路徑 | ✓ |
@@ -168,3 +188,4 @@ Gate 0 決策包已組裝。
 | SK-D14-016 | Cost Risk Contingency Analysis | 成本風險驅動、三情境、敏感度、Contingency 分離 |
 
 <!-- Phase 6: Enhanced 2026-03-19. -->
+<!-- F6 Optimization: risk ratios 3/5/10%, CBOM Evolution Summary, EPCI risk drivers -->

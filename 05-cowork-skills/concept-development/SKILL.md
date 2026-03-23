@@ -45,6 +45,24 @@ description: >
    | SIS (如有) | 安全系統 | SIS Controller | SL-3 |
    ```
 
+   **IEC 61850 變電所標準 Zone 分層**（當專案涉及變電所時，使用以下進階分層）：
+   ```markdown
+   | Purdue | Zone | 功能 | 典型設備 | 概念 SL-T |
+   |--------|------|------|---------|----------|
+   | L4 | Enterprise | 公司 IT/ERP | ERP, ADCC, Remote WS | SL-1 |
+   | L3.5 | DMZ | IT/OT 邊界 | Firewall, Jump Server, Data Diode | SL-2 |
+   | L3 | Supervisory | SCADA 監控 | SCADA Server, HMI, Historian, NTP | SL-2~3 |
+   | L2 | Station Bus | PRP 通訊骨幹 | PRP Switch LAN-A/B, Bay Switch | SL-2 |
+   | L1 | Bay Level | 現場控制 | RTU, Gateway, IED 通訊介面 | SL-2 |
+   | L0 | Process | 現場設備 | Protection Relay, Inverter, Meter | SL-1~2 |
+   ```
+   詳細參考架構見 `references/substation_zone_conduit.md`。
+
+   **⚠️ PRP 成本預警**：當概念架構含 PRP 雙骨幹時，自動標註以下警告：
+   > ⚠️ PRP 架構將使網路交換機數量增加 2-3 倍（F6 實績：15→27 台，+80%）。
+   > 概念階段即應預留 PRP 三倍化的成本空間，避免 CBOM 低估。
+   > 詳見 cbom-builder/references/epci_substation_patterns.md §3。
+
 2. **定義 Conduit**：Zone 間通訊路徑（協定、頻寬、延遲、可靠性）
 
 3. **初步安全控制配置**：每個 Zone 的概念級安全控制
@@ -53,10 +71,17 @@ description: >
 
 5. **產出概念架構圖**：可使用 arch-diagram Skill 的 D2/Mermaid 規範
 
+**多站點概念架構**（當 EPCI 含多個站點時）：
+- 每站點獨立繪製 Zone/Conduit，標示站間通訊 Conduit
+- 站間光纖 trunk 和備援（如 4G/microwave）為獨立 Conduit
+- 每站點可有不同 SL-T（如 ONS = SL-3、OnSWST = SL-2）
+- 共用設備（如集中 SIEM）標示為跨站共用 Zone
+
 **⚠️ 避坑**：
 - 概念架構**不是**詳細設計——不需要 IP 規劃或完整防火牆規則
 - 必須標示 non-binding——否則客戶可能視為合約承諾
 - 至少要有 3 個 Zone——少於 3 個表示分析不夠深入
+- **PRP 概念架構必須明確標示 LAN-A/B 雙骨幹**——影響設備數量估算
 
 ---
 
@@ -166,3 +191,4 @@ description: >
 | SK-D14-018 | Pre-Gate 0 Requirement Clarification | 需求對齊、Gate 0 可行性輸入 |
 
 <!-- Phase 6: Enhanced 2026-03-19. -->
+<!-- F6 Optimization: IEC 61850 Z/C patterns, PRP cost warning, multi-site concept -->

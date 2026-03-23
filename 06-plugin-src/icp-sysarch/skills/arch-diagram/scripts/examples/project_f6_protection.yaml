@@ -1,0 +1,247 @@
+# ============================================================
+# Formosa 6 — Protection Relay System Architecture
+# DWG-L3 保護電驛系統架構圖 v2.0
+# 修正：Relay/BCU/Meter 平行掛在 PRP Station Bus（非 BCU 下層）
+# CBOM Group 1a 對齊 | ER07 §5.8
+# ============================================================
+
+project:
+  name: "F6 ONS — Protection Relay System"
+  site: "Protection Relay System  ER07 §5.8"
+  client: "F6"
+  site_code: "PROT"
+  rev: "2.0"
+  date: "2026-03-20"
+  standard: "IEC 61850 / IEC 62439-3 PRP"
+  zone_labels:
+    l4: "Level 4｜External Interface"
+    dmz: "DMZ｜IEC 62443"
+    l3: "Level 3｜SCADA / Engineering"
+    l2: "Level 2｜IEC 61850 PRP Station Bus"
+    l1: "Level 1｜Bay Devices (IED + BCU + Meter)"
+    l0: "Level 0｜Process I/O (CT / VT / CB / GIS)"
+
+# ── L3 ──
+scada:
+  hmi_count: 2
+  hmi_model: ""
+  hmi_redundancy: true
+  hmi_labels:
+    hmi_a: "WinCC OA Server x 2"
+    hmi_b: "HMI OWS x 3"
+  historian: true
+  historian_model: "Fault Recorder  COMTRADE"
+  engineering_ws: true
+  engineering_ws_model: "DIGSI 5 × 3  Relay Config"
+  ntp: true
+  ntp_model: "GPS/PTP × 2  IRIG-B"
+  gnss: true
+  ups_l3: false
+
+# ── DMZ ──
+dmz:
+  firewall_model: "OT Firewall × 2 HA"
+  l3_switch_model: "IDS"
+  remote_access: false
+
+# ── L4 ──
+enterprise:
+  enabled: true
+  erp: true
+  adcc: true
+  scada_ws: false
+
+# ── L2 PRP Station Bus ──
+# 依 Bay 功能分群
+network:
+  prp_enabled: true
+  core_switch_model: "L3 Core Switch  PRP"
+  feeder_groups:
+    - id: "TR"
+      label: "TR"
+      description: "Transformer Bay"
+      mcc_panels: ""
+    - id: "LINE"
+      label: "LINE"
+      description: "Line / Cable Bay"
+      mcc_panels: ""
+    - id: "BUS"
+      label: "BUS"
+      description: "Busbar + VSR + HF"
+      mcc_panels: ""
+    - id: "FDR"
+      label: "FDR"
+      description: "22.8kV Feeder"
+      mcc_panels: ""
+
+# ── L1：Relay + BCU + Meter 全部平行掛 PRP ──
+# 用 rtu_panels 放 BCU，用 mcc 的位置不需要了
+# 但工具鏈限制：我們把所有 bay devices 都放在 rtu_panels 的 ieds 裡
+field_control:
+  gateways:
+    enabled: false
+
+  rtu_panels:
+    # ═══ TR Bay ═══
+    - id: "TR"
+      label: "TR Bay — Transformer Protection"
+      node_label: "BCU"
+      rtu_model: "6MD85-J4 × 2 + J2 × 1"
+      redbox: false
+      ieds:
+        - id: "R_87T"
+          label: "7UT86 × 16\n87T TR Diff (M+B)"
+          protocol: "IEC61850"
+        - id: "R_OC_TR"
+          label: "7SJ82 × 6\n50/51 OC/EF"
+          protocol: "IEC61850"
+        - id: "R_REF"
+          label: "REF × 6\nRestricted EF"
+          protocol: "IEC61850"
+        - id: "M_TR"
+          label: "P850 × 6\nBay Meter"
+          protocol: "IEC61850"
+      connected_to_feeder: "TR"
+
+    # ═══ LINE Bay ═══
+    - id: "LINE"
+      label: "LINE Bay — Cable / Line Protection"
+      node_label: "BCU"
+      rtu_model: "6MD85-J2 × 5"
+      redbox: false
+      ieds:
+        - id: "R_87L"
+          label: "7SL86 × 8\n87L Line Diff (M+B)"
+          protocol: "IEC61850"
+        - id: "R_21"
+          label: "7SJ82 × 6\n21 Distance"
+          protocol: "IEC61850"
+        - id: "R_BFP_L"
+          label: "BFP × 3\nBreaker Fail"
+          protocol: "IEC61850"
+        - id: "M_LINE"
+          label: "P850 × 3\nBay Meter"
+          protocol: "IEC61850"
+        - id: "M_REV"
+          label: "Revenue × 3\nTPC Billing Cl.0.2"
+          protocol: "IEC61850"
+        - id: "TPC_PCC"
+          label: "TPC PCC × 2\nCT/VT/CB Extension"
+          protocol: "IEC61850"
+      connected_to_feeder: "LINE"
+
+    # ═══ BUS Bay ═══
+    - id: "BUS"
+      label: "BUS Bay — Busbar / VSR / HF Protection"
+      node_label: "BCU"
+      rtu_model: "6MD85-J2 × 5"
+      redbox: false
+      ieds:
+        - id: "R_87B"
+          label: "7SS85 × 6\n87B Busbar Diff (M+B)"
+          protocol: "IEC61850"
+        - id: "R_SYNC"
+          label: "7SJ85 × 2\nANSI 25 Sync Check"
+          protocol: "IEC61850"
+        - id: "R_VSR"
+          label: "7UT86 × 2\n87 VSR + REF + 27/59"
+          protocol: "IEC61850"
+        - id: "R_HF"
+          label: "7UT86 × 2\n87 HF + 49R/49L + 60"
+          protocol: "IEC61850"
+        - id: "R_BFP_B"
+          label: "BFP × 5\nBreaker Fail"
+          protocol: "IEC61850"
+        - id: "M_BUS"
+          label: "P850 × 4\nBay Meter"
+          protocol: "IEC61850"
+        - id: "SPS"
+          label: "SPS\nCurtailment + Inter-trip"
+          protocol: "IEC61850"
+      connected_to_feeder: "BUS"
+
+    # ═══ FDR Bay ═══
+    - id: "FDR"
+      label: "FDR Bay — 22.8kV Feeder Protection"
+      node_label: "BCU"
+      rtu_model: "6MD85-J2 × 15"
+      redbox: false
+      ieds:
+        - id: "R_OC_F"
+          label: "7SJ82 × 20\n50/51 Feeder OC/EF"
+          protocol: "IEC61850"
+        - id: "M_FDR"
+          label: "P850 × 15\nBay Meter"
+          protocol: "IEC61850"
+      connected_to_feeder: "FDR"
+
+  statcom:
+    enabled: false
+
+# ── L0：Process I/O（一次設備 CT/VT/CB/GIS）──
+field_devices:
+  protection_ieds:
+    enabled: false
+  pmcc_ieds:
+    enabled: false
+  solar_storage:
+    enabled: true
+    group_label: "Process I/O — CT / VT / CB / GIS"
+    devices:
+      - id: "GIS_230"
+        label: "230kV GIS\n3 Bay"
+        type: "plc"
+        comm: "IEC61850_MMS"
+        connected_to: "rtu_TR"
+      - id: "GIS_161"
+        label: "161kV GIS\n3 Bay"
+        type: "plc"
+        comm: "IEC61850_MMS"
+        connected_to: "rtu_LINE"
+      - id: "MTR_3"
+        label: "Main TR × 3\nODAF"
+        type: "plc"
+        comm: "Modbus_TCP"
+        connected_to: "rtu_TR"
+      - id: "VSR_2"
+        label: "VSR × 2\nVariable Shunt Reactor"
+        type: "plc"
+        comm: "Modbus_TCP"
+        connected_to: "rtu_BUS"
+      - id: "HF_2"
+        label: "HF × 2\nHarmonic Filter"
+        type: "plc"
+        comm: "Modbus_TCP"
+        connected_to: "rtu_BUS"
+      - id: "SW_22"
+        label: "22.8kV Switchgear\n15 Feeder"
+        type: "plc"
+        comm: "IEC61850_MMS"
+        connected_to: "rtu_FDR"
+      - id: "CT_VT"
+        label: "CT / VT\nAll Bays"
+        type: "plc"
+        comm: "IEC61850_MMS"
+        connected_to: "rtu_FDR"
+
+# ── Comm Styles ──
+comm_styles:
+  PRP_LAN_A:      { label: "PRP LAN-A", stroke: "#008EC3", stroke_width: 2, stroke_dash: 0 }
+  PRP_LAN_B:      { label: "PRP LAN-B", stroke: "#0C3467", stroke_width: 2, stroke_dash: 3 }
+  IEC61850_fiber:  { label: "IEC 61850 Fiber", stroke: "#0C3467", stroke_width: 3, stroke_dash: 0 }
+  IEC61850_MMS:    { label: "IEC 61850 MMS", stroke: "#008EC3", stroke_width: 2, stroke_dash: 0 }
+  PRP_fiber_A:     { label: "PRP Fiber A", stroke: "#008EC3", stroke_width: 2, stroke_dash: 0 }
+  PRP_fiber_B:     { label: "PRP Fiber B", stroke: "#0C3467", stroke_width: 2, stroke_dash: 3 }
+  OPC_UA_A:        { label: "OPC-UA LAN-A", stroke: "#008EC3", stroke_width: 2, stroke_dash: 0 }
+  OPC_UA_B:        { label: "OPC-UA LAN-B", stroke: "#0C3467", stroke_width: 2, stroke_dash: 3 }
+  IT_ethernet:     { label: "Ethernet", stroke: "#9B9B9B", stroke_width: 1, stroke_dash: 3 }
+  RS485_modbus:    { label: "RS-485", stroke: "#9B9B9B", stroke_width: 1, stroke_dash: 3 }
+  RS485:           { label: "RS-485", stroke: "#9B9B9B", stroke_width: 1, stroke_dash: 3 }
+  Modbus_TCP:      { label: "Modbus TCP", stroke: "#008EC3", stroke_width: 1, stroke_dash: 0 }
+  VPN_PSTN:        { label: "VPN", stroke: "#F5A623", stroke_width: 1, stroke_dash: 4 }
+  RF_wireless:     { label: "RF", stroke: "#F5A623", stroke_width: 1, stroke_dash: 4 }
+  IRIG_B:          { label: "IRIG-B", stroke: "#0C3467", stroke_width: 3, stroke_dash: 0 }
+  IEEE1588_A:      { label: "PTP LAN-A", stroke: "#008EC3", stroke_width: 2, stroke_dash: 0 }
+  IEEE1588_B:      { label: "PTP LAN-B", stroke: "#0C3467", stroke_width: 2, stroke_dash: 3 }
+  DNP3_PSTN:       { label: "DNP3", stroke: "#F5A623", stroke_width: 1, stroke_dash: 4 }
+  DNP3_IEC104:     { label: "DNP3", stroke: "#008EC3", stroke_width: 2, stroke_dash: 0 }

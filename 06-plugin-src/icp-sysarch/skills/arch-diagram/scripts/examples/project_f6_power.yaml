@@ -1,0 +1,114 @@
+# F6 ONS — Power Supply System | CBOM 1.1b + 1.2 HW subset
+project:
+  name: "F6 ONS — Power Supply System (DC / UPS / EDG)"
+  site: "Power Supply System  CBOM 1.1b+1.2"
+  client: "F6"
+  site_code: "PWR"
+  rev: "1.0"
+  date: "2026-03-23"
+  standard: "ER07 §5.10.5 / 24hr Standby"
+  zone_labels:
+    l4: "Level 4｜External"
+    dmz: "DMZ｜(N/A)"
+    l3: "Level 3｜SCADA Monitoring (Ref)"
+    l2: "Level 2｜Modbus Network"
+    l1: "Level 1｜RTU BoP Monitoring (Ref)"
+    l0: "Level 0｜Power Equipment"
+scada:
+  hmi_count: 1
+  hmi_model: ""
+  hmi_redundancy: false
+  hmi_labels:
+    hmi_a: "WinCC OA (See DWG-SCADA)  Monitoring Only"
+  historian: false
+  hmi_ws: false
+  engineering_ws: false
+  ntp: false
+  gnss: false
+  ups_l3: false
+dmz:
+  firewall_model: "(See DWG-SCADA)"
+  l3_switch_model: ""
+  remote_access: false
+enterprise:
+  enabled: false
+network:
+  prp_enabled: false
+  core_switch_model: "FortiSwitch  Modbus VLAN"
+  feeder_groups:
+    - id: "ONS"
+      label: "ONS"
+      description: "ONS Power"
+      mcc_panels: ""
+field_control:
+  gateways:
+    enabled: false
+  rtu_panels:
+    - id: "ONS"
+      label: "SICAM A8000 RTU (See DWG-SCADA)"
+      node_label: "RTU"
+      rtu_model: "SICAM A8000  Modbus TCP"
+      redbox: false
+      ieds: []
+      connected_to_feeder: "ONS"
+  statcom:
+    enabled: false
+field_devices:
+  protection_ieds:
+    enabled: false
+  pmcc_ieds:
+    enabled: false
+  solar_storage:
+    enabled: true
+    group_label: "Power Equipment (Monitored by RTU)"
+    devices:
+      - id: "SCADA_UPS"
+        label: "SCADA UPS\n4 Cab x 5kVA  48hr"
+        type: "ups"
+        comm: "Modbus_TCP"
+        connected_to: "rtu_ONS"
+      - id: "RCP_UPS"
+        label: "RCP DC/UPS x 2\n120VDC 2000W  24hr"
+        type: "ups"
+        comm: "Modbus_TCP"
+        connected_to: "rtu_ONS"
+      - id: "RTU_UPS"
+        label: "RTU UPS x 4\n24VDC 500W  8hr"
+        type: "ups"
+        comm: "Modbus_TCP"
+        connected_to: "rtu_ONS"
+      - id: "DC_125V"
+        label: "DC 125V System\n(Monitored by RTU)"
+        type: "ups"
+        comm: "Modbus_TCP"
+        connected_to: "rtu_ONS"
+      - id: "BATTERY"
+        label: "Battery Bank x 2\nVRLA / Li-ion  24hr"
+        type: "ups"
+        comm: "Modbus_TCP"
+        connected_to: "rtu_ONS"
+      - id: "EDG"
+        label: "EDG x 2\n1000kVA (Monitored)"
+        type: "ups"
+        comm: "Modbus_TCP"
+        connected_to: "rtu_ONS"
+comm_styles:
+  PRP_LAN_A:      { label: "PRP LAN-A", stroke: "#008EC3", stroke_width: 2, stroke_dash: 0 }
+  PRP_LAN_B:      { label: "PRP LAN-B", stroke: "#0C3467", stroke_width: 2, stroke_dash: 3 }
+  IEC61850_fiber:  { label: "IEC 61850", stroke: "#0C3467", stroke_width: 3, stroke_dash: 0 }
+  IEC61850_MMS:    { label: "IEC 61850", stroke: "#008EC3", stroke_width: 2, stroke_dash: 0 }
+  PRP_fiber_A:     { label: "Fiber A", stroke: "#008EC3", stroke_width: 2, stroke_dash: 0 }
+  PRP_fiber_B:     { label: "Fiber B", stroke: "#0C3467", stroke_width: 2, stroke_dash: 3 }
+  OPC_UA_A:        { label: "OPC-UA", stroke: "#008EC3", stroke_width: 2, stroke_dash: 0 }
+  OPC_UA_B:        { label: "OPC-UA", stroke: "#0C3467", stroke_width: 2, stroke_dash: 3 }
+  IT_ethernet:     { label: "Ethernet", stroke: "#9B9B9B", stroke_width: 1, stroke_dash: 3 }
+  RS485_modbus:    { label: "RS-485", stroke: "#9B9B9B", stroke_width: 1, stroke_dash: 3 }
+  RS485:           { label: "RS-485", stroke: "#9B9B9B", stroke_width: 1, stroke_dash: 3 }
+  Modbus_TCP:      { label: "Modbus TCP", stroke: "#008EC3", stroke_width: 1, stroke_dash: 0 }
+  VPN_PSTN:        { label: "VPN", stroke: "#F5A623", stroke_width: 1, stroke_dash: 4 }
+  RF_wireless:     { label: "RF", stroke: "#F5A623", stroke_width: 1, stroke_dash: 4 }
+  IRIG_B:          { label: "IRIG-B", stroke: "#0C3467", stroke_width: 3, stroke_dash: 0 }
+  IEEE1588_A:      { label: "PTP", stroke: "#008EC3", stroke_width: 2, stroke_dash: 0 }
+  IEEE1588_B:      { label: "PTP", stroke: "#0C3467", stroke_width: 2, stroke_dash: 3 }
+  DNP3_PSTN:       { label: "DNP3", stroke: "#F5A623", stroke_width: 1, stroke_dash: 4 }
+  DNP3_IEC104:     { label: "DNP3", stroke: "#008EC3", stroke_width: 2, stroke_dash: 0 }

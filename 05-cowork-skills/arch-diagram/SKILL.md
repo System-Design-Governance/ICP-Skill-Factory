@@ -867,6 +867,132 @@ A-class 碰撞 = 連線路徑穿越或觸碰非 Zone 標題的文字標籤（距
 
 ---
 
+## 24A. YAML 驅動自動化產圖 Pipeline（F6 工具鏈）
+
+本章定義 YAML → SVG/PDF 的自動化產圖流程。工程師只需填寫 `project.yaml`（不需要懂 D2 語法），執行 Pipeline 即可產出符合所有規範的架構圖。
+
+### 24A.1 三層分離架構
+
+```
+Layer 1  PROJECT CONFIG (project.yaml)        ← 工程師只填這份
+Layer 2  COMPONENT LIBRARY (component_library.yaml)  ← 設備標準定義
+Layer 3  CODE GENERATOR (gen_d2.py)           ← 套用 Rulebook，輸出 D2
+Layer 4  RENDER (d2 CLI, dagre layout)        ← D2 官方渲染
+Layer 5  POSTPROCESS (optimize_svg.py)        ← Title Bar / Legend / 遮罩
+```
+
+### 24A.2 Pipeline 流程
+
+```bash
+# 單圖 Pipeline
+python gen_d2.py project.yaml --output diagram.d2 --library component_library.yaml
+d2 diagram.d2 diagram_raw.svg
+python optimize_svg.py --input diagram_raw.svg --output diagram_final.svg --project project.yaml
+python check_collision.py diagram_final.svg
+
+# 多圖專案（如 F6 的 8 張子系統圖）
+# 1. 每個子系統建立獨立 project_f6_{name}.yaml
+# 2. gen_d2.py 產出各圖 .d2
+# 3. patch_all.py 統一修正（協定標籤、中文清除、L4 節點替換）
+# 4. d2 render → SVG → optimize_svg.py → check_collision.py
+# 5. gen_pdf.py 合併為 PDF 提案書
+```
+
+### 24A.3 project.yaml 頂層結構
+
+```yaml
+project:           # 專案基本資訊（Title Bar 文字來源）
+scada:             # L3 SCADA 監控站（HMI, Historian, NTP, UPS）
+dmz:               # DMZ 邊界防護（防火牆, 遠端存取）
+enterprise:        # L4 企業層（可選，enabled: true/false）
+network:           # L2 控制網路（PRP 開關, feeder_groups 動態展開）
+field_control:     # L1 現場控制（gateways, rtu_panels, statcom）
+field_devices:     # L0 現場設備（protection_ieds, solar_storage）
+comm_styles:       # 通訊方式樣式庫（集中定義，設備只引用 key）
+```
+
+完整欄位規格見 `scripts/SKILL_PACKAGE.md` §四。
+
+### 24A.4 拓撲規則（T-01 ~ T-08）
+
+| ID | 名稱 | 觸發條件 | 行為 |
+|----|------|---------|------|
+| T-01 | PRP 備援開關 | `prp_enabled: false` | 單網，每個 feeder 只有 SW_A，無 REDBOX |
+| T-02 | HMI 備援 | `hmi_count: 1` | 只產生 HMI_A |
+| T-03 | Gateway 備援 | `gateways.count: 1` | 只有 GW_A |
+| T-04 | **L1 子群組順序** | 永遠套用 | 宣告順序：**gw → rtu_panels → mcc → statcom**（控制 dagre 水平排列） |
+| T-05 | 骨幹 label 去重 | 永遠套用 | LAN-A/LAN-B 各自只有第一條保留 label |
+| T-06 | null 跳過連線 | `connected_to: null` | 完全不產生連線宣告 |
+| T-07 | L4 可選 | `enterprise.enabled: false` | 省略 L4 Zone |
+| T-08 | STATCOM 可選 | `statcom.enabled: false` | 省略 STATCOM 子群組 |
+
+### 24A.5 D2 語法規則（R-D2-01 ~ R-D2-11）
+
+| ID | 等級 | 規則 |
+|----|------|------|
+| R-D2-01 | 🔴 | 永遠使用 dagre layout，禁止 ELK |
+| R-D2-02 | 🔴 | 禁止在 D2 中宣告 title:/legend: 節點（由 SVG 後製注入） |
+| R-D2-03 | 🔴 | 子群組宣告順序決定水平排列 |
+| R-D2-08 | 🔴 | 所有子群組使用 class: zone_sub，禁止硬編碼顏色 |
+| R-D2-09 | 🔴 | 連線使用 inline style，禁止 connection class |
+| R-D2-10 | 🔴 | 連線 label 禁止 `\n`，用兩空格替代 |
+
+### 24A.6 SVG 後製 8 步驟（R-PP-01）
+
+| Step | 函式 | 職責 |
+|------|------|------|
+| 1 | `parse_svg()` | 解析 viewBox bounding box |
+| 2 | `remove_d2_artifacts()` | 移除 D2 殘留 title/legend |
+| 3 | `shift_content(+110px)` | 主圖向下位移（Title Bar 空間） |
+| 4 | `fix_dasharray()` | dasharray > 8 → 6,4 |
+| 5 | `inject_title_bar()` | 110px Navy 背景 + 3 行文字 |
+| 6 | `inject_legend()` | 雙欄 Legend 浮層（右側延伸或空白嵌入） |
+| 7 | `add_label_backgrounds_v2()` | 連線 label 白底遮罩 |
+| 8 | `update_canvas()` | 更新 viewBox + A1 紙張尺寸 |
+
+### 24A.7 Legend 位置策略
+
+| 畫布寬度 | 策略 | 說明 |
+|---------|------|------|
+| ≥ 6000px | 嵌入圖內空白 | `find_empty_zone()` 30px 步進掃描 |
+| < 6000px | 右側延伸 | `x = canvas_w + 30`，加 55px 高深藍色 Title Bar 延伸條 |
+| PDF | 獨立頁面 | Legend 作為獨立頁，放 TOC 之後 |
+
+### 24A.8 gen_pdf.py PDF 提案書
+
+```
+Stage 1: reportlab → 文字頁面 PDF（封面、目錄、Legend 頁、章節標題）
+Stage 2: d2 CLI → 架構圖 PDF（向量圖，不經 optimize_svg.py）
+Stage 3: pypdf → 合併（文字頁 + 架構圖交錯，Title Bar overlay）
+```
+
+**⚠️ 頁面索引陷阱**：`merge_pdfs()` 用 `chapter_start = 3`（跳過 cover/TOC/Legend）交錯文字頁和架構圖。新增任何文字頁面時必須同步調整 `chapter_start` 和 `appendix_start`，否則頁面對應會整體偏移。
+
+### 24A.9 patch 模式（多圖專案）
+
+gen_d2.py 固定產生 `ERP`、`ADCC`、`SCADA_WS` 三個 L4 節點。每張圖的 patch 函式替換為實際外部系統：
+
+```python
+patch_common(s)      # 所有圖面共用（中文清除、LAN 標籤、MCC 前綴）
+patch_non_ot(s)      # CCTV/ACS/TEL/PWR 專用（去 PRP、去 IEC 61850）
+patch_{name}(path)   # 每張圖的專屬修正（L4 節點、協定標籤）
+```
+
+### 24A.10 工具鏈檔案清單
+
+| 檔案 | 行數 | 功能 |
+|------|------|------|
+| `gen_d2.py` | 1153 | YAML → D2 源碼（支援 PRP 雙網、node_label、DANP） |
+| `optimize_svg.py` | 821 | SVG 8 步驟後製（Title Bar + Legend + 白底遮罩） |
+| `check_collision.py` | 270 | A 類碰撞檢查（Green/Yellow/Red） |
+| `gen_pdf.py` | 450+ | PDF 提案書（reportlab + d2 CLI + pypdf） |
+| `component_library.yaml` | 541 | 設備元件庫（34 個標準設備） |
+| `project_template.yaml` | 272 | 空白專案模板（含中文說明） |
+
+所有工具位於 `scripts/` 目錄，F6 範例 YAML 位於 `scripts/examples/`。
+
+---
+
 ## 25. 人類審核閘門（Human Review Gate）
 
 **審核時機**：架構圖初版完成後提交審核。
@@ -898,7 +1024,7 @@ A-class 碰撞 = 連線路徑穿越或觸碰非 Zone 標題的文字標籤（距
 | SK-D02-011 | Simple Network Diagram | SND 佈局、SuC 邊界 |
 
 <!-- Phase 5 Wave 1: SK knowledge integrated from SK-D01-001/002, SK-D02-001/004/011 -->
-<!-- Phase 7: OT automation toolchain integrated from source-documents/system-architecture-diagram -->
+<!-- Phase 7: OT automation toolchain integrated from source-documents/SKILL_TOOLKIT (F6 ONS project) -->
 
 ---
 
@@ -906,5 +1032,18 @@ A-class 碰撞 = 連線路徑穿越或觸碰非 Zone 標題的文字標籤（距
 
 本 Skill 的 `references/` 目錄包含：
 
-- `component_library.yaml` — OT/電力系統設備元件庫（34+ 設備，含協定、認證、冗餘資訊）
+- `component_library.yaml` — OT/電力系統設備元件庫（34 設備，含協定、認證、冗餘資訊）
 - `project_template.yaml` — 專案配置 YAML 範本（含完整中文註解，272 行）
+- `prp_rules.md` — IEC 62439-3 PRP 架構規則（DANP vs RedBox、雙網拓撲、常見錯誤）
+- `protocol_map.md` — OT/IT/BoP/外部介面協定使用對照表
+- `naming_conventions.md` — 設備命名規範（node_label、跨圖標籤統一、中文清除規則）
+
+本 Skill 的 `scripts/` 目錄包含：
+
+- `gen_d2.py` — YAML → D2 源碼產生器（1153 行，支援 PRP 雙網、node_label、DANP）
+- `optimize_svg.py` — SVG 8 步驟後製（821 行，Title Bar + Legend + 白底遮罩）
+- `check_collision.py` — A 類碰撞檢查（270 行，Green/Yellow/Red 分級）
+- `gen_pdf.py` — PDF 提案書產生器（450+ 行，reportlab + d2 CLI + pypdf）
+- `Makefile` / `run.sh` — 一鍵 Pipeline
+
+本 Skill 的 `scripts/examples/` 目錄包含 F6 ONS 專案 9 個 YAML 範例（最複雜：protection 46 節點，最簡單：cctv 15 節點）。
