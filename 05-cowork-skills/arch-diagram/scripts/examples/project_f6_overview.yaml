@@ -1,0 +1,154 @@
+# F6 ONS — System Overview (Inter-Diagram Map)
+project:
+  name: "F6 ONS — System Overview"
+  site: "System Overview  CBOM v0.7"
+  client: "F6"
+  site_code: "OVW"
+  rev: "1.0"
+  date: "2026-03-23"
+  standard: "IEC 62443 / IEC 61850 / Purdue Model"
+  zone_labels:
+    l4: "Level 4｜External Systems"
+    dmz: "DMZ｜Fortinet Security Fabric"
+    l3: "Level 3｜SCADA + Management"
+    l2: "Level 2｜Network Infrastructure"
+    l1: "Level 1｜Bay Control + RTU"
+    l0: "Level 0｜Field Devices + Sensors"
+
+scada:
+  hmi_count: 2
+  hmi_model: ""
+  hmi_redundancy: true
+  hmi_labels:
+    hmi_a: "WinCC OA Server x 2  See DWG-SCADA"
+    hmi_b: "Milestone VMS  See DWG-CCTV"
+  historian: true
+  historian_model: "Historian + NAS 100TB  See DWG-SCADA"
+  hmi_ws: true
+  hmi_ws_model: "ACS Server  See DWG-ACS"
+  engineering_ws: true
+  engineering_ws_model: "IP-PBX  See DWG-TEL"
+  ntp: true
+  ntp_model: "GPS/PTP x 2  See DWG-SCADA"
+  gnss: false
+  ups_l3: true
+  ups_l3_capacity: "SCADA UPS 48hr  See DWG-PWR"
+
+dmz:
+  firewall_model: "FortiGate HA x 3  See DWG-SCADA"
+  l3_switch_model: "FortiNDR + FortiAnalyzer"
+  remote_access: true
+  remote_type: "PSTN+4G"
+  modem_model: "VPN Gateway"
+
+enterprise:
+  enabled: true
+  erp: true
+  adcc: true
+  scada_ws: true
+
+network:
+  prp_enabled: true
+  core_switch_model: "FortiSwitch 448E x 5"
+  feeder_groups:
+    - id: "OT"
+      label: "OT"
+      description: "PRP IEC 61850 (See DWG-PROT)"
+      mcc_panels: ""
+    - id: "IT"
+      label: "IT"
+      description: "FortiSwitch 124F x 22"
+      mcc_panels: ""
+
+field_control:
+  gateways:
+    enabled: true
+    count: 2
+    model: "IEC 61850 / IEC 104"
+    zone: "l3"
+    gw_labels:
+      gw_a: "OSS SCADA Client  500MW"
+      gw_b: "WTG SCADA Client  300MW"
+  rtu_panels:
+    - id: "BAY"
+      label: "BCU x 27  6MD85  See DWG-PROT"
+      node_label: "BCU"
+      rtu_model: "6MD85  IEC 61850"
+      redbox: false
+      ieds: []
+      connected_to_feeder: "OT"
+    - id: "BOP"
+      label: "RTU x 4  SICAM A8000  See DWG-SCADA"
+      node_label: "RTU"
+      rtu_model: "SICAM A8000  Modbus TCP"
+      redbox: false
+      ieds: []
+      connected_to_feeder: "IT"
+  statcom:
+    enabled: false
+
+field_devices:
+  protection_ieds:
+    enabled: false
+  pmcc_ieds:
+    enabled: false
+  solar_storage:
+    enabled: true
+    group_label: "Subsystem Overview"
+    devices:
+      - id: "PROT"
+        label: "Protection Relays x 68\nSee DWG-PROT"
+        type: "gateway"
+        comm: "IEC61850_fiber"
+        connected_to: "mcc_OT"
+      - id: "METER"
+        label: "P850 x 28 + Revenue x 3\nSee DWG-PROT"
+        type: "plc"
+        comm: "IEC61850_MMS"
+        connected_to: "mcc_OT"
+      - id: "TPC"
+        label: "TPC PCC x 2 + SPS + DGA\nSee DWG-TPC"
+        type: "gateway"
+        comm: "IEC61850_fiber"
+        connected_to: "mcc_OT"
+      - id: "CCTV"
+        label: "Camera x 20 + NVR x 2\nSee DWG-CCTV"
+        type: "plc"
+        comm: "IT_ethernet"
+        connected_to: "rtu_BOP"
+      - id: "ACS"
+        label: "ACS x 5 + Sensors x 73\nSee DWG-ACS"
+        type: "plc"
+        comm: "RS485_modbus"
+        connected_to: "rtu_BOP"
+      - id: "TEL"
+        label: "PBX + Phone x 33 + Radio x 10\nSee DWG-TEL"
+        type: "plc"
+        comm: "IT_ethernet"
+        connected_to: "rtu_BOP"
+      - id: "PWR"
+        label: "UPS + DC + EDG\nSee DWG-PWR"
+        type: "ups"
+        comm: "Modbus_TCP"
+        connected_to: "rtu_BOP"
+
+comm_styles:
+  PRP_LAN_A:      { label: "PRP LAN-A", stroke: "#008EC3", stroke_width: 2, stroke_dash: 0 }
+  PRP_LAN_B:      { label: "PRP LAN-B", stroke: "#0C3467", stroke_width: 2, stroke_dash: 3 }
+  IEC61850_fiber:  { label: "IEC 61850", stroke: "#0C3467", stroke_width: 3, stroke_dash: 0 }
+  IEC61850_MMS:    { label: "IEC 61850", stroke: "#008EC3", stroke_width: 2, stroke_dash: 0 }
+  PRP_fiber_A:     { label: "Fiber A", stroke: "#008EC3", stroke_width: 2, stroke_dash: 0 }
+  PRP_fiber_B:     { label: "Fiber B", stroke: "#0C3467", stroke_width: 2, stroke_dash: 3 }
+  OPC_UA_A:        { label: "OPC-UA", stroke: "#008EC3", stroke_width: 2, stroke_dash: 0 }
+  OPC_UA_B:        { label: "OPC-UA", stroke: "#0C3467", stroke_width: 2, stroke_dash: 3 }
+  IT_ethernet:     { label: "Ethernet", stroke: "#9B9B9B", stroke_width: 1, stroke_dash: 3 }
+  RS485_modbus:    { label: "RS-485", stroke: "#9B9B9B", stroke_width: 1, stroke_dash: 3 }
+  RS485:           { label: "RS-485", stroke: "#9B9B9B", stroke_width: 1, stroke_dash: 3 }
+  Modbus_TCP:      { label: "Modbus TCP", stroke: "#008EC3", stroke_width: 1, stroke_dash: 0 }
+  VPN_PSTN:        { label: "VPN", stroke: "#F5A623", stroke_width: 1, stroke_dash: 4 }
+  RF_wireless:     { label: "RF", stroke: "#F5A623", stroke_width: 1, stroke_dash: 4 }
+  IRIG_B:          { label: "IRIG-B", stroke: "#0C3467", stroke_width: 3, stroke_dash: 0 }
+  IEEE1588_A:      { label: "PTP", stroke: "#008EC3", stroke_width: 2, stroke_dash: 0 }
+  IEEE1588_B:      { label: "PTP", stroke: "#0C3467", stroke_width: 2, stroke_dash: 3 }
+  DNP3_PSTN:       { label: "DNP3", stroke: "#F5A623", stroke_width: 1, stroke_dash: 4 }
+  DNP3_IEC104:     { label: "DNP3", stroke: "#008EC3", stroke_width: 2, stroke_dash: 0 }

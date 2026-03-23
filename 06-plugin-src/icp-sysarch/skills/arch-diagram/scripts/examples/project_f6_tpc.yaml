@@ -1,0 +1,126 @@
+# F6 ONS — TPC Extension + SPS Curtailment | CBOM 1.10+1.11
+project:
+  name: "F6 ONS — TPC Extension + SPS Curtailment"
+  site: "TPC Extension + SPS  CBOM 1.10-1.11"
+  client: "F6"
+  site_code: "TPC"
+  rev: "1.0"
+  date: "2026-03-23"
+  standard: "IEC 61850 / TPC Grid Code"
+  zone_labels:
+    l4: "Level 4｜TPC Grid Interface"
+    dmz: "DMZ｜IEC 62443"
+    l3: "Level 3｜SCADA / SPS"
+    l2: "Level 2｜IEC 61850 PRP (Ref)"
+    l1: "Level 1｜TPC Bay + SPS"
+    l0: "Level 0｜TPC-side Equipment"
+scada:
+  hmi_count: 2
+  hmi_model: ""
+  hmi_redundancy: true
+  hmi_labels:
+    hmi_a: "WinCC OA (See DWG-SCADA)"
+    hmi_b: "WinCC OA Web Client  (See DWG-SCADA)"
+  historian: false
+  hmi_ws: false
+  engineering_ws: false
+  ntp: false
+  gnss: false
+  ups_l3: false
+dmz:
+  firewall_model: "FortiGate (See DWG-SCADA)"
+  l3_switch_model: "OTU x 2  Fiber Termination"
+  remote_access: false
+enterprise:
+  enabled: true
+  erp: true
+  adcc: false
+  scada_ws: false
+network:
+  prp_enabled: true
+  core_switch_model: "PRP Station Bus (See DWG-PROT)"
+  feeder_groups:
+    - id: "PCC"
+      label: "PCC"
+      description: "TPC PCC Bay"
+      mcc_panels: ""
+    - id: "MON"
+      label: "MON"
+      description: "SPS Curtailment"
+      mcc_panels: ""
+field_control:
+  gateways:
+    enabled: false
+  rtu_panels:
+    - id: "PCC"
+      label: "TPC PCC Bay x 2  CT/VT/CB Extension"
+      node_label: "BCU"
+      rtu_model: "IEC 61850"
+      redbox: false
+      ieds:
+        - id: "R_PCC"
+          label: "7SJ82 x 4\nTPC Backup Relay"
+          protocol: "IEC61850"
+        - id: "M_REV"
+          label: "Revenue Meter x 3\nTPC Billing Cl.0.2"
+          protocol: "IEC61850"
+      connected_to_feeder: "PCC"
+    - id: "MON"
+      label: "SPS Curtailment Bay"
+      node_label: "SPS"
+      rtu_model: "Curtailment Controller"
+      redbox: false
+      ieds:
+        - id: "SPS_COMM"
+          label: "SPS Comm x 2\nTPC Inter-trip Fiber"
+          protocol: "IEC61850"
+        - id: "SPS_TGT"
+          label: "Curtailment Target\nWTG SCADA + ONS PCC CB"
+          protocol: "IEC61850"
+      connected_to_feeder: "MON"
+  statcom:
+    enabled: false
+field_devices:
+  protection_ieds:
+    enabled: false
+  pmcc_ieds:
+    enabled: false
+  solar_storage:
+    enabled: true
+    group_label: "TPC-side Equipment (External)"
+    devices:
+      - id: "TPC_RTU"
+        label: "TPC-side RTU x 2\nRemote Terminal"
+        type: "gateway"
+        comm: "IEC61850_fiber"
+        connected_to: "rtu_PCC"
+      - id: "TPC_MARSH"
+        label: "Marshalling Panel x 2\nWiring Interface"
+        type: "plc"
+        comm: "IEC61850_MMS"
+        connected_to: "rtu_PCC"
+      - id: "TPC_CB"
+        label: "TPC CB / DS / ES\n(Excluded - TPC Asset)"
+        type: "plc"
+        comm: "IEC61850_MMS"
+        connected_to: "rtu_PCC"
+comm_styles:
+  PRP_LAN_A:      { label: "PRP LAN-A", stroke: "#008EC3", stroke_width: 2, stroke_dash: 0 }
+  PRP_LAN_B:      { label: "PRP LAN-B", stroke: "#0C3467", stroke_width: 2, stroke_dash: 3 }
+  IEC61850_fiber:  { label: "IEC 61850 Fiber", stroke: "#0C3467", stroke_width: 3, stroke_dash: 0 }
+  IEC61850_MMS:    { label: "IEC 61850 MMS", stroke: "#008EC3", stroke_width: 2, stroke_dash: 0 }
+  PRP_fiber_A:     { label: "Fiber A", stroke: "#008EC3", stroke_width: 2, stroke_dash: 0 }
+  PRP_fiber_B:     { label: "Fiber B", stroke: "#0C3467", stroke_width: 2, stroke_dash: 3 }
+  OPC_UA_A:        { label: "OPC-UA", stroke: "#008EC3", stroke_width: 2, stroke_dash: 0 }
+  OPC_UA_B:        { label: "OPC-UA", stroke: "#0C3467", stroke_width: 2, stroke_dash: 3 }
+  IT_ethernet:     { label: "Ethernet", stroke: "#9B9B9B", stroke_width: 1, stroke_dash: 3 }
+  RS485_modbus:    { label: "RS-485", stroke: "#9B9B9B", stroke_width: 1, stroke_dash: 3 }
+  RS485:           { label: "RS-485", stroke: "#9B9B9B", stroke_width: 1, stroke_dash: 3 }
+  Modbus_TCP:      { label: "Modbus TCP", stroke: "#008EC3", stroke_width: 1, stroke_dash: 0 }
+  VPN_PSTN:        { label: "VPN", stroke: "#F5A623", stroke_width: 1, stroke_dash: 4 }
+  RF_wireless:     { label: "RF", stroke: "#F5A623", stroke_width: 1, stroke_dash: 4 }
+  IRIG_B:          { label: "IRIG-B", stroke: "#0C3467", stroke_width: 3, stroke_dash: 0 }
+  IEEE1588_A:      { label: "PTP", stroke: "#008EC3", stroke_width: 2, stroke_dash: 0 }
+  IEEE1588_B:      { label: "PTP", stroke: "#0C3467", stroke_width: 2, stroke_dash: 3 }
+  DNP3_PSTN:       { label: "DNP3 PSTN", stroke: "#F5A623", stroke_width: 1, stroke_dash: 4 }
+  DNP3_IEC104:     { label: "IEC 60870-5-104", stroke: "#008EC3", stroke_width: 2, stroke_dash: 0 }

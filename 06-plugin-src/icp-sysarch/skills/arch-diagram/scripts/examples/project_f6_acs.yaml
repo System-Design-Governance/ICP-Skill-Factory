@@ -1,0 +1,116 @@
+# F6 ONS — Access Control & Intrusion Detection | CBOM 1.8
+project:
+  name: "F6 ONS — Access Control + Intrusion Detection"
+  site: "Access Control + Intrusion Detection  CBOM 1.8"
+  client: "F6"
+  site_code: "ACS"
+  rev: "1.0"
+  date: "2026-03-23"
+  standard: "IEC 62443 / Physical Security"
+  zone_labels:
+    l4: "Level 4｜External"
+    dmz: "DMZ｜IEC 62443"
+    l3: "Level 3｜ACS Management"
+    l2: "Level 2｜ACS Network"
+    l1: "Level 1｜ACS Controller"
+    l0: "Level 0｜Sensors & Locks"
+scada:
+  hmi_count: 2
+  hmi_model: ""
+  hmi_redundancy: true
+  hmi_labels:
+    hmi_a: "ACS Software  5yr Support"
+    hmi_b: "WinCC OA  Alarm Integration"
+  historian: false
+  hmi_ws: false
+  engineering_ws: false
+  ntp: false
+  gnss: false
+  ups_l3: false
+dmz:
+  firewall_model: "FortiGate (See DWG-SCADA)"
+  l3_switch_model: ""
+  remote_access: false
+enterprise:
+  enabled: false
+network:
+  prp_enabled: false
+  core_switch_model: "FortiSwitch  ACS VLAN"
+  feeder_groups:
+    - id: "ONS"
+      label: "ONS"
+      description: "ONS Building"
+      mcc_panels: ""
+    - id: "SWST"
+      label: "OnSWST"
+      description: "Switching Station"
+      mcc_panels: ""
+field_control:
+  gateways:
+    enabled: false
+  rtu_panels:
+    - id: "ONS"
+      label: "ACS Panel x 3  ONS (4-door each)"
+      node_label: "ACS Panel"
+      rtu_model: "ACS Controller  24VDC"
+      redbox: false
+      ieds: []
+      connected_to_feeder: "ONS"
+    - id: "SWST"
+      label: "ACS Panel x 2  OnSWST (4-door each)"
+      node_label: "ACS Panel"
+      rtu_model: "ACS Controller  24VDC"
+      redbox: false
+      ieds: []
+      connected_to_feeder: "SWST"
+  statcom:
+    enabled: false
+field_devices:
+  protection_ieds:
+    enabled: false
+  pmcc_ieds:
+    enabled: false
+  solar_storage:
+    enabled: true
+    group_label: "Sensors, Readers & Locks"
+    devices:
+      - id: "READER"
+        label: "Card Reader x 15\nRFID Wiegand 26/34"
+        type: "plc"
+        comm: "RS485_modbus"
+        connected_to: "rtu_ONS"
+      - id: "LOCK"
+        label: "EM Lock x 20\n1000kg + Release Button"
+        type: "plc"
+        comm: "RS485_modbus"
+        connected_to: "rtu_ONS"
+      - id: "PIR"
+        label: "PIR Sensor x 30\nMotion + Magnetic Contact"
+        type: "plc"
+        comm: "RS485_modbus"
+        connected_to: "rtu_SWST"
+      - id: "ALARM"
+        label: "Alarm Bell x 8\n90dB Siren"
+        type: "plc"
+        comm: "RS485_modbus"
+        connected_to: "rtu_SWST"
+comm_styles:
+  PRP_LAN_A:      { label: "PRP LAN-A", stroke: "#008EC3", stroke_width: 2, stroke_dash: 0 }
+  PRP_LAN_B:      { label: "PRP LAN-B", stroke: "#0C3467", stroke_width: 2, stroke_dash: 3 }
+  IEC61850_fiber:  { label: "IEC 61850", stroke: "#0C3467", stroke_width: 3, stroke_dash: 0 }
+  IEC61850_MMS:    { label: "IEC 61850", stroke: "#008EC3", stroke_width: 2, stroke_dash: 0 }
+  PRP_fiber_A:     { label: "Fiber A", stroke: "#008EC3", stroke_width: 2, stroke_dash: 0 }
+  PRP_fiber_B:     { label: "Fiber B", stroke: "#0C3467", stroke_width: 2, stroke_dash: 3 }
+  OPC_UA_A:        { label: "OPC-UA", stroke: "#008EC3", stroke_width: 2, stroke_dash: 0 }
+  OPC_UA_B:        { label: "OPC-UA", stroke: "#0C3467", stroke_width: 2, stroke_dash: 3 }
+  IT_ethernet:     { label: "Ethernet", stroke: "#9B9B9B", stroke_width: 1, stroke_dash: 3 }
+  RS485_modbus:    { label: "RS-485 Bus", stroke: "#9B9B9B", stroke_width: 1, stroke_dash: 3 }
+  RS485:           { label: "RS-485", stroke: "#9B9B9B", stroke_width: 1, stroke_dash: 3 }
+  Modbus_TCP:      { label: "Modbus TCP", stroke: "#008EC3", stroke_width: 1, stroke_dash: 0 }
+  VPN_PSTN:        { label: "VPN", stroke: "#F5A623", stroke_width: 1, stroke_dash: 4 }
+  RF_wireless:     { label: "RF", stroke: "#F5A623", stroke_width: 1, stroke_dash: 4 }
+  IRIG_B:          { label: "IRIG-B", stroke: "#0C3467", stroke_width: 3, stroke_dash: 0 }
+  IEEE1588_A:      { label: "PTP", stroke: "#008EC3", stroke_width: 2, stroke_dash: 0 }
+  IEEE1588_B:      { label: "PTP", stroke: "#0C3467", stroke_width: 2, stroke_dash: 3 }
+  DNP3_PSTN:       { label: "DNP3", stroke: "#F5A623", stroke_width: 1, stroke_dash: 4 }
+  DNP3_IEC104:     { label: "DNP3", stroke: "#008EC3", stroke_width: 2, stroke_dash: 0 }

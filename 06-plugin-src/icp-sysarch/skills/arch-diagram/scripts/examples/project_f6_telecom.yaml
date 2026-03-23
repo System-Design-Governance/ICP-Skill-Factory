@@ -1,0 +1,125 @@
+# F6 ONS — Telecom System | CBOM 1.5+1.6+1.9
+project:
+  name: "F6 ONS — Telecom System (VoIP + WiFi + Radio)"
+  site: "Telecom System  CBOM 1.5/1.6/1.9"
+  client: "F6"
+  site_code: "TEL"
+  rev: "1.0"
+  date: "2026-03-23"
+  standard: "IEC 62443 / VoIP / 802.11ax"
+  zone_labels:
+    l4: "Level 4｜External Telecom"
+    dmz: "DMZ｜IEC 62443"
+    l3: "Level 3｜PBX / WiFi Management"
+    l2: "Level 2｜Voice + WiFi Network"
+    l1: "Level 1｜(empty)"
+    l0: "Level 0｜Phones & Radios"
+scada:
+  hmi_count: 2
+  hmi_model: ""
+  hmi_redundancy: true
+  hmi_labels:
+    hmi_a: "IP-PBX System  30-extension SIP"
+    hmi_b: "FortiGate  WiFi AP Management"
+  historian: false
+  hmi_ws: false
+  engineering_ws: true
+  engineering_ws_model: "FortiAuthenticator  802.1X PKI"
+  ntp: false
+  gnss: false
+  ups_l3: false
+dmz:
+  firewall_model: "FortiGate (See DWG-SCADA)"
+  l3_switch_model: "VPN Gateway"
+  remote_access: true
+  remote_type: "PSTN+4G"
+  modem_model: "PSTN / 4G Trunk"
+enterprise:
+  enabled: true
+  erp: true
+  adcc: false
+  scada_ws: false
+network:
+  prp_enabled: false
+  core_switch_model: "FortiSwitch 448E  Voice VLAN"
+  feeder_groups:
+    - id: "WIFI"
+      label: "WiFi"
+      description: "FortiAP x 16 (ONS+OnSWST)"
+      mcc_panels: ""
+    - id: "VOIP"
+      label: "VoIP"
+      description: "PoE Switch  Voice"
+      mcc_panels: ""
+field_control:
+  gateways:
+    enabled: false
+  rtu_panels:
+    - id: "PBX"
+      label: "IP-PBX + PoE Switch"
+      node_label: "PBX"
+      rtu_model: "30-ext SIP Gateway"
+      redbox: false
+      ieds: []
+      connected_to_feeder: "VOIP"
+  statcom:
+    enabled: false
+field_devices:
+  protection_ieds:
+    enabled: false
+  pmcc_ieds:
+    enabled: false
+  solar_storage:
+    enabled: true
+    group_label: "Phones, APs & Radios"
+    devices:
+      - id: "PHONE"
+        label: "IP Phone x 30\nPoE LCD"
+        type: "plc"
+        comm: "IT_ethernet"
+        connected_to: "rtu_PBX"
+      - id: "OUTDOOR"
+        label: "Outdoor Phone x 3\nWeatherproof SS"
+        type: "plc"
+        comm: "IT_ethernet"
+        connected_to: "rtu_PBX"
+      - id: "AP_OUT"
+        label: "FortiAP x 8\nOutdoor IP67"
+        type: "plc"
+        comm: "IT_ethernet"
+        connected_to: "rtu_PBX"
+      - id: "AP_IN"
+        label: "FortiAP x 8\nIndoor"
+        type: "plc"
+        comm: "IT_ethernet"
+        connected_to: "rtu_PBX"
+      - id: "RADIO"
+        label: "Radio x 10\nTDMA 2-5W"
+        type: "gateway"
+        comm: "RF_wireless"
+        connected_to: null
+      - id: "TPC_LINE"
+        label: "TPC Dedicated Line\nDirect Dispatch"
+        type: "plc"
+        comm: "IT_ethernet"
+        connected_to: null
+comm_styles:
+  PRP_LAN_A:      { label: "PRP LAN-A", stroke: "#008EC3", stroke_width: 2, stroke_dash: 0 }
+  PRP_LAN_B:      { label: "PRP LAN-B", stroke: "#0C3467", stroke_width: 2, stroke_dash: 3 }
+  IEC61850_fiber:  { label: "IEC 61850", stroke: "#0C3467", stroke_width: 3, stroke_dash: 0 }
+  IEC61850_MMS:    { label: "IEC 61850", stroke: "#008EC3", stroke_width: 2, stroke_dash: 0 }
+  PRP_fiber_A:     { label: "Fiber A", stroke: "#008EC3", stroke_width: 2, stroke_dash: 0 }
+  PRP_fiber_B:     { label: "Fiber B", stroke: "#0C3467", stroke_width: 2, stroke_dash: 3 }
+  OPC_UA_A:        { label: "OPC-UA", stroke: "#008EC3", stroke_width: 2, stroke_dash: 0 }
+  OPC_UA_B:        { label: "OPC-UA", stroke: "#0C3467", stroke_width: 2, stroke_dash: 3 }
+  IT_ethernet:     { label: "Ethernet PoE", stroke: "#9B9B9B", stroke_width: 1, stroke_dash: 3 }
+  RS485_modbus:    { label: "RS-485", stroke: "#9B9B9B", stroke_width: 1, stroke_dash: 3 }
+  RS485:           { label: "RS-485", stroke: "#9B9B9B", stroke_width: 1, stroke_dash: 3 }
+  Modbus_TCP:      { label: "Modbus TCP", stroke: "#008EC3", stroke_width: 1, stroke_dash: 0 }
+  VPN_PSTN:        { label: "PSTN / 4G", stroke: "#F5A623", stroke_width: 1, stroke_dash: 4 }
+  RF_wireless:     { label: "RF TDMA", stroke: "#F5A623", stroke_width: 1, stroke_dash: 4 }
+  IRIG_B:          { label: "IRIG-B", stroke: "#0C3467", stroke_width: 3, stroke_dash: 0 }
+  IEEE1588_A:      { label: "PTP", stroke: "#008EC3", stroke_width: 2, stroke_dash: 0 }
+  IEEE1588_B:      { label: "PTP", stroke: "#0C3467", stroke_width: 2, stroke_dash: 3 }
+  DNP3_PSTN:       { label: "DNP3", stroke: "#F5A623", stroke_width: 1, stroke_dash: 4 }
+  DNP3_IEC104:     { label: "DNP3", stroke: "#008EC3", stroke_width: 2, stroke_dash: 0 }

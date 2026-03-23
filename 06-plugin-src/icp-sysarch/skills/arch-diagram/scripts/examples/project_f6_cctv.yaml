@@ -1,0 +1,138 @@
+# ============================================================
+# F6 ONS — CCTV Surveillance System Architecture
+# CBOM Group 1.7 | ER07 §5.12.2
+# ============================================================
+
+project:
+  name: "F6 ONS — CCTV Surveillance System"
+  site: "CCTV Surveillance System  CBOM 1.7"
+  client: "F6"
+  site_code: "CCTV"
+  rev: "1.0"
+  date: "2026-03-23"
+  standard: "IEC 62443 / IP Surveillance"
+  zone_labels:
+    l4: "Level 4｜External"
+    dmz: "DMZ｜IEC 62443"
+    l3: "Level 3｜VMS / SCADA Integration"
+    l2: "Level 2｜CCTV VLAN Network"
+    l1: "Level 1｜NVR Recording"
+    l0: "Level 0｜IP Cameras"
+
+scada:
+  hmi_count: 2
+  hmi_model: ""
+  hmi_redundancy: true
+  hmi_labels:
+    hmi_a: "Milestone VMS  Video Management"
+    hmi_b: "WinCC OA  Video Integration (S209)"
+  historian: false
+  hmi_ws: false
+  engineering_ws: true
+  engineering_ws_model: "Video Wall 9x3  Control Room"
+  ntp: false
+  gnss: false
+  ups_l3: false
+
+dmz:
+  firewall_model: "FortiGate 80F HA  (See DWG-SCADA)"
+  l3_switch_model: ""
+  remote_access: false
+
+enterprise:
+  enabled: false
+
+network:
+  prp_enabled: false
+  core_switch_model: "FortiSwitch 448E  CCTV VLAN"
+  feeder_groups:
+    - id: "ONS"
+      label: "ONS"
+      description: "ONS Building + Yard"
+      mcc_panels: ""
+    - id: "SWST"
+      label: "OnSWST"
+      description: "Switching Station"
+      mcc_panels: ""
+
+field_control:
+  gateways:
+    enabled: false
+  rtu_panels:
+    - id: "ONS"
+      label: "NVR-1 (ONS, 64ch)"
+      node_label: "NVR"
+      rtu_model: "NVR  H.265  8MP"
+      redbox: false
+      ieds: []
+      connected_to_feeder: "ONS"
+    - id: "SWST"
+      label: "NVR-2 (OnSWST, 64ch)"
+      node_label: "NVR"
+      rtu_model: "NVR  H.265  8MP"
+      redbox: false
+      ieds: []
+      connected_to_feeder: "SWST"
+  statcom:
+    enabled: false
+
+field_devices:
+  protection_ieds:
+    enabled: false
+  pmcc_ieds:
+    enabled: false
+  solar_storage:
+    enabled: true
+    group_label: "IP Cameras (PoE, 4K)"
+    devices:
+      - id: "CAM_YARD"
+        label: "PTZ Camera × 4\nONS Yard Perimeter"
+        type: "plc"
+        comm: "IT_ethernet"
+        connected_to: "rtu_ONS"
+      - id: "CAM_TR"
+        label: "Fixed Camera × 4\nTransformer Area"
+        type: "plc"
+        comm: "IT_ethernet"
+        connected_to: "rtu_ONS"
+      - id: "CAM_CTRL"
+        label: "Dome Camera × 3\nControl Room / Entry"
+        type: "plc"
+        comm: "IT_ethernet"
+        connected_to: "rtu_ONS"
+      - id: "CAM_GIS"
+        label: "Fixed Camera × 3\nGIS Hall"
+        type: "plc"
+        comm: "IT_ethernet"
+        connected_to: "rtu_ONS"
+      - id: "CAM_SWST"
+        label: "PTZ Camera × 4\nOnSWST Yard"
+        type: "plc"
+        comm: "IT_ethernet"
+        connected_to: "rtu_SWST"
+      - id: "CAM_SWST2"
+        label: "Fixed Camera × 2\nOnSWST Building"
+        type: "plc"
+        comm: "IT_ethernet"
+        connected_to: "rtu_SWST"
+
+comm_styles:
+  PRP_LAN_A:      { label: "PRP LAN-A", stroke: "#008EC3", stroke_width: 2, stroke_dash: 0 }
+  PRP_LAN_B:      { label: "PRP LAN-B", stroke: "#0C3467", stroke_width: 2, stroke_dash: 3 }
+  IEC61850_fiber:  { label: "IEC 61850 Fiber", stroke: "#0C3467", stroke_width: 3, stroke_dash: 0 }
+  IEC61850_MMS:    { label: "IEC 61850 MMS", stroke: "#008EC3", stroke_width: 2, stroke_dash: 0 }
+  PRP_fiber_A:     { label: "PRP Fiber A", stroke: "#008EC3", stroke_width: 2, stroke_dash: 0 }
+  PRP_fiber_B:     { label: "PRP Fiber B", stroke: "#0C3467", stroke_width: 2, stroke_dash: 3 }
+  OPC_UA_A:        { label: "OPC-UA", stroke: "#008EC3", stroke_width: 2, stroke_dash: 0 }
+  OPC_UA_B:        { label: "OPC-UA B", stroke: "#0C3467", stroke_width: 2, stroke_dash: 3 }
+  IT_ethernet:     { label: "Ethernet PoE", stroke: "#9B9B9B", stroke_width: 1, stroke_dash: 3 }
+  RS485_modbus:    { label: "RS-485", stroke: "#9B9B9B", stroke_width: 1, stroke_dash: 3 }
+  RS485:           { label: "RS-485", stroke: "#9B9B9B", stroke_width: 1, stroke_dash: 3 }
+  Modbus_TCP:      { label: "Modbus TCP", stroke: "#008EC3", stroke_width: 1, stroke_dash: 0 }
+  VPN_PSTN:        { label: "VPN", stroke: "#F5A623", stroke_width: 1, stroke_dash: 4 }
+  RF_wireless:     { label: "RF", stroke: "#F5A623", stroke_width: 1, stroke_dash: 4 }
+  IRIG_B:          { label: "IRIG-B", stroke: "#0C3467", stroke_width: 3, stroke_dash: 0 }
+  IEEE1588_A:      { label: "PTP", stroke: "#008EC3", stroke_width: 2, stroke_dash: 0 }
+  IEEE1588_B:      { label: "PTP B", stroke: "#0C3467", stroke_width: 2, stroke_dash: 3 }
+  DNP3_PSTN:       { label: "DNP3", stroke: "#F5A623", stroke_width: 1, stroke_dash: 4 }
+  DNP3_IEC104:     { label: "DNP3", stroke: "#008EC3", stroke_width: 2, stroke_dash: 0 }

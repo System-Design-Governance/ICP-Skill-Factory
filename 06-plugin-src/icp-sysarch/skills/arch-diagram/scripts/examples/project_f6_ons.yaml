@@ -1,0 +1,225 @@
+# ============================================================
+# Formosa 6 — ONS OT System Architecture (DWG-L1 全景圖)
+# v1.0 | 2026-03-20 | CBOM v0.2 對齊
+# ============================================================
+
+project:
+  name: "Formosa 6 OWF — ONS OT System Architecture"
+  site: "Onshore Substation  800MW"
+  client: "F6"
+  site_code: "ONS"
+  rev: "1.0"
+  date: "2026-03-20"
+  standard: "IEC 62443 / IEC 61850"
+  zone_labels:
+    l4: "Level 4｜External Systems"
+    dmz: "DMZ｜IEC 62443-3-2"
+    l3: "Level 3｜SCADA Supervisory Zone"
+    l2: "Level 2｜IEC 61850 PRP Network"
+    l1: "Level 1｜Bay Control"
+    l0: "Level 0｜Field Devices"
+
+# ── L3 SCADA ──
+scada:
+  hmi_count: 2
+  hmi_model: ""
+  hmi_redundancy: true
+  hmi_labels:
+    hmi_a: "SCADA Server × 2  Hot-Standby"
+    hmi_b: "HMI OWS × 3  Control Room"
+  historian: true
+  historian_model: "Historian × 2  SQL + COMTRADE"
+  hmi_ws: true
+  hmi_ws_model: "ENG WS × 2  DIGSI 5"
+  engineering_ws: true
+  engineering_ws_model: "NMS  Network Management"
+  ntp: true
+  ntp_model: "GPS/PTP × 2  IEEE 1588"
+  gnss: true
+  ups_l3: true
+  ups_l3_capacity: "AC UPS  48hr"
+
+# ── DMZ ──
+dmz:
+  firewall_model: "OT Firewall × 2  HA"
+  l3_switch_model: "IDS + SIEM"
+  remote_access: true
+  remote_type: "PSTN+4G"
+  modem_model: "VPN Gateway  Diverse-Routed"
+
+# ── L4 ──
+enterprise:
+  enabled: true
+  erp: true
+  adcc: true
+  scada_ws: true
+
+# ── L2 PRP Network ──
+network:
+  prp_enabled: true
+  core_switch_model: "L3 Core Switch × 3  PRP"
+  feeder_groups:
+    - id: "SYS1"
+      label: "SYS-1"
+      description: "230kV GIS + TR (500MW)"
+      mcc_panels: ""
+    - id: "SYS2"
+      label: "SYS-2"
+      description: "161kV GIS + TR (300MW)"
+      mcc_panels: ""
+    - id: "AUX"
+      label: "AUX"
+      description: "VSR + HF Bay"
+      mcc_panels: ""
+
+# ── L1 Bay Control ──
+field_control:
+  gateways:
+    enabled: true
+    count: 2
+    model: "IEC 61850 / IEC 104"
+    zone: "l3"
+    gw_labels:
+      gw_a: "OSS SCADA Client  500MW"
+      gw_b: "WTG SCADA Client  300MW"
+
+  rtu_panels:
+    - id: "SYS1"
+      label: "BCU Group SYS-1  230kV + TR-1 + PCC1"
+      rtu_model: "BCU × 12  IEC 61850"
+      redbox: false
+      ieds: []
+      connected_to_feeder: "SYS1"
+    - id: "SYS2"
+      label: "BCU Group SYS-2  161kV + TR-2 + PCC2"
+      rtu_model: "BCU × 13  IEC 61850"
+      redbox: false
+      ieds: []
+      connected_to_feeder: "SYS2"
+
+  statcom:
+    enabled: false
+
+# ── L0 Field Devices ──
+field_devices:
+  protection_ieds:
+    enabled: false
+  pmcc_ieds:
+    enabled: false
+
+  solar_storage:
+    enabled: true
+    group_label: "Field Devices"
+    devices:
+      # ── Protection Relays（經 BCU 連接 IEC 61850 Process Bus）──
+      - id: "R_OC"
+        label: "7SJ82 × 32\nDistance / OC"
+        type: "gateway"
+        comm: "IEC61850_fiber"
+        connected_to: "rtu_SYS1"
+      - id: "R_DIFF"
+        label: "7UT86 × 10\nTR Differential"
+        type: "gateway"
+        comm: "IEC61850_fiber"
+        connected_to: "rtu_SYS1"
+      - id: "R_LINE"
+        label: "7SD86 × 6\nLine Differential"
+        type: "gateway"
+        comm: "IEC61850_fiber"
+        connected_to: "rtu_SYS2"
+      - id: "R_BUS"
+        label: "7SS85 × 3\nBusbar Differential"
+        type: "gateway"
+        comm: "IEC61850_fiber"
+        connected_to: "rtu_SYS1"
+      - id: "R_BFP"
+        label: "BFP × 8\nBreaker Fail"
+        type: "gateway"
+        comm: "IEC61850_MMS"
+        connected_to: "rtu_SYS2"
+      # ── Metering（經 BCU 連接 IEC 61850 MMS）──
+      - id: "M_P850"
+        label: "P850 × 28\nMulti-function Meter"
+        type: "plc"
+        comm: "IEC61850_MMS"
+        connected_to: "rtu_SYS1"
+      - id: "M_REV"
+        label: "Revenue Meter × 3\nTPC Billing"
+        type: "plc"
+        comm: "IEC61850_MMS"
+        connected_to: "rtu_SYS2"
+      # ── Monitoring（經 BCU 連接 Modbus TCP）──
+      - id: "MON_DGA"
+        label: "DGA × 3\nTransformer Gas"
+        type: "plc"
+        comm: "Modbus_TCP"
+        connected_to: "rtu_SYS1"
+      - id: "MON_DTS"
+        label: "DTS / DAS\nFiber Sensing"
+        type: "plc"
+        comm: "Modbus_TCP"
+        connected_to: "rtu_SYS2"
+      # ── TPC Extension + SPS（經 BCU 連接 IEC 61850）──
+      - id: "TPC_EXT"
+        label: "TPC PCC × 2 Bay\nCT/VT/CB Extension"
+        type: "gateway"
+        comm: "IEC61850_fiber"
+        connected_to: "rtu_SYS2"
+      - id: "SPS"
+        label: "SPS Controller\nUFLS/UVLS + Inter-trip"
+        type: "gateway"
+        comm: "IEC61850_fiber"
+        connected_to: "rtu_SYS1"
+      # ── Safety / Telecom / Power（獨立系統，不走 OT PRP 網路）──
+      - id: "S_FAS"
+        label: "FAS\nFire Alarm"
+        type: "plc"
+        comm: "Modbus_TCP"
+        connected_to: null
+      - id: "S_CCTV"
+        label: "CCTV × 10 + NVR × 2\nIP Surveillance"
+        type: "plc"
+        comm: "IT_ethernet"
+        connected_to: null
+      - id: "S_ACS"
+        label: "ACS × 2\nAccess Control"
+        type: "plc"
+        comm: "Modbus_TCP"
+        connected_to: null
+      - id: "TEL_VOIP"
+        label: "PABX + Phone × 18\nVoIP System"
+        type: "plc"
+        comm: "IT_ethernet"
+        connected_to: null
+      - id: "P_DC"
+        label: "125VDC + Bat × 2\nRectifier"
+        type: "ups"
+        comm: "Modbus_TCP"
+        connected_to: null
+      - id: "P_UPS"
+        label: "EDG × 2 + UPS\n24hr Backup"
+        type: "ups"
+        comm: "Modbus_TCP"
+        connected_to: null
+
+# ── Comm Styles ──
+comm_styles:
+  PRP_LAN_A:      { label: "PRP LAN-A", stroke: "#008EC3", stroke_width: 2, stroke_dash: 0 }
+  PRP_LAN_B:      { label: "PRP LAN-B", stroke: "#0C3467", stroke_width: 2, stroke_dash: 3 }
+  IEC61850_fiber:  { label: "IEC 61850 Fiber", stroke: "#0C3467", stroke_width: 3, stroke_dash: 0 }
+  IEC61850_MMS:    { label: "IEC 61850 MMS", stroke: "#008EC3", stroke_width: 2, stroke_dash: 0 }
+  PRP_fiber_A:     { label: "PRP Fiber A", stroke: "#008EC3", stroke_width: 2, stroke_dash: 0 }
+  PRP_fiber_B:     { label: "PRP Fiber B", stroke: "#0C3467", stroke_width: 2, stroke_dash: 3 }
+  OPC_UA_A:        { label: "OPC-UA LAN-A", stroke: "#008EC3", stroke_width: 2, stroke_dash: 0 }
+  OPC_UA_B:        { label: "OPC-UA LAN-B", stroke: "#0C3467", stroke_width: 2, stroke_dash: 3 }
+  IT_ethernet:     { label: "Ethernet / IP", stroke: "#9B9B9B", stroke_width: 1, stroke_dash: 3 }
+  RS485_modbus:    { label: "RS-485 Modbus", stroke: "#9B9B9B", stroke_width: 1, stroke_dash: 3 }
+  RS485:           { label: "RS-485", stroke: "#9B9B9B", stroke_width: 1, stroke_dash: 3 }
+  Modbus_TCP:      { label: "Modbus TCP", stroke: "#008EC3", stroke_width: 1, stroke_dash: 0 }
+  VPN_PSTN:        { label: "VPN / PSTN", stroke: "#F5A623", stroke_width: 1, stroke_dash: 4 }
+  RF_wireless:     { label: "RF Wireless", stroke: "#F5A623", stroke_width: 1, stroke_dash: 4 }
+  IRIG_B:          { label: "IRIG-B Fiber", stroke: "#0C3467", stroke_width: 3, stroke_dash: 0 }
+  IEEE1588_A:      { label: "PTP LAN-A", stroke: "#008EC3", stroke_width: 2, stroke_dash: 0 }
+  IEEE1588_B:      { label: "PTP LAN-B", stroke: "#0C3467", stroke_width: 2, stroke_dash: 3 }
+  DNP3_PSTN:       { label: "DNP3 PSTN", stroke: "#F5A623", stroke_width: 1, stroke_dash: 4 }
+  DNP3_IEC104:     { label: "IEC 60870-5-104", stroke: "#008EC3", stroke_width: 2, stroke_dash: 0 }
