@@ -1,0 +1,81 @@
+name: Build and Release Plugins
+
+on:
+  push:
+    branches: [main, master]
+    paths:
+      - "05-cowork-skills/**"
+      - "06-plugin-src/**"
+
+jobs:
+  build-plugins:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Bump plugin versions and build packages
+        id: build
+        run: |
+          mkdir -p dist
+
+          for plugin_dir in 06-plugin-src/icp-*/; do
+            plugin_name=$(basename "$plugin_dir")
+            plugin_json="${plugin_dir}.claude-plugin/plugin.json"
+
+            if [ ! -f "$plugin_json" ]; then
+              echo "⚠️ Skipping ${plugin_name}: no plugin.json found"
+              continue
+            fi
+
+            # Read current version and bump patch
+            current_version=$(jq -r '.version' "$plugin_json")
+            IFS='.' read -r major minor patch <<< "$current_version"
+            new_patch=$((patch + 1))
+            new_version="${major}.${minor}.${new_patch}"
+
+            echo "📦 ${plugin_name}: ${current_version} → ${new_version}"
+
+            # Update version in plugin.json
+            jq --arg v "$new_version" '.version = $v' "$plugin_json" > tmp.json
+            mv tmp.json "$plugin_json"
+
+            # Build ZIP package
+            (cd "$plugin_dir" && zip -r "../../dist/${plugin_name}.plugin" . -x '*.git*')
+
+            echo "✅ Built dist/${plugin_name}.plugin"
+          done
+
+          # Determine release tag from date and run number
+          RELEASE_TAG="plugins-v$(date +%Y%m%d)-${GITHUB_RUN_NUMBER}"
+          echo "release_tag=${RELEASE_TAG}" >> "$GITHUB_OUTPUT"
+          echo "🏷️ Release tag: ${RELEASE_TAG}"
+
+      - name: Commit version bumps
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add 06-plugin-src/*/.claude-plugin/plugin.json
+          git diff --cached --quiet || git commit -m "chore: bump plugin patch versions [skip ci]"
+          git push
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ steps.build.outputs.release_tag }}
+          name: "Plugin Build ${{ steps.build.outputs.release_tag }}"
+          body: |
+            Automated plugin build triggered by push to main.
+
+            ## Included Plugins
+            - icp-governance
+            - icp-integration
+            - icp-presales
+            - icp-seceng
+            - icp-sysarch
+          files: dist/*.plugin
+          generate_release_notes: true
