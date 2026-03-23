@@ -49,6 +49,11 @@ if prp:
 | ❌ IED connects via RedBox | ✅ SIPROTEC 5 is DANP, direct PRP connection |
 | ❌ LAN-B shows abbreviated names | ✅ LAN-A and LAN-B Bay Switch descriptions must be identical |
 | ❌ Non-OT devices on PRP network | ✅ CCTV/ACS/TEL/PWR use Ethernet VLAN, not PRP |
+| ❌ Mixed diagram (OT+IT) sets `prp_enabled: true` | ✅ Mixed diagrams set `false`; PRP shown only in PROT-specific diagram |
+| ❌ IT Switch (FortiSwitch) appears in LAN-B | ✅ Only OT IEC 61850 devices have LAN-B |
+| ❌ Non-PRP diagram zone labeled "LAN-A" | ✅ Use specific names: "Ethernet VLAN" / "Modbus TCP Network" / "Fortinet Managed Network" |
+| ❌ Non-PRP diagram switch labeled "Core Switch A" | ✅ Drop the "A" (implies a B exists), use "Core Switch" |
+| ❌ Non-PRP diagram link labeled "PRP LAN-A" | ✅ Use actual protocol: "Ethernet" / "Modbus TCP" |
 
 ## 5. PRP Cost Impact
 

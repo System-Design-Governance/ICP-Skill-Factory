@@ -74,6 +74,11 @@ if prp:
 | ❌ IED 透過 RedBox 上行 | ✅ SIPROTEC 5 是 DANP，直接走 PRP |
 | ❌ LAN-B 只顯示簡短名稱 | ✅ LAN-A 和 LAN-B 的 Bay Switch 描述必須一致 |
 | ❌ 非 OT 設備掛 PRP 網路 | ✅ CCTV/ACS/TEL/PWR 走 Ethernet VLAN |
+| ❌ 混合圖面（OT+IT）設 prp_enabled: true | ✅ 混合圖面設 false，PRP 由 PROT 專屬圖呈現 |
+| ❌ IT Switch (FortiSwitch) 出現在 LAN-B | ✅ 只有 OT IEC 61850 設備才有 LAN-B |
+| ❌ 非 PRP 圖的 zone 叫 "LAN-A" | ✅ 非 PRP 圖改為 Ethernet VLAN / Modbus TCP Network 等具體名稱 |
+| ❌ 非 PRP 圖的 Switch 叫 "Core Switch A" | ✅ 去掉 "A"（暗示有 B），改為 "Core Switch" |
+| ❌ 非 PRP 圖的連線標 "PRP LAN-A" | ✅ 改為 Ethernet / Modbus TCP 等實際協定 |
 
 ---
 

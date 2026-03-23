@@ -39,6 +39,8 @@ def patch_common(s):
     s = s.replace('輔助設備', 'Auxiliary')
     s = s.replace('HMI 及監控桌\\n', '')
     s = s.replace('HMI 及監控桌\n', '')
+    # LAN 標籤：移除中文，但保留 LAN-A/LAN-B 標識（由各 patch 函式決定是否改名）
+    # 不在 common 統一改——PRP 圖保留 LAN-A/B，非 PRP 圖由 patch_non_ot() 改為 Ethernet
     s = s.replace('LAN-A（IEC 62439-3 獨立實體網路）', 'LAN-A (IEC 62439-3)')
     s = s.replace('LAN-B（IEC 62439-3 獨立實體網路）', 'LAN-B (IEC 62439-3)')
     # 統一清理 MCC 前綴（patch 後殘留的）
@@ -59,8 +61,16 @@ def patch_l4_labels(s, nodes):
 def patch_non_ot(s):
     """Non-OT 圖面（CCTV/ACS/TEL/PWR）專用修正"""
     # LAN 標籤：去除 PRP/IEC 62439-3
-    s = s.replace('LAN-A（IEC 62439-3 獨立實體網路）', 'Ethernet VLAN')
-    s = s.replace('LAN-B（IEC 62439-3 獨立實體網路）', 'Ethernet VLAN-B')
+    # 非 PRP 圖：移除所有 LAN-A/LAN-B/PRP 術語
+    s = s.replace('LAN-A (IEC 62439-3)', 'Ethernet VLAN')
+    s = s.replace('LAN-B (IEC 62439-3)', 'Ethernet VLAN-B')
+    # Switch 節點名稱中的 "LAN-A" → 移除
+    s = re.sub(r' LAN-A ', ' ', s)
+    # Core Switch A → Core Switch（去掉 A，因為沒有 B）
+    s = s.replace('Core Switch A', 'Core Switch')
+    # 連線標籤中的 "PRP LAN-A" → 協定名稱由各 patch 覆蓋
+    s = s.replace(': "PRP LAN-A"', ': "Ethernet"')
+    s = s.replace(': "PRP LAN-B"', ': "Ethernet"')
 
     # L2→L1 連線協定：IEC 61850 MMS → Ethernet
     # 只修正 L2→L1 的連線（保留 L3→L2 的 OPC-UA）
@@ -200,9 +210,11 @@ def patch_power(path):
     s = s.replace('MCC 群', 'Power Distribution')
     s = s.replace('MCC-ONS  ONS Power', 'ONS Power Panel')
 
-    # L2/L1：Power 用 Modbus TCP 是正確的（RTU 收 BoP）
-    # 但 LAN 標籤不是 PRP
-    s = s.replace('LAN-A（IEC 62439-3 獨立實體網路）', 'Modbus TCP Network')
+    # L2/L1：Power 用 Modbus TCP，不是 PRP — 移除所有 LAN-A 術語
+    s = s.replace('LAN-A (IEC 62439-3)', 'Modbus TCP Network')
+    s = re.sub(r' LAN-A ', ' ', s)
+    s = s.replace('Core Switch A', 'Core Switch')
+    s = s.replace(': "PRP LAN-A"', ': "Modbus TCP"')
 
     # L2→L1：RTU 用 Modbus TCP（不是 IEC 61850）
     s = re.sub(
@@ -249,8 +261,11 @@ def patch_scada(path):
     s = s.replace('MCC-SWST  OnSWST L2 Switch x 4 + FW', 'FortiSwitch 124F x 5 + FG 80F OnSWST')
     s = s.replace('MCC-WIFI  FortiAP x 16 + FortiAuth', 'FortiAP x 16 + FortiAuth')
 
-    # L2 IT 網路不是 PRP
-    s = s.replace('LAN-A（IEC 62439-3 獨立實體網路）', 'Fortinet Managed Network')
+    # L2 IT 網路不是 PRP — 移除所有 LAN-A/PRP 術語
+    s = s.replace('LAN-A (IEC 62439-3)', 'Fortinet Managed Network')
+    s = re.sub(r' LAN-A ', ' ', s)
+    s = s.replace('Core Switch A', 'Core Switch')
+    s = s.replace(': "PRP LAN-A"', ': "Ethernet"')
 
     # RTU LV 連線：IEC 61850 → Modbus TCP
     s = s.replace('SW_SWST_A -> L1.rtu_lv.RTU_RTU_LV: "IEC 61850 MMS"',
@@ -346,10 +361,13 @@ def patch_overview(path):
     # L2
     s = s.replace('MCC 群', 'Network Layer')
     s = s.replace('MCC-OT  PRP IEC 61850 (See DWG-PROT)', 'OT PRP Network (DWG-PROT)')
-    s = s.replace('MCC-IT  FortiSwitch 124F x 12', 'IT/Safety Network (DWG-SCADA)')
+    s = s.replace('MCC-IT  FortiSwitch 124F x 22', 'IT/Safety Network (DWG-SCADA)')
 
-    # L2 LAN 標籤：Overview 不標 PRP（因為混合 OT+IT）
-    s = s.replace('LAN-A（IEC 62439-3 獨立實體網路）', 'OT + IT Network Infrastructure')
+    # L2 LAN 標籤：Overview 混合 OT+IT，移除 LAN-A/PRP 術語
+    s = s.replace('LAN-A (IEC 62439-3)', 'OT + IT Network Infrastructure')
+    s = re.sub(r' LAN-A ', ' ', s)
+    s = s.replace('Core Switch A', 'Core Switch')
+    s = s.replace(': "PRP LAN-A"', ': "Ethernet"')
 
     # L1→L0 的 IT 連線修正
     s = s.replace('L1.bop.RTU_BOP -> L0.solar.CCTV: "Ethernet"',
