@@ -237,6 +237,18 @@ Stage 3: pypdf → 合併（文字頁 + 架構圖交錯，架構圖上疊加 Tit
 | Chrome headless print-to-pdf | 頁面跑版、加日期浮水印 |
 | Legend 疊加在 d2 PDF 上 | 不同頁面尺寸導致 Legend 位置不一致 |
 
+### 7.5 PDF 頁面索引陷阱
+
+`merge_pdfs()` 用 hardcoded index 交錯 text 頁面和 diagram 頁面。**新增任何文字頁面時必須調整 `chapter_start`**：
+
+```python
+# text PDF 頁面結構：Cover(0) + TOC(1) + Legend(2) + Ch1~8(3~10) + Appendix(11~13)
+chapter_start = 3  # 必須 = 固定頁面數（cover + TOC + Legend）
+appendix_start = chapter_start + len(diagram_pdfs)
+```
+
+踩過的坑：忘記 Legend 佔了 page 2，`chapter_start=2` 導致 Legend 被當成 Chapter 1 說明頁，架構圖出現在說明頁之前。
+
 ---
 
 ## 八、patch_all_f6.py 設計模式

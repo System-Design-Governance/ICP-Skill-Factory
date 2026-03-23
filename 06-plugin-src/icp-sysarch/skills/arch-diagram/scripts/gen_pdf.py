@@ -445,11 +445,14 @@ def merge_pdfs(text_pdf, diagram_pdfs, output_path):
     writer.add_page(text_reader.pages[0])
     # TOC
     writer.add_page(text_reader.pages[1])
+    # Legend page
+    writer.add_page(text_reader.pages[2])
 
-    # Interleave chapter pages with diagrams
+    # Interleave: chapter title page → diagram page
+    chapter_start = 3  # page 0=cover, 1=TOC, 2=Legend, 3+=chapters
     for i, diagram_pdf in enumerate(diagram_pdfs):
-        # Chapter title page
-        text_page_idx = 2 + i
+        # Chapter title page first
+        text_page_idx = chapter_start + i
         if text_page_idx < total_text:
             writer.add_page(text_reader.pages[text_page_idx])
 
@@ -466,8 +469,8 @@ def merge_pdfs(text_pdf, diagram_pdfs, output_path):
             page.merge_page(overlay_reader.pages[0])
             writer.add_page(page)
 
-    # Appendix pages
-    appendix_start = 2 + len(diagram_pdfs)
+    # Appendix pages (after cover + TOC + Legend + N chapter pages)
+    appendix_start = chapter_start + len(diagram_pdfs)
     for i in range(appendix_start, total_text):
         writer.add_page(text_reader.pages[i])
 

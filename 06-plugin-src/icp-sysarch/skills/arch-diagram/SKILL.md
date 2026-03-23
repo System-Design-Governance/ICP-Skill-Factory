@@ -966,6 +966,8 @@ Stage 2: d2 CLI → 架構圖 PDF（向量圖，不經 optimize_svg.py）
 Stage 3: pypdf → 合併（文字頁 + 架構圖交錯，Title Bar overlay）
 ```
 
+**⚠️ 頁面索引陷阱**：`merge_pdfs()` 用 `chapter_start = 3`（跳過 cover/TOC/Legend）交錯文字頁和架構圖。新增任何文字頁面時必須同步調整 `chapter_start` 和 `appendix_start`，否則頁面對應會整體偏移。
+
 ### 24A.9 patch 模式（多圖專案）
 
 gen_d2.py 固定產生 `ERP`、`ADCC`、`SCADA_WS` 三個 L4 節點。每張圖的 patch 函式替換為實際外部系統：
